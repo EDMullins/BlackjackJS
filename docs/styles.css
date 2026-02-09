@@ -1,0 +1,15 @@
+:root {
+    --primary-color: #0B6E4F;
+    --secondary-color: #393939;
+    --primary-color-hover: #094d36;
+    --background-color: #699f5b;
+    --text-color: #222222;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Times New Roman', serif;
+    margin: 0;
+    padding: 20px;
+}
