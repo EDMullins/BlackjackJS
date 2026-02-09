@@ -1,15 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Young+Serif&display=swap');
+
 :root {
-    --primary-color: #0B6E4F;
+    --primary-color: #edd51e;
     --secondary-color: #393939;
     --primary-color-hover: #094d36;
-    --background-color: #699f5b;
+    --background-color: #7fb572;
     --text-color: #222222;
+    --primary-font: 'Noto Serif', serif;
+    --secondary-font: 'Young Serif', serif;
 }
 
 body {
-    background-color: var(--background-color);
+    background-color: var(--background-color) !important;
     color: var(--text-color);
-    font-family: 'Times New Roman', serif;
+    font-family: var(--primary-font);
     margin: 0;
-    padding: 20px;
+}
+
+header {
+    padding: 2vw;
+}
+
+h1 {
+    font-family: var(--secondary-font);
+    color: var(--primary-color);
 }
