@@ -19,6 +19,9 @@ body {
 
 header {
     padding: 2vw;
+    background-color: #14564b;
+    box-shadow: 5px 4px 0 #094d36;
+    border-radius: 0 0 15px 15px;
 }
 
 h1 {
