@@ -14,13 +14,18 @@
 body {
     background-color: var(--background-color) !important;
     color: var(--text-color);
-    font-family: var(--primary-font);
+    font-family: var(--primary-font) !important;
     margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
     padding: 2vw;
-    background-color: var(--background-color-secondary);
+    background-image: linear-gradient(to bottom, rgba(20, 86, 75, 0.95), rgba(20, 86, 75, 0.9)), url('../docs/imgs/headerBG.jpg');
+    background-size: cover;
     box-shadow: 5px 4px 0 #094d36;
     border-radius: 0 0 15px 15px;
 }
@@ -43,4 +48,11 @@ h1 {
     background-color: var(--primary-color-hover) !important;
     color: var(--text-color) !important;
     box-shadow: 5px 5px 0 #094d36;
+}
+
+footer {
+    margin-top: auto;
+    padding: 1vw;
+    background-color: var(--background-color-secondary);
+    color: var(--primary-color);
 }
