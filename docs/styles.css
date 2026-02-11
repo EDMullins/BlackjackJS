@@ -7,6 +7,7 @@
     --background-color: #7fb572;
     --background-color-secondary: #14564b;
     --text-color: #222222;
+    --soft-text-color: #496e3f;
     --primary-font: 'Noto Serif', serif;
     --secondary-font: 'Young Serif', serif;
 }
@@ -43,11 +44,28 @@ h1 {
     font-weight: bold !important;
     box-shadow: 3px 3px 0 #094d36;
 }
-
 .btn-primary:hover {
     background-color: var(--primary-color-hover) !important;
     color: var(--text-color) !important;
     box-shadow: 5px 5px 0 #094d36;
+}
+
+.softText {
+    font-family: var(--secondary-font);
+    font-style: italic;
+    color: var(--soft-text-color);
+}
+
+.cardImage {
+    width: 140px;
+    height: 200px;
+    margin-right: 0.5vw;
+}
+
+.cardSection {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 1vw;
 }
 
 footer {

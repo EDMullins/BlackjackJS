@@ -17,16 +17,34 @@
         <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">Repo</a>
     </header>
 
-    <div class="dealerSection d-flex flex-direction-column flex-grow-1 mt-4 ms-3">
-        <h2>Dealer's Hand</h2>
+    <div class="dealerSection">
+        <div class="d-flex justify-content-between flex-grow-1 mt-4 mx-4">
+            <h2 class="softText">Dealer's Hand:</h2>
+            <div class="moneyTab">
+                <h2 class=" " id="money">$</h2>
+            </div>
+        </div>
+        <div class="cardSection d-flex flex-wrap justify-content-center" id="dealerCardSection">
+            <!-- Cards will be appended here -->
+        </div>
     </div>
 
-    <div class="playerSection d-flex flex-direction-column flex-grow-1 ms-3">
-        <h2>Player's Hand</h2>
+    <div class="playerSection">
+        <div class="d-flex justify-content-between flex-grow-1 mx-4">
+            <h2 class="softText">Player's Hand:</h2>
+            <div class="btnSection">
+                <div class="btn btn-primary" id="hit">Hit</div>
+                <div class="btn btn-primary" id="stand">Stand</div>
+            </div>
+        </div>
+        <div class="cardSection d-flex flex-wrap justify-content-center" id="playerCardSection">
+            <!-- Cards will be appended here -->
+        </div>
     </div>
+
 
     <footer>
-        <h2>XP: </h2> 
+        <h4>XP: </h4>
     </footer>
     <script src="scripts.js"></script>
 </body>
