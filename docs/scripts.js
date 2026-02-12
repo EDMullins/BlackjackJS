@@ -128,6 +128,18 @@ class Game {
     this.dealerHand.addCard(this.deck.drawCard());
 
     this.render();
+    document.getElementById('hit').disabled = false;
+    document.getElementById('stand').disabled = false;
+    // Add event listeners for buttons
+    document.getElementById('hit').onclick = () => this.hit();
+    document.getElementById('stand').onclick = () => this.stand();
+    console.log("Listening for clicks");
+  }
+
+  end() {
+    this.gameActive = false;
+    document.getElementById('hit').disabled = true;
+    document.getElementById('stand').disabled = true;
   }
 
   render() {
@@ -143,5 +155,35 @@ class Game {
       displayCard(card, '#playerCardSection');
       console.log(`Player card: ${card.rank}, hidden: ${card.hidden}`);
     }
+  }
+
+  hit() {
+    if (!this.gameActive) return;
+    this.playerHand.addCard(this.deck.drawCard());
+    this.render();
+    if (this.playerHand.isBust()) {
+      alert('You bust! Dealer wins.');
+      this.gameActive = false;
+    }
+  }
+
+  stand() {
+    if (!this.gameActive) return;
+    this.dealerHand.cards[0].reveal(); // Reveal dealer's hidden card
+    this.render();
+    while (this.dealerHand.getValue() < 17) {
+      this.dealerHand.addCard(this.deck.drawCard());
+      this.render();
+    }
+    if (this.dealerHand.isBust()) {
+      alert('Dealer busts! You win.');
+    } else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
+      alert('You win!');
+    } else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
+      alert('Dealer wins.');
+    } else {
+      alert("It's a tie!");
+    }
+    this.gameActive = false;
   }
 }
