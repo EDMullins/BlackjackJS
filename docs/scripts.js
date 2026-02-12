@@ -115,12 +115,24 @@ class Game {
     this.playerHand = new Hand();
     this.dealerHand = new Hand();
     this.gameActive = false;
+    this.setupNewHandListener();
+  }
+
+  setupNewHandListener() {
+    document.getElementById('newHand').onclick = () => {
+      console.log("New Hand");
+      document.getElementById('roundOverSection').style.display = 'none';
+      this.start();
+    };
   }
 
   start() {
     this.gameActive = true;
+    // Reset game state if needed
+    this.deck.reset();
     this.playerHand.clear();
     this.dealerHand.clear();
+    document.getElementById('roundOverSection').style.display = 'none';
     // Initial deal
     this.playerHand.addCard(this.deck.drawCard());
     this.dealerHand.addCard(this.deck.drawCard(), true); // Dealer's first card is hidden
@@ -136,21 +148,23 @@ class Game {
     console.log("Listening for clicks");
   }
 
-  end() {
+  end(result) {
     this.gameActive = false;
     document.getElementById('hit').disabled = true;
     document.getElementById('stand').disabled = true;
+    document.getElementById('roundOverSection').style.display = 'flex';
+    document.getElementById('roundResult').textContent = result;
   }
 
   render() {
     document.querySelector('#dealerCardSection').innerHTML = '';
     document.querySelector('#playerCardSection').innerHTML = '';
-    
+
     for (let card of this.dealerHand.cards) {
       displayCard(card, '#dealerCardSection');
       console.log(`Dealer card: ${card.rank}, hidden: ${card.hidden}`);
     }
-    
+
     for (let card of this.playerHand.cards) {
       displayCard(card, '#playerCardSection');
       console.log(`Player card: ${card.rank}, hidden: ${card.hidden}`);
@@ -162,11 +176,11 @@ class Game {
     this.playerHand.addCard(this.deck.drawCard());
     this.render();
     if (this.playerHand.isBust()) {
-      alert('You bust! Dealer wins.');
-      this.gameActive = false;
+      this.end('You bust! Dealer wins.');
     }
   }
 
+  //TODO: add end 
   stand() {
     if (!this.gameActive) return;
     this.dealerHand.cards[0].reveal(); // Reveal dealer's hidden card
@@ -176,14 +190,34 @@ class Game {
       this.render();
     }
     if (this.dealerHand.isBust()) {
-      alert('Dealer busts! You win.');
+      this.end('Dealer busts! You win!');
     } else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
-      alert('You win!');
+      this.end('You win!');
     } else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
-      alert('Dealer wins.');
+      this.end('Dealer wins.');
     } else {
-      alert("It's a tie!");
+      this.end("It's a tie!");
     }
     this.gameActive = false;
+  }
+}
+
+class Player {
+  constructor() {
+    this.xp = 0;
+    this.level = 0;
+    this.xpToNextLvl = 100;
+    this.money = 100;
+    //After you lose all your money, you can start a new round with 100 money, but you will lose all your multiplier.
+    this.moneyOnNewRound = 100;
+    this.multiplier = 1;
+  }
+
+  GetPlayerData() {
+
+  }
+
+  PutPlayerData() {
+
   }
 }
