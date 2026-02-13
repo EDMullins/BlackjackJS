@@ -8,11 +8,25 @@ import { Deck } from './Deck.js';
 import { Hand } from './Hand.js';
 import { Player } from './Player.js';
 
+// Test Firestore read/write
+async function testFirestore() {
+  const player = new Player();
+  // Write test data
+  await player.PutPlayerData("testUser", { xp: 10, money: 50 });
+  // Read test data
+  const data = await player.GetPlayerData("testUser");
+  console.log("Firestore test data:", data);
+}
+
+testFirestore();
+
 class Game {
   constructor() {
+    // Player Data
+    this.player = new Player();
+    this.player.GetPlayerData();
     // Deck & Hands
     this.deck = new Deck();
-    this.player = new Player();
     this.playerHand = new Hand(true);
     this.dealerHand = new Hand();
     this.gameActive = false;
@@ -21,7 +35,7 @@ class Game {
     this.dealerCardSection = document.getElementById('dealerCardSection');
     this.hitButton = document.getElementById('hit');
     this.standButton = document.getElementById('stand');
-    // this.moneyDisplay = document.getElementById('money');
+    this.moneyDisplay = document.getElementById('money');
     this.playerValueDisplay = document.getElementById('playerHandValue');
     this.dealerValueDisplay = document.getElementById('dealerHandValue');
     this.roundOverSection = document.getElementById('roundOverSection');
