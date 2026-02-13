@@ -208,10 +208,11 @@ class Game {
   stand() {
     if (!this.gameActive) return;
     this.revealHiddenCards();
-    console.log(`Dealer's hand value: ${this.dealerHand.getValue()}`);
+    // Dealer's turn
     while (this.dealerHand.getValue() < 17) {
       this.displayCard(this.deck.drawCard(), this.dealerHand);
     }
+    this.updateHandValues(this.dealerHand);
     if (this.dealerHand.isBust()) {
       this.end('Dealer busts! You win!');
     } 
