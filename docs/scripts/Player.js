@@ -3,7 +3,6 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/fi
 import { app, auth } from "./firebase-config.js"; // Import the 'app' instance
 const db = getFirestore(app); // Initialize Firestore with the app instance
 
-console.log("Firestore db:", db);
 export class Player {
     constructor() {
         this.xp = 0;
@@ -18,11 +17,8 @@ export class Player {
             if (user) {
                 // User is signed in, get their UID
                 const uid = user.uid;
-                console.log("User signed in with UID:", uid);
-
-                // Now you can safely create a Player instance and fetch data
-                const player = new Player();
-                player.GetPlayerData(uid).then(data => {
+                // Now you can safely fetch data
+                this.GetPlayerData(uid).then(data => {
                     if (data) {
                         console.log("Player data:", data);
                         // Use player data to initialize your game or UI
@@ -33,9 +29,6 @@ export class Player {
                 }).catch(error => {
                     console.error("Error getting player data:", error);
                 });
-
-                // You might want to initialize your Game class here, passing the uid
-                // const game = new Game(uid); // If Game constructor expects uid
             } else {
                 // User is signed out
                 console.log("No user signed in.");
