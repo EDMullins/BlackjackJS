@@ -1,114 +1,18 @@
 document.addEventListener("DOMContentLoaded", (event) => {
-  console.log("DOM fully loaded and parsed");
   const game = new Game();
   game.start();
+  console.log("DOM fully loaded and parsed");
 });
 
-class Card {
-  constructor(rank, hidden = false) {
-    this.rank = rank;
-    this.hidden = hidden;
-  }
-
-  hide() {
-    this.hidden = true;
-  }
-
-  reveal() {
-    this.hidden = false;
-  }
-
-  getValue() {
-    if (this.rank === 'A') return 11;
-    if (['J', 'Q', 'K'].includes(this.rank)) return 10;
-    return parseInt(this.rank);
-  }
-
-  getImage() {
-    if (this.hidden) {
-      return `imgs/back.png`;
-    }
-    return `imgs/${this.rank}.png`;
-  }
-}
-
-class Deck {
-  constructor() {
-    this.cards = this.createDeck();
-  }
-
-  createDeck() {
-    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    const deck = [];
-
-    for (let i = 0; i < 4; i++) {
-      for (let rank of ranks) {
-        deck.push(new Card(rank));
-      }
-    }
-
-    return deck.sort(() => Math.random() - 0.5); // Shuffle the deck
-  }
-
-  drawCard() {
-    return this.cards.pop();
-  }
-
-  isEmpty() {
-    return this.cards.length === 0;
-  }
-
-  reset() {
-    this.cards = this.createDeck();
-  }
-}
-
-class Hand {
-  constructor(isPlayer = false) {
-    this.cards = [];
-    this.isPlayer = isPlayer;
-  }
-
-  addCard(card, hidden = false) {
-    if (hidden) {
-      card.hide();
-    }
-    this.cards.push(card);
-  }
-
-  getValue() {
-    let value = 0;
-    let aces = 0;
-
-    for (let card of this.cards) {
-      if (card.hidden) continue; // Skip hidden cards
-      value += card.getValue();
-      if (card.rank === 'A' && !card.hidden) aces++;
-    }
-    while (value > 21 && aces > 0) {
-      value -= 10;
-      aces--;
-    }
-    return value;
-  }
-
-  getLastCard() {
-    return this.cards[this.cards.length - 1];
-  }
-
-  isBust() {
-    return this.getValue() > 21;
-  }
-
-  clear() {
-    this.cards = [];
-  }
-}
+import { Deck } from './Deck.js';
+import { Hand } from './Hand.js';
+import { Player } from './Player.js';
 
 class Game {
   constructor() {
     // Deck & Hands
     this.deck = new Deck();
+    this.player = new Player();
     this.playerHand = new Hand(true);
     this.dealerHand = new Hand();
     this.gameActive = false;
@@ -154,7 +58,6 @@ class Game {
     this.standButton.disabled = false;
     this.hitButton.onclick = () => this.hit();
     this.standButton.onclick = () => this.stand();
-    console.log("Listening for clicks");
   }
 
   end(result) {
@@ -250,25 +153,5 @@ class Game {
         img.src = card.getImage();
       }
     }
-  }
-}
-
-class Player {
-  constructor() {
-    this.xp = 0;
-    this.level = 0;
-    this.xpToNextLvl = 100;
-    this.money = 100;
-    //After you lose all your money, you can start a new round with 100 money, but you will lose all your multiplier.
-    this.moneyOnNewRound = 100;
-    this.multiplier = 1;
-  }
-
-  GetPlayerData() {
-
-  }
-
-  PutPlayerData() {
-
   }
 }
