@@ -5,17 +5,20 @@ const db = getFirestore(app); // Initialize Firestore with the app instance
 
 export class Player {
     constructor() {
+        // Player Data
         this.xp = 0;
         this.level = 0;
-        this.xpToNextLvl = 100;
-        this.money = 100;
-        //After you lose all your money, you can start a new round with 100 money, but you will lose all your multiplier.
-        this.moneyOnNewRound = 100;
         this.multiplier = 1;
+        this.money = 100;
+        this.wins = 0;
+        this.losses = 0;
+        //After you lose all your money, you can start a new round with 100 money, but you will lose all your multiplier.
+        this.moneyOnNewRound = 100 + (this.level * 20);
+        this.xpToNextLvl = 100 * (this.level * 1.5);
+        
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in, get their UID
                 const uid = user.uid;
                 // Now you can safely fetch data
                 this.GetPlayerData(uid).then(data => {
@@ -32,7 +35,6 @@ export class Player {
             } else {
                 // User is signed out
                 console.log("No user signed in.");
-                // Redirect to login page or show sign-in UI
             }
         });
     }

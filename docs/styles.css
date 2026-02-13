@@ -80,8 +80,8 @@ h1 {
     padding: 2vw;
 }
 
-#authForm {
-    display: flex;
+#loginSection {
+    display: none;
     flex-direction: column;
     width: 400px;
     background-color: var(--background-color-secondary);
@@ -90,6 +90,18 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 2vw;
+}
+
+#loginXBtn {
+    align-self: flex-end;
+    margin-bottom: 2vw;
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
 }
 
 footer {
