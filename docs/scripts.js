@@ -63,18 +63,10 @@ class Deck {
   }
 }
 
-const displayCard = (card, containerSelector) => {
-  const container = document.querySelector(containerSelector);
-  const img = document.createElement('img');
-  img.className = 'cardImage';
-  img.src = card.getImage();
-  img.alt = card.rank;
-  container.appendChild(img);
-};
-
 class Hand {
-  constructor() {
+  constructor(isPlayer = false) {
     this.cards = [];
+    this.isPlayer = isPlayer;
   }
 
   addCard(card, hidden = false) {
@@ -100,6 +92,10 @@ class Hand {
     return value;
   }
 
+  getLastCard() {
+    return this.cards[this.cards.length - 1];
+  }
+
   isBust() {
     return this.getValue() > 21;
   }
@@ -111,17 +107,29 @@ class Hand {
 
 class Game {
   constructor() {
+    // Deck & Hands
     this.deck = new Deck();
-    this.playerHand = new Hand();
+    this.playerHand = new Hand(true);
     this.dealerHand = new Hand();
     this.gameActive = false;
+    // UI Elements
+    this.playerCardSection = document.getElementById('playerCardSection');
+    this.dealerCardSection = document.getElementById('dealerCardSection');
+    this.hitButton = document.getElementById('hit');
+    this.standButton = document.getElementById('stand');
+    // this.moneyDisplay = document.getElementById('money');
+    this.playerValueDisplay = document.getElementById('playerHandValue');
+    this.dealerValueDisplay = document.getElementById('dealerHandValue');
+    this.roundOverSection = document.getElementById('roundOverSection');
+    this.roundResultDisplay = document.getElementById('roundResult');
+    // Event Listeners
     this.setupNewHandListener();
   }
 
   setupNewHandListener() {
     document.getElementById('newHand').onclick = () => {
       console.log("New Hand");
-      document.getElementById('roundOverSection').style.display = 'none';
+      this.roundOverSection.style.display = 'none';
       this.start();
     };
   }
@@ -132,73 +140,115 @@ class Game {
     this.deck.reset();
     this.playerHand.clear();
     this.dealerHand.clear();
-    document.getElementById('roundOverSection').style.display = 'none';
+    this.clearScreen();
     // Initial deal
-    this.playerHand.addCard(this.deck.drawCard());
-    this.dealerHand.addCard(this.deck.drawCard(), true); // Dealer's first card is hidden
-    this.playerHand.addCard(this.deck.drawCard());
-    this.dealerHand.addCard(this.deck.drawCard());
-
-    this.render();
-    document.getElementById('hit').disabled = false;
-    document.getElementById('stand').disabled = false;
-    // Add event listeners for buttons
-    document.getElementById('hit').onclick = () => this.hit();
-    document.getElementById('stand').onclick = () => this.stand();
+    this.displayCard(this.deck.drawCard(), this.playerHand);
+    this.displayCard(this.deck.drawCard(), this.dealerHand, true);// Dealer's first card is hidden
+    this.displayCard(this.deck.drawCard(), this.playerHand);
+    this.displayCard(this.deck.drawCard(), this.dealerHand);
+    // Update hand values
+    this.updateHandValues(this.playerHand);
+    this.updateHandValues(this.dealerHand);
+    // Enable buttons and set up event listeners
+    this.hitButton.disabled = false;
+    this.standButton.disabled = false;
+    this.hitButton.onclick = () => this.hit();
+    this.standButton.onclick = () => this.stand();
     console.log("Listening for clicks");
   }
 
   end(result) {
     this.gameActive = false;
-    document.getElementById('hit').disabled = true;
-    document.getElementById('stand').disabled = true;
-    document.getElementById('roundOverSection').style.display = 'flex';
-    document.getElementById('roundResult').textContent = result;
+    this.hitButton.disabled = true;
+    this.standButton.disabled = true;
+    this.roundOverSection.style.display = 'flex';
+    this.roundResultDisplay.textContent = result;
   }
 
-  render() {
-    document.querySelector('#dealerCardSection').innerHTML = '';
-    document.querySelector('#playerCardSection').innerHTML = '';
-
-    for (let card of this.dealerHand.cards) {
-      displayCard(card, '#dealerCardSection');
-      console.log(`Dealer card: ${card.rank}, hidden: ${card.hidden}`);
+  displayCard(card, hand, hidden = false) {
+    let containerSelector = '';
+    if (hand instanceof Hand) {
+      if (hand.isPlayer) {
+        this.playerHand.addCard(card);
+        containerSelector = '#playerCardSection';
+      }
+      else {
+        this.dealerHand.addCard(card, hidden);
+        containerSelector = '#dealerCardSection';
+      }
+      this.updateHandValues(hand);
     }
-
-    for (let card of this.playerHand.cards) {
-      displayCard(card, '#playerCardSection');
-      console.log(`Player card: ${card.rank}, hidden: ${card.hidden}`);
+    else {
+      return console.error("Error DisplayCard(): Invalid hand type");
     }
+    const container = document.querySelector(containerSelector);
+    const img = document.createElement('img');
+    img.className = 'cardImage';
+    img.src = card.getImage();
+    img.alt = card.rank;
+    container.appendChild(img);
+  };
+
+  clearScreen() {
+    this.playerCardSection.innerHTML = '';
+    this.dealerCardSection.innerHTML = '';
+    this.playerValueDisplay.textContent = "Player's Hand: ";
+    this.dealerValueDisplay.textContent = "Dealer's Hand: ";
+    this.roundOverSection.style.display = 'none';
   }
 
   hit() {
     if (!this.gameActive) return;
-    this.playerHand.addCard(this.deck.drawCard());
-    this.render();
+    this.displayCard(this.deck.drawCard(), this.playerHand);
     if (this.playerHand.isBust()) {
       this.end('You bust! Dealer wins.');
     }
   }
 
-  //TODO: add end 
   stand() {
     if (!this.gameActive) return;
-    this.dealerHand.cards[0].reveal(); // Reveal dealer's hidden card
-    this.render();
+    this.revealHiddenCards();
+    console.log(`Dealer's hand value: ${this.dealerHand.getValue()}`);
     while (this.dealerHand.getValue() < 17) {
-      this.dealerHand.addCard(this.deck.drawCard());
-      this.render();
+      this.displayCard(this.deck.drawCard(), this.dealerHand);
     }
     if (this.dealerHand.isBust()) {
       this.end('Dealer busts! You win!');
-    } else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
+    } 
+    else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
       this.end('You win!');
-    } else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
+    } 
+    else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
       this.end('Dealer wins.');
-    } else {
+    } 
+    else {
       this.end("It's a tie!");
     }
     this.gameActive = false;
+  }
+
+  updateHandValues(hand) {
+    if (hand instanceof Hand) {
+      if (hand.isPlayer) {
+        this.playerValueDisplay.textContent = `Player's Hand: ${hand.getValue()}`;
+      }
+      else {
+        this.dealerValueDisplay.textContent = `Dealer's Hand: ${hand.getValue()}`;
+      }
+    }
+    else {
+      return console.error("Error UpdateHandValues(): Invalid hand type");
+    }
+  }
+
+  revealHiddenCards() {
+    for (let card of this.dealerHand.cards) {
+      if (card.hidden) {
+        card.reveal();
+        const img = document.querySelector(`#dealerCardSection img[alt="${card.rank}"]`);
+        img.src = card.getImage();
+      }
+    }
   }
 }
 

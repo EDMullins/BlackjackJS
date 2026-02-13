@@ -19,7 +19,7 @@
 
     <div class="dealerSection">
         <div class="d-flex justify-content-between flex-grow-1 mt-4 mx-4">
-            <h2 class="softText">Dealer's Hand:</h2>
+            <h2 class="softText" id="dealerHandValue">Dealer's Hand:</h2>
             <div class="moneyTab">
                 <h2 class=" " id="money">$</h2>
             </div>
@@ -31,7 +31,7 @@
 
     <div class="playerSection">
         <div class="d-flex justify-content-between flex-grow-1 mx-4">
-            <h2 class="softText">Player's Hand:</h2>
+            <h2 class="softText" id="playerHandValue" >Player's Hand:</h2>
             <div class="btnSection">
                 <button disabled class="btn btn-primary" id="hit">Hit</button>
                 <button disabled class="btn btn-primary" id="stand">Stand</button>
@@ -42,12 +42,15 @@
         </div>
     </div>
 
-    <div class="roundOver flex-column align-items-center mt-4" id="roundOverSection" style="display: none;">
-        <h2 id="roundResult">
-            <!-- Result will be added here -->
-        </h2>
-        <button class="btn btn-secondary" id="newHand">New Hand</button>
+    <div class="d-flex justify-content-center">
+        <div class="roundOver flex-column align-items-center mt-4" id="roundOverSection" style="display: none;">
+            <h2 id="roundResult">
+                <!-- Result will be added here -->
+            </h2>
+            <button class="btn btn-primary" id="newHand">New Hand</button>
+        </div>
     </div>
+
 
     <footer>
         <h4>XP: </h4>
