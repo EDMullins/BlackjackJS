@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { auth } from "./firebase-config.js";
 import { Deck } from './Deck.js';
 import { Hand } from './Hand.js';
@@ -24,12 +24,44 @@ export class Game {
         this.dealerValueDisplay = document.getElementById('dealerHandValue');
         this.roundOverSection = document.getElementById('roundOverSection');
         this.roundResultDisplay = document.getElementById('roundResult');
+        this.loginMenuBtn = document.getElementById('LoginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
         this.loginBtn = document.getElementById('loginBtn');
         this.registerBtn = document.getElementById('registerBtn');
         // Event Listeners
         this.setupNewHandListener();
+        this.setupAuthStateListener();
+    }
+
+    setupAuthStateListener() {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User signed in:", user.email);
+                this.loginMenuBtn.textContent = "Logout";
+                this.loginMenuBtn.onclick = () => this.logout();
+            } else {
+                this.loginMenuBtn.textContent = "Login";
+                this.loginMenuBtn.onclick = () => {
+                    if (this.loginSection.style.display === 'flex') {
+                        this.loginSection.style.display = 'none';
+                    } else {
+                        this.loginSection.style.display = 'flex';
+                    }
+                };
+            }
+        });
+    }
+
+    logout() {
+        signOut(auth).then(() => {
+            // Optionally, reset UI or show a message
+            this.loginSection.style.display = 'none';
+            this.player.resetData();
+            this.start();
+        }).catch((error) => {
+            console.error("Logout error:", error);
+        });
     }
 
     start() {
@@ -48,7 +80,6 @@ export class Game {
         this.updateHandValues(this.playerHand);
         this.updateHandValues(this.dealerHand);
         this.updateMoneyDisplay();
-        console.log("$");
         // Enable buttons and set up event listeners
         this.hitButton.disabled = false;
         this.standButton.disabled = false;
@@ -57,7 +88,10 @@ export class Game {
         this.loginXBtn.onclick = () => this.loginSection.style.display = 'none';
     }
 
-    end(result) {
+    end(result, action, betAmount) {
+        this.player.action(action, betAmount);
+        this.revealHiddenCards();
+        this.updateHandValues(this.dealerHand);
         this.gameActive = false;
         this.hitButton.disabled = true;
         this.standButton.disabled = true;
@@ -86,7 +120,12 @@ export class Game {
         const img = document.createElement('img');
         img.className = 'cardImage';
         img.src = card.getImage();
-        img.alt = card.rank;
+        if (hidden) {
+            img.alt = "Hidden Card";
+        }
+        else {
+            img.alt = card.rank;
+        }
         container.appendChild(img);
     };
 
@@ -102,8 +141,7 @@ export class Game {
         if (!this.gameActive) return;
         this.displayCard(this.deck.drawCard(), this.playerHand);
         if (this.playerHand.isBust()) {
-            this.end('You bust! Dealer wins.');
-            this.player.action(0, 10);
+            this.end('You bust! Dealer wins.', 1, 10);
         }
     }
 
@@ -116,22 +154,18 @@ export class Game {
         }
         this.updateHandValues(this.dealerHand);
         if (this.dealerHand.isBust()) {
-            this.end('Dealer busts! You win!');
-            this.player.action(1, 10);
+            this.end('Dealer busts! You win!', 1, 10);
         }
         else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
-            this.end('You win!');
-            this.player.action(1, 10);
+            this.end('You win!', 1, 10);
 
         }
         else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
-            this.end('Dealer wins.');
-            this.player.action(0, 10);
+            this.end('Dealer wins.', 0, 10);
 
         }
         else {
-            this.end("It's a tie!");
-            this.player.action(2, 10);
+            this.end("It's a tie!", 2, 10);
 
         }
         this.gameActive = false;
@@ -164,21 +198,13 @@ export class Game {
         for (let card of this.dealerHand.cards) {
             if (card.hidden) {
                 card.reveal();
-                const img = document.querySelector(`#dealerCardSection img[alt="${card.rank}"]`);
+                const img = document.querySelector(`#dealerCardSection img[alt="Hidden Card"]`);
                 img.src = card.getImage();
             }
         }
     }
 
     login() {
-        document.getElementById('LoginMenuBtn').onclick = () => {
-            if (this.loginSection.style.display === 'flex') {
-                this.loginSection.style.display = 'none';
-            }
-            else {
-                this.loginSection.style.display = 'flex';
-            }
-        };
         document.getElementById('loginXBtn').onclick = () => {
             this.loginSection.style.display = 'none';
         };
@@ -212,18 +238,18 @@ export class Game {
     }
 
     updatePlayerData() {
-        const user = auth.currentUser;
-        if (user) {
-            const uid = user.uid;
+        if (this.player.loggedIn && this.player.uid) {
             const data = {
                 xp: this.player.xp,
                 level: this.player.level,
                 multiplier: this.player.multiplier,
                 money: this.player.money,
                 wins: this.player.wins,
-                losses: this.player.losses
+                losses: this.player.losses,
+                moneyOnNewRound: this.player.moneyOnNewRound,
+                xpToNextLvl: this.player.xpToNextLvl
             };
-            this.player.PutPlayerData(uid, data);
+            this.player.PutPlayerData(this.player.uid, data);
         }
         else {
             console.log("No user signed in. Cannot update player data.");

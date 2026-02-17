@@ -12,48 +12,46 @@ export class Player {
         this.money = 100;
         this.wins = 0;
         this.losses = 0;
-        //After you lose all your money, you can start a new round with 100 money, but you will lose all your multiplier.
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
-
+        this.loggedIn = false;
+        this.uid = null;
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const uid = user.uid;
-                // Now you can safely fetch data
-                this.GetPlayerData(uid).then(data => {
+                this.loggedIn = true;
+                this.uid = user.uid;
+                // Now you can safely fetch data for the logged-in user
+                this.GetPlayerData(this.uid).then(data => {
                     if (data) {
                         console.log("Player data:", data);
-                        // Use player data to initialize your game or UI
                         this.xp = data.xp || 0;
                         this.level = data.level || 0;
                         this.multiplier = data.multiplier || 1;
                         this.money = data.money || 100;
                         this.wins = data.wins || 0;
                         this.losses = data.losses || 0;
-                    } else {
-                        console.log("No player data found");
+                        this.moneyOnNewRound = data.moneyOnNewRound || 100;
+                        this.xpToNextLvl = data.xpToNextLvl || 100;
                     }
-                    if (onDataLoaded) {
-                        onDataLoaded();
-                    }
+                    // Call the onDataLoaded callback after data is fetched and player properties are set
+                    if (onDataLoaded) onDataLoaded();
                 }).catch(error => {
                     console.error("Error getting player data:", error);
-                    if (onDataLoaded) {
-                        onDataLoaded();
-                    }
+                    if (onDataLoaded) onDataLoaded();
                 });
             } else {
                 // User is signed out
                 console.log("No user signed in.");
-                if (onDataLoaded) {
-                    onDataLoaded();
-                }
+                this.loggedIn = false;
+                this.uid = null;
+                if (onDataLoaded) onDataLoaded();
             }
         });
     }
 
     async GetPlayerData(uid) {
+        if (!uid) return null;
         try {
             const docRef = doc(db, "users", uid);
             const docSnap = await getDoc(docRef);
@@ -70,6 +68,7 @@ export class Player {
     }
 
     async PutPlayerData(uid, data) {
+        if (!uid) return;
         const docRef = doc(db, "users", uid);
         await setDoc(docRef, data);
     }
@@ -100,6 +99,17 @@ export class Player {
             this.moneyOnNewRound = 100 + (this.level * 20);
             this.xpToNextLvl = 100 * (this.level * 1.5);
         }
+    }
+
+    resetData() {
+        this.xp = 0;
+        this.level = 0;
+        this.multiplier = 1;
+        this.money = 100;
+        this.wins = 0;
+        this.losses = 0;
+        this.moneyOnNewRound = 100;
+        this.xpToNextLvl = 100;
     }
 
 }
