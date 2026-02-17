@@ -7,7 +7,7 @@ import { Player } from './Player.js';
 export class Game {
     constructor() {
         // Player Data
-        this.player = new Player();
+        this.player = new Player(() => this.updateMoneyDisplay());
         this.login();
         // Deck & Hands
         this.deck = new Deck();

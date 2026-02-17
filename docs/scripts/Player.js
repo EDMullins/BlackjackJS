@@ -4,7 +4,7 @@ import { app, auth } from "./firebase-config.js"; // Import the 'app' instance
 const db = getFirestore(app); // Initialize Firestore with the app instance
 
 export class Player {
-    constructor() {
+    constructor(onDataLoaded) {
         // Player Data
         this.xp = 0;
         this.level = 0;
@@ -34,12 +34,21 @@ export class Player {
                     } else {
                         console.log("No player data found");
                     }
+                    if (onDataLoaded) {
+                        onDataLoaded();
+                    }
                 }).catch(error => {
                     console.error("Error getting player data:", error);
+                    if (onDataLoaded) {
+                        onDataLoaded();
+                    }
                 });
             } else {
                 // User is signed out
                 console.log("No user signed in.");
+                if (onDataLoaded) {
+                    onDataLoaded();
+                }
             }
         });
     }
@@ -88,7 +97,7 @@ export class Player {
         if (this.xp >= this.xpToNextLvl) {
             this.level++;
             this.xp = 0;
-            this.moneyOnNewRound =  100 + (this.level * 20);
+            this.moneyOnNewRound = 100 + (this.level * 20);
             this.xpToNextLvl = 100 * (this.level * 1.5);
         }
     }
