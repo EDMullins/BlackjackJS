@@ -56,16 +56,21 @@
     </div>
 
     <div class="justify-content-center" id="loginSection">
-        <button id="loginXBtn" class="btn">X</button>
+        <div class="d-flex justify-content-between">
+            <h2>Login or Sign Up</h2>
+            <button id="loginXBtn" class="btn">X</button>
+        </div>
         <form class="authForm">
             <div class="mb-3">
+                <p>Email</p>
                 <input type="email" class="form-control" id="email" placeholder="Email" required>
             </div>
             <div class="mb-3">
+                <p>Password</p>
                 <input type="password" class="form-control" id="password" placeholder="Password" required>
             </div>
             <button type="button" class="btn btn-primary" id="loginBtn">Login</button>
-            <button type="button" class="btn btn-secondary" id="registerBtn">Register</button>
+            <button type="button" class="btn btn-secondary mt-2" id="registerBtn">Register</button>
             <div id="authMessage" class="mt-2"></div>
         </form>
     </div>
