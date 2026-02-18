@@ -24,9 +24,17 @@
     <div class="dealerSection">
         <div class="d-flex justify-content-between flex-grow-1 mt-4 mx-4">
             <h2 class="softText" id="dealerHandValue">Dealer's Hand:</h2>
-            <div class="moneyTab">
-                <h2 class="softText" id="money">$</h2>
+            <div>
+                <div class="moneyTab">
+                    <h2 class="softText" id="money">$</h2>
+                </div>
+                <form id="betTab" action="#">
+                    <label for="bet" class="softText">Bet:</label>
+                    <input type="text" id="bet" name="bet">
+                    <div><span id="error-msg" style="color:red"></span></div>
+                </form>
             </div>
+
         </div>
         <div class="cardSection d-flex flex-wrap justify-content-center" id="dealerCardSection">
             <!-- Cards will be appended here -->
@@ -81,6 +89,7 @@
         <div id="xpContainer">
             <div id="xpBar"></div>
         </div>
+        <h4 id="mult"></h4>
     </footer>
     <script src="scripts/main.js" type="module"></script>
 </body>

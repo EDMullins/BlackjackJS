@@ -55,6 +55,13 @@ h1 {
     font-family: var(--secondary-font);
     font-style: italic;
     color: var(--soft-text-color);
+    white-space: nowrap;
+}
+
+.playerSection button {
+    width: 120px;
+    height: 50px;
+    font-size: 20px;
 }
 
 .cardImage {
@@ -135,13 +142,12 @@ footer {
 }
 
 #levelDisplay {
-    margin: 0;
-    margin-right: 20px;
+    margin-inline: 25px;
     white-space: nowrap;
 }
 
 #xpContainer {
-    height: 30px;
+    height: 20px;
     width: 100%;
     border-radius: 10px;
     background-color: var(--background-color);
@@ -152,5 +158,10 @@ footer {
     width: 0%;
     border-radius: 10px;
     background-color: var(--primary-color);
-    transition: width 0.2s ease-in-out;
+    transition: width 1.0s ease;
+}
+
+#mult {
+    margin-inline: 25px;
+    white-space: nowrap;
 }

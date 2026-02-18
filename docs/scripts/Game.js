@@ -30,12 +30,35 @@ export class Game {
         this.registerBtn = document.getElementById('registerBtn');
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
+        this.mult = document.getElementById('mult');
         // Event Listeners
-        this.setupNewHandListener();
-        this.setupAuthStateListeners();
+        this.setupEventListeners();
     }
 
-    setupAuthStateListeners() {
+    setupEventListeners() {
+        this.hitButton.onclick = () => this.hit();
+        this.standButton.onclick = () => this.stand();
+        this.loginXBtn.onclick = () => this.loginSection.style.display = 'none';
+        //Bet form handler
+        document.getElementById('bet').addEventListener('input', function (event) {
+            // Regex to check if input is only digits
+            const isValid = /^\d+$/.test(event.target.value);
+
+            if (!isValid && event.target.value !== "") {
+                // Set custom validation error
+                event.target.setCustomValidity('Please enter only digits.');
+                document.getElementById('error-msg').textContent = 'Invalid number format';
+            } else {
+                // Clear error
+                event.target.setCustomValidity('');
+                document.getElementById('error-msg').textContent = '';
+            }
+        });
+        //New hand Handler
+        document.getElementById('newHand').onclick = () => {
+            this.roundOverSection.style.display = 'none';
+            this.start();
+        };
         // Listen for auth state changes to update UI and game state
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -118,9 +141,6 @@ export class Game {
         // Enable buttons and set up event listeners
         this.hitButton.disabled = false;
         this.standButton.disabled = false;
-        this.hitButton.onclick = () => this.hit();
-        this.standButton.onclick = () => this.stand();
-        this.loginXBtn.onclick = () => this.loginSection.style.display = 'none';
     }
 
     end(result, action, betAmount) {
@@ -208,13 +228,6 @@ export class Game {
         this.gameActive = false;
     }
 
-    setupNewHandListener() {
-        document.getElementById('newHand').onclick = () => {
-            this.roundOverSection.style.display = 'none';
-            this.start();
-        };
-    }
-
     updateHandValues(hand) {
         if (hand instanceof Hand) {
             if (hand.isPlayer) {
@@ -242,7 +255,8 @@ export class Game {
     updateDataDisplay() {
         this.moneyDisplay.textContent = `Money: ${this.player.money}`;
         this.xpBar.style.width = `${this.player.xp / this.player.xpToNextLvl * 100}%`;
-        console.log(`XP: ${this.player.xp}/${this.player.xpToNextLvl} (${((this.player.xp / this.player.xpToNextLvl) * 100).toFixed(2)}%)`);
+        console.log(`XP: ${(this.player.xp).toFixed(2)}/${this.player.xpToNextLvl} (${((this.player.xp / this.player.xpToNextLvl) * 100).toFixed(2)}%)`);
         this.levelDisplay.textContent = `Level: ${this.player.level}`;
+        this.mult.textContent = `${this.player.multiplier.toFixed(2)}x`
     }
 }

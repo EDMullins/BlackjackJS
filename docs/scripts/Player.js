@@ -92,8 +92,7 @@ export class Player {
             this.wins++;
             this.money += betAmount * 2;
             this.xp += 50 * this.multiplier;
-            
-            console.log(`Won ${betAmount}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
+            console.log(`Won ${betAmount * 2}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
             this.multiplier += betAmount / this.money;
         }
         else if (winner === 0) {
@@ -114,7 +113,7 @@ export class Player {
         //check level up
         if (this.xp >= this.xpToNextLvl) {
             this.level++;
-            this.xp = 0;
+            this.xp = this.xp - this.xpToNextLvl;
             this.moneyOnNewRound = 100 + (this.level * 20);
             this.xpToNextLvl = 100 * (this.level * 1.5);
         }
