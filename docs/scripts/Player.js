@@ -17,6 +17,7 @@ export class Player {
         this.loggedIn = false;
         this.uid = null;
 
+        // Listen for auth state changes to load player data
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 this.loggedIn = true;
@@ -45,6 +46,7 @@ export class Player {
                 console.log("No user signed in.");
                 this.loggedIn = false;
                 this.uid = null;
+                this.username = null;
                 if (onDataLoaded) onDataLoaded();
             }
         });
@@ -83,9 +85,6 @@ export class Player {
             const docRef = doc(db, "users", this.uid);
             await setDoc(docRef, data);
         }
-        else {
-            console.log("No user signed in. Cannot update player data.");
-        }
     }
 
     action(winner, betAmount) {
@@ -93,27 +92,37 @@ export class Player {
             this.wins++;
             this.money += betAmount * 2;
             this.xp += 50 * this.multiplier;
+            
+            console.log(`Won ${betAmount}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
             this.multiplier += betAmount / this.money;
-            console.log(`You won ${betAmount}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
         }
         else if (winner === 0) {
             this.losses++;
             this.money -= betAmount;
-            this.xp += 20;
+            this.xp += 10;
+            console.log(`Lost ${betAmount}, XP gained 10`);
         }
         else {//tie
             this.xp += 20 * this.multiplier;
         }
-        this.checkLevelUp();
+        console.log(`Current Level: ${this.level}`);
+        this.checkState();
         this.PutPlayerData();
     }
 
-    checkLevelUp() {
+    checkState() {
+        //check level up
         if (this.xp >= this.xpToNextLvl) {
             this.level++;
             this.xp = 0;
             this.moneyOnNewRound = 100 + (this.level * 20);
             this.xpToNextLvl = 100 * (this.level * 1.5);
+        }
+        //check money
+        if (this.money <= 0) {
+            this.money = this.moneyOnNewRound;
+            this.multiplier = 1;
+            console.log(`Money lost, starting new round with ${this.money} and multiplier reset to 1`);
         }
     }
 

@@ -7,7 +7,7 @@ import { Player } from './Player.js';
 export class Game {
     constructor() {
         // Player Data
-        this.player = new Player(() => this.updateMoneyDisplay());
+        this.player = new Player(() => this.updateDataDisplay());
         // Deck & Hands
         this.deck = new Deck();
         this.playerHand = new Hand(true);
@@ -28,12 +28,14 @@ export class Game {
         this.loginXBtn = document.getElementById('loginXBtn');
         this.loginBtn = document.getElementById('loginBtn');
         this.registerBtn = document.getElementById('registerBtn');
+        this.xpBar = document.getElementById('xpBar');
+        this.levelDisplay = document.getElementById('levelDisplay');
         // Event Listeners
         this.setupNewHandListener();
-        this.setupAuthStateListener();
+        this.setupAuthStateListeners();
     }
 
-    setupAuthStateListener() {
+    setupAuthStateListeners() {
         // Listen for auth state changes to update UI and game state
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -112,7 +114,7 @@ export class Game {
         // Update UI values
         this.updateHandValues(this.playerHand);
         this.updateHandValues(this.dealerHand);
-        this.updateMoneyDisplay();
+        this.updateDataDisplay();
         // Enable buttons and set up event listeners
         this.hitButton.disabled = false;
         this.standButton.disabled = false;
@@ -210,7 +212,6 @@ export class Game {
         document.getElementById('newHand').onclick = () => {
             this.roundOverSection.style.display = 'none';
             this.start();
-            this.updateMoneyDisplay();
         };
     }
 
@@ -238,7 +239,10 @@ export class Game {
         }
     }
 
-    updateMoneyDisplay() {
+    updateDataDisplay() {
         this.moneyDisplay.textContent = `Money: ${this.player.money}`;
+        this.xpBar.style.width = `${this.player.xp / this.player.xpToNextLvl * 100}%`;
+        console.log(`XP: ${this.player.xp}/${this.player.xpToNextLvl} (${((this.player.xp / this.player.xpToNextLvl) * 100).toFixed(2)}%)`);
+        this.levelDisplay.textContent = `Level: ${this.player.level}`;
     }
 }

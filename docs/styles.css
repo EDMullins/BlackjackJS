@@ -6,6 +6,7 @@
     --secondary-color: #393939;
     --background-color: #7fb572;
     --background-color-secondary: #14564b;
+    --shadow-color: #094d36;
     --text-color: #222222;
     --soft-text-color: #496e3f;
     --primary-font: 'Noto Serif', serif;
@@ -27,7 +28,7 @@ header {
     padding: 2vw;
     background-image: linear-gradient(to bottom, rgba(20, 86, 75, 0.95), rgba(20, 86, 75, 0.9)), url('imgs/headerBG.jpg');
     background-size: cover;
-    box-shadow: 5px 4px 0 #094d36;
+    box-shadow: 5px 4px 0 var(--shadow-color);
     border-radius: 0 0 15px 15px;
 }
 
@@ -57,9 +58,10 @@ h1 {
 }
 
 .cardImage {
-    width: 140px;
-    height: 200px;
-    margin-right: 0.5vw;
+    width: 150px;
+    margin-right: 0.33vw;
+    border-radius: 6px;
+    box-shadow: 2px 2px 5px #222222;
 }
 
 .cardSection {
@@ -78,6 +80,10 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 2vw;
+    color: var(--primary-color);
+    border: #222222 solid 2px;
+    border-radius: 15px;
+    box-shadow: #545454 3px 1px 15px;
 }
 
 #loginSection {
@@ -122,6 +128,29 @@ h1 {
 footer {
     margin-top: auto;
     padding: 10px;
+    border-top: 4px solid var(--shadow-color);
+    border-radius: 15px 15px 0 0;
     background-color: var(--background-color-secondary);
     color: var(--primary-color);
+}
+
+#levelDisplay {
+    margin: 0;
+    margin-right: 20px;
+    white-space: nowrap;
+}
+
+#xpContainer {
+    height: 30px;
+    width: 100%;
+    border-radius: 10px;
+    background-color: var(--background-color);
+}
+
+#xpBar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    transition: width 0.2s ease-in-out;
 }
