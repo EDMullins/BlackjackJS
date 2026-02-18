@@ -121,7 +121,7 @@ h1 {
 
 footer {
     margin-top: auto;
-    padding: 1vw;
+    padding: 10px;
     background-color: var(--background-color-secondary);
     color: var(--primary-color);
 }

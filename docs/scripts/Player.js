@@ -67,10 +67,25 @@ export class Player {
         }
     }
 
-    async PutPlayerData(uid, data) {
-        if (!uid) return;
-        const docRef = doc(db, "users", uid);
-        await setDoc(docRef, data);
+    async PutPlayerData() {
+        if (this.loggedIn && this.uid) {
+            const data = {
+                xp: this.xp,
+                level: this.level,
+                multiplier: this.multiplier,
+                money: this.money,
+                wins: this.wins,
+                losses: this.losses,
+                moneyOnNewRound: this.moneyOnNewRound,
+                xpToNextLvl: this.xpToNextLvl
+            };
+            if (!this.uid) return;
+            const docRef = doc(db, "users", this.uid);
+            await setDoc(docRef, data);
+        }
+        else {
+            console.log("No user signed in. Cannot update player data.");
+        }
     }
 
     action(winner, betAmount) {
@@ -79,7 +94,7 @@ export class Player {
             this.money += betAmount * 2;
             this.xp += 50 * this.multiplier;
             this.multiplier += betAmount / this.money;
-            console.log(`You won ${betAmount}! Multiplier increased to ${this.multiplier.toFixed(2)}`);
+            console.log(`You won ${betAmount}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
         }
         else if (winner === 0) {
             this.losses++;
@@ -90,6 +105,7 @@ export class Player {
             this.xp += 20 * this.multiplier;
         }
         this.checkLevelUp();
+        this.PutPlayerData();
     }
 
     checkLevelUp() {
@@ -111,5 +127,4 @@ export class Player {
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
     }
-
 }

@@ -89,15 +89,17 @@ export class Game {
     }
 
     end(result, action, betAmount) {
+        // Update player data based on result
         this.player.action(action, betAmount);
+        //display dealer hand
         this.revealHiddenCards();
         this.updateHandValues(this.dealerHand);
+        // set state to ended and update UI
         this.gameActive = false;
         this.hitButton.disabled = true;
         this.standButton.disabled = true;
         this.roundOverSection.style.display = 'flex';
         this.roundResultDisplay.textContent = result;
-        this.updatePlayerData();
     }
 
     displayCard(card, hand, hidden = false) {
@@ -141,7 +143,7 @@ export class Game {
         if (!this.gameActive) return;
         this.displayCard(this.deck.drawCard(), this.playerHand);
         if (this.playerHand.isBust()) {
-            this.end('You bust! Dealer wins.', 1, 10);
+            this.end('You bust! Dealer wins.', 0, 10);
         }
     }
 
@@ -173,7 +175,6 @@ export class Game {
 
     setupNewHandListener() {
         document.getElementById('newHand').onclick = () => {
-            console.log("New Hand");
             this.roundOverSection.style.display = 'none';
             this.start();
             this.updateMoneyDisplay();
@@ -235,25 +236,6 @@ export class Game {
                 msg.style.color = "red";
             }
         };
-    }
-
-    updatePlayerData() {
-        if (this.player.loggedIn && this.player.uid) {
-            const data = {
-                xp: this.player.xp,
-                level: this.player.level,
-                multiplier: this.player.multiplier,
-                money: this.player.money,
-                wins: this.player.wins,
-                losses: this.player.losses,
-                moneyOnNewRound: this.player.moneyOnNewRound,
-                xpToNextLvl: this.player.xpToNextLvl
-            };
-            this.player.PutPlayerData(this.player.uid, data);
-        }
-        else {
-            console.log("No user signed in. Cannot update player data.");
-        }
     }
 
     updateMoneyDisplay() {
