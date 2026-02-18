@@ -8,7 +8,6 @@ export class Game {
     constructor() {
         // Player Data
         this.player = new Player(() => this.updateMoneyDisplay());
-        this.login();
         // Deck & Hands
         this.deck = new Deck();
         this.playerHand = new Hand(true);
@@ -35,11 +34,13 @@ export class Game {
     }
 
     setupAuthStateListener() {
+        // Listen for auth state changes to update UI and game state
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("User signed in:", user.email);
                 this.loginMenuBtn.textContent = "Logout";
                 this.loginMenuBtn.onclick = () => this.logout();
+                this.start();
             } else {
                 this.loginMenuBtn.textContent = "Login";
                 this.loginMenuBtn.onclick = () => {
@@ -51,11 +52,43 @@ export class Game {
                 };
             }
         });
+        // Login X Handler
+        document.getElementById('loginXBtn').onclick = () => {
+            this.loginSection.style.display = 'none';
+        };
+        // Login Handler
+        document.getElementById('loginBtn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('authMessage');
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                msg.textContent = "Login successful!";
+                msg.style.color = "green";
+            } catch (error) {
+                msg.textContent = error.message;
+                msg.style.color = "red";
+            }
+        };
+        // Register Handler
+        document.getElementById('registerBtn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('authMessage');
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                msg.textContent = "Registration successful!";
+                msg.style.color = "green";
+            } catch (error) {
+                msg.textContent = error.message;
+                msg.style.color = "red";
+            }
+        };
     }
 
     logout() {
         signOut(auth).then(() => {
-            // Optionally, reset UI or show a message
+            // Reset UI, Data, and Game
             this.loginSection.style.display = 'none';
             this.player.resetData();
             this.start();
@@ -65,8 +98,8 @@ export class Game {
     }
 
     start() {
-        this.gameActive = true;
         // Reset game state if needed
+        this.gameActive = true;
         this.deck.reset();
         this.playerHand.clear();
         this.dealerHand.clear();
@@ -76,7 +109,7 @@ export class Game {
         this.displayCard(this.deck.drawCard(), this.dealerHand, true);// Dealer's first card is hidden
         this.displayCard(this.deck.drawCard(), this.playerHand);
         this.displayCard(this.deck.drawCard(), this.dealerHand);
-        // Update hand values
+        // Update UI values
         this.updateHandValues(this.playerHand);
         this.updateHandValues(this.dealerHand);
         this.updateMoneyDisplay();
@@ -203,39 +236,6 @@ export class Game {
                 img.src = card.getImage();
             }
         }
-    }
-
-    login() {
-        document.getElementById('loginXBtn').onclick = () => {
-            this.loginSection.style.display = 'none';
-        };
-        document.getElementById('loginBtn').onclick = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('authMessage');
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                msg.textContent = "Login successful!";
-                msg.style.color = "green";
-            } catch (error) {
-                msg.textContent = error.message;
-                msg.style.color = "red";
-            }
-        };
-
-        document.getElementById('registerBtn').onclick = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('authMessage');
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                msg.textContent = "Registration successful!";
-                msg.style.color = "green";
-            } catch (error) {
-                msg.textContent = error.message;
-                msg.style.color = "red";
-            }
-        };
     }
 
     updateMoneyDisplay() {
