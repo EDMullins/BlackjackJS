@@ -13,6 +13,7 @@ export class Game {
         this.playerHand = new Hand(true);
         this.dealerHand = new Hand();
         this.gameActive = false;
+        this.playerBet = null;
         // UI Elements
         this.playerCardSection = document.getElementById('playerCardSection');
         this.dealerCardSection = document.getElementById('dealerCardSection');
@@ -23,7 +24,11 @@ export class Game {
         this.dealerValueDisplay = document.getElementById('dealerHandValue');
         this.roundOverSection = document.getElementById('roundOverSection');
         this.roundResultDisplay = document.getElementById('roundResult');
-        this.loginMenuBtn = document.getElementById('LoginMenuBtn');
+        this.betSection = document.getElementById('betSection');
+        this.betInput = document.getElementById('bet');
+        this.errorMsg = document.getElementById('errorMsg');
+        this.betBtn = document.getElementById('betBtn');
+        this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
         this.loginBtn = document.getElementById('loginBtn');
@@ -39,25 +44,33 @@ export class Game {
         this.hitButton.onclick = () => this.hit();
         this.standButton.onclick = () => this.stand();
         this.loginXBtn.onclick = () => this.loginSection.style.display = 'none';
-        //Bet form handler
-        document.getElementById('bet').addEventListener('input', function (event) {
-            // Regex to check if input is only digits
-            const isValid = /^\d+$/.test(event.target.value);
-
-            if (!isValid && event.target.value !== "") {
-                // Set custom validation error
-                event.target.setCustomValidity('Please enter only digits.');
-                document.getElementById('error-msg').textContent = 'Invalid number format';
-            } else {
-                // Clear error
-                event.target.setCustomValidity('');
-                document.getElementById('error-msg').textContent = '';
-            }
+        //Bet input handler
+        document.getElementById('bet').addEventListener('input', (event) => {
+            this.validateBetInput(event.target.value);
         });
+        //Bet button Handler 
+        this.betBtn.onclick = () => {
+            const bet = Number(document.getElementById("bet").value);
+            this.playerBet = bet;
+            if (bet <= this.player.money) {
+                this.betSection.style.display = 'none';
+                this.start();
+                this.hitButton.disabled = false;
+                this.standButton.disabled = false;
+            }
+            else {
+                console.error("Error: Bet greater than total money");
+            }
+        }
         //New hand Handler
         document.getElementById('newHand').onclick = () => {
             this.roundOverSection.style.display = 'none';
-            this.start();
+            //open bet section
+            this.betSection.style.display = 'flex';
+            if (this.playerBet !== null && this.playerBet <= this.player.money) {
+                this.betInput.value = this.playerBet;
+            }
+            this.validateBetInput(this.betInput.value);
         };
         // Listen for auth state changes to update UI and game state
         onAuthStateChanged(auth, (user) => {
@@ -65,6 +78,7 @@ export class Game {
                 console.log("User signed in:", user.email);
                 this.loginMenuBtn.textContent = "Logout";
                 this.loginMenuBtn.onclick = () => this.logout();
+                this.playerBet = null;
                 this.start();
             } else {
                 this.loginMenuBtn.textContent = "Login";
@@ -116,6 +130,7 @@ export class Game {
             // Reset UI, Data, and Game
             this.loginSection.style.display = 'none';
             this.player.resetData();
+            this.playerBet = null;
             this.start();
         }).catch((error) => {
             console.error("Logout error:", error);
@@ -123,6 +138,12 @@ export class Game {
     }
 
     start() {
+        if (this.playerBet === null) { //first game only
+            this.betSection.style.display = 'flex';
+            this.hitButton.disabled = true;
+            this.standButton.disabled = true;
+            this.validateBetInput(this.betInput.value);
+        }
         // Reset game state if needed
         this.gameActive = true;
         this.deck.reset();
@@ -138,9 +159,6 @@ export class Game {
         this.updateHandValues(this.playerHand);
         this.updateHandValues(this.dealerHand);
         this.updateDataDisplay();
-        // Enable buttons and set up event listeners
-        this.hitButton.disabled = false;
-        this.standButton.disabled = false;
     }
 
     end(result, action, betAmount) {
@@ -155,6 +173,7 @@ export class Game {
         this.standButton.disabled = true;
         this.roundOverSection.style.display = 'flex';
         this.roundResultDisplay.textContent = result;
+        this.updateDataDisplay();
     }
 
     displayCard(card, hand, hidden = false) {
@@ -198,32 +217,29 @@ export class Game {
         if (!this.gameActive) return;
         this.displayCard(this.deck.drawCard(), this.playerHand);
         if (this.playerHand.isBust()) {
-            this.end('You bust! Dealer wins.', 0, 10);
+            this.end('You bust! Dealer wins.', 0, this.playerBet);
         }
     }
 
     stand() {
         if (!this.gameActive) return;
-        this.revealHiddenCards();
         // Dealer's turn
+        this.revealHiddenCards();
         while (this.dealerHand.getValue() < 17) {
             this.displayCard(this.deck.drawCard(), this.dealerHand);
         }
-        this.updateHandValues(this.dealerHand);
+        // win/loss Logic
         if (this.dealerHand.isBust()) {
-            this.end('Dealer busts! You win!', 1, 10);
+            this.end('Dealer busts! You win!', 1, this.playerBet);
         }
         else if (this.playerHand.getValue() > this.dealerHand.getValue()) {
-            this.end('You win!', 1, 10);
-
+            this.end('You win!', 1, this.playerBet);
         }
         else if (this.playerHand.getValue() < this.dealerHand.getValue()) {
-            this.end('Dealer wins.', 0, 10);
-
+            this.end('Dealer wins.', 0, this.playerBet);
         }
         else {
-            this.end("It's a tie!", 2, 10);
-
+            this.end("It's a tie!", 2, this.playerBet);
         }
         this.gameActive = false;
     }
@@ -255,8 +271,35 @@ export class Game {
     updateDataDisplay() {
         this.moneyDisplay.textContent = `Money: ${this.player.money}`;
         this.xpBar.style.width = `${this.player.xp / this.player.xpToNextLvl * 100}%`;
-        console.log(`XP: ${(this.player.xp).toFixed(2)}/${this.player.xpToNextLvl} (${((this.player.xp / this.player.xpToNextLvl) * 100).toFixed(2)}%)`);
         this.levelDisplay.textContent = `Level: ${this.player.level}`;
         this.mult.textContent = `${this.player.multiplier.toFixed(2)}x`
+    }
+
+    validateBetInput(value) {
+        console.log(`validating input ${value}`);
+        if (value === "") {
+            this.errorMsg.textContent = "";
+            this.betBtn.disabled = true; // or false, depending on your UX
+            return;
+        }
+        // Regex to check if input is only digits
+        if (!/^\d+$/.test(value) && value !== "") {
+            this.errorMsg.textContent = 'Invalid number format';
+            this.betBtn.disabled = true;
+            return;
+        }
+        const bet = Number(value);
+        if (bet === 0) {
+            this.errorMsg.textContent = 'Must be greater than 0.';
+            this.betBtn.disabled = true;
+            return;
+        }
+        if (bet > this.player.money) {
+            this.errorMsg.textContent = `Can't be greater than ${this.player.money}.`;
+            this.betBtn.disabled = true;
+            return;
+        }
+        document.getElementById('errorMsg').textContent = '';
+        this.betBtn.disabled = false;
     }
 }

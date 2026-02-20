@@ -15,7 +15,7 @@
         <h1><i class="bi bi-suit-spade"></i></h1>
         <h1 class="text-center">Blackjack</h1>
         <div>
-            <button id="LoginMenuBtn" class="btn btn-primary">Login</button>
+            <button id="loginMenuBtn" class="btn btn-primary">Login</button>
             <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">Repo</a>
         </div>
     </header>
@@ -28,11 +28,6 @@
                 <div class="moneyTab">
                     <h2 class="softText" id="money">$</h2>
                 </div>
-                <form id="betTab" action="#">
-                    <label for="bet" class="softText">Bet:</label>
-                    <input type="text" id="bet" name="bet">
-                    <div><span id="error-msg" style="color:red"></span></div>
-                </form>
             </div>
 
         </div>
@@ -63,6 +58,15 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-center">
+        <div id="betSection">
+            <h2>Enter your Bet</h2>
+            <input type="text" id="bet" name="bet">
+            <div><span id="errorMsg" style="color:red"></span></div>
+            <button id="betBtn" class="btn btn-primary mt-3" disabled>Place Bet</button>
+        </div>
+    </div>
+
     <div class="justify-content-center" id="loginSection">
         <div class="d-flex justify-content-between">
             <h2>Login or Sign Up</h2>
@@ -82,7 +86,6 @@
             <div id="authMessage" class="mt-2"></div>
         </form>
     </div>
-
 
     <footer class="d-flex align-items-center">
         <h4 id="levelDisplay"></h4>
