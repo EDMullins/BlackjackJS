@@ -88,21 +88,25 @@ export class Player {
     }
 
     action(winner, betAmount) {
+        const moneyPopup = document.getElementById('moneyPopup');
         if (winner === 1) {
             this.wins++;
             this.money += betAmount;
             this.xp += 50 * this.multiplier;
             console.log(`Won ${betAmount * 2}, Multiplier increased to ${this.multiplier.toFixed(2)} XP gained ${(50 * this.multiplier).toFixed(2)}`);
             this.multiplier += betAmount / this.money;
+            moneyPopup.textContent = `+${betAmount}`;
         }
         else if (winner === 0) {
             this.losses++;
             this.money -= betAmount;
             this.xp += 10;
             console.log(`Lost ${betAmount}, XP gained 10`);
+            moneyPopup.textContent = `-${betAmount}`;
         }
         else {//tie
             this.xp += 20 * this.multiplier;
+            moneyPopup.textContent = "";
         }
         console.log(`Current Level: ${this.level}`);
         this.checkState();
