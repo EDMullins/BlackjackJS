@@ -88,9 +88,9 @@ h1 {
 
 .catArm {
     position: absolute;
-    left: -540px;
+    left: -500px;
     /* cat sits left of the card */
-    top: 50%;
+    top: 35%;
     transform: translateY(-50%);
     width: 600px;
     pointer-events: none;

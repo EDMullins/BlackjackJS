@@ -209,7 +209,7 @@ export class Game {
 
         // --- Cat image ---
         const cat = document.createElement('img');
-        cat.src = './imgs/catArms.png';
+        cat.src = './imgs/cat.png';
         cat.className = 'catArm';
 
         const img = document.createElement('img');
