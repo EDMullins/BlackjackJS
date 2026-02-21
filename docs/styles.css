@@ -101,6 +101,9 @@ h1 {
     transform: translate(-65vw, -50%);
 }
 
+.hidden {
+    display: none !important;
+}
 
 .cardSection {
     display: flex;
@@ -108,54 +111,39 @@ h1 {
     margin-top: 1vw;
 }
 
-#roundOverSection {
-    display: none;
+.menuPanel {
     background-color: var(--background-color-secondary);
     color: var(--primary-color);
-    min-width: 500px;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 2vw;
-    color: var(--primary-color);
     border: #222222 solid 2px;
     border-radius: 15px;
     box-shadow: #545454 3px 1px 15px;
+}
+
+#roundOverSection {
+    display: flex;
+    min-width: 500px;
 }
 
 #betSection {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--background-color-secondary);
-    color: var(--primary-color);
     min-width: 300px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2vw;
-    color: var(--primary-color);
-    border: #222222 solid 2px;
-    border-radius: 15px;
-    box-shadow: #545454 3px 1px 15px;
+}
+
+#errorMsg {
+    color:red;
 }
 
 #loginSection {
-    display: none;
+    display: flex;
     flex-direction: column;
     min-width: 350px;
-    background-color: var(--background-color-secondary);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2vw;
-    color: var(--primary-color);
-    border: #222222 solid 2px;
-    border-radius: 15px;
-    box-shadow: #545454 3px 1px 15px;
 }
 
 #loginXBtn {

@@ -32,6 +32,9 @@ export class Game {
         this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
+        this.emailInput = document.getElementById('email');
+        this.passwordInput = document.getElementById('password');
+        this.authMessage = document.getElementById('authMessage');
         this.loginBtn = document.getElementById('loginBtn');
         this.registerBtn = document.getElementById('registerBtn');
         this.xpBar = document.getElementById('xpBar');
@@ -45,19 +48,19 @@ export class Game {
     }
 
     setupEventListeners() {
+        //hit & stand handlers
         this.hitButton.onclick = () => this.hit();
         this.standButton.onclick = () => this.stand();
-        this.loginXBtn.onclick = () => this.loginSection.style.display = 'none';
         //Bet input handler
-        document.getElementById('bet').addEventListener('input', (event) => {
+        this.betInput.addEventListener('input', (event) => {
             this.validateBetInput(event.target.value);
         });
         //Bet button Handler 
         this.betBtn.onclick = () => {
-            const bet = Number(document.getElementById("bet").value);
+            const bet = Number(this.betInput.value);
             this.playerBet = bet;
             if (bet <= this.player.money) {
-                this.betSection.style.display = 'none';
+                this.betSection.classList.add('hidden');
                 this.start();
                 this.hitButton.disabled = false;
                 this.standButton.disabled = false;
@@ -68,9 +71,9 @@ export class Game {
         }
         //New hand Handler
         document.getElementById('newHand').onclick = () => {
-            this.roundOverSection.style.display = 'none';
+            this.roundOverSection.classList.add('hidden');
             //open bet section
-            this.betSection.style.display = 'flex';
+            this.betSection.classList.remove('hidden');
             if (this.playerBet !== null && this.playerBet <= this.player.money) {
                 this.betInput.value = this.playerBet;
             }
@@ -87,20 +90,16 @@ export class Game {
             } else {
                 this.loginMenuBtn.textContent = "Login";
                 this.loginMenuBtn.onclick = () => {
-                    if (this.loginSection.style.display === 'flex') {
-                        this.loginSection.style.display = 'none';
-                    } else {
-                        this.loginSection.style.display = 'flex';
-                    }
+                    this.loginSection.classList.toggle('hidden');
                 };
             }
         });
         // Login X Handler
-        document.getElementById('loginXBtn').onclick = () => {
-            this.loginSection.style.display = 'none';
+        this.loginXBtn.onclick = () => {
+            this.loginSection.classList.add('hidden');
         };
         // Login Handler
-        document.getElementById('loginBtn').onclick = async () => {
+        this.loginBtn.onclick = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const msg = document.getElementById('authMessage');
@@ -114,10 +113,10 @@ export class Game {
             }
         };
         // Register Handler
-        document.getElementById('registerBtn').onclick = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const msg = document.getElementById('authMessage');
+        this.registerBtn.onclick = async () => {
+            const email = this.emailInput.value;
+            const password = this.passwordInput.value;
+            const msg = this.authMessage;
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
                 msg.textContent = "Registration successful!";
@@ -132,7 +131,7 @@ export class Game {
     logout() {
         signOut(auth).then(() => {
             // Reset UI, Data, and Game
-            this.loginSection.style.display = 'none';
+            this.loginSection.classList.add('hidden');
             this.player.resetData();
             this.playerBet = null;
             this.start();
@@ -143,7 +142,7 @@ export class Game {
 
     start() {
         if (this.playerBet === null) { //first game only
-            this.betSection.style.display = 'flex';
+            this.betSection.classList.remove('hidden');
             this.hitButton.disabled = true;
             this.standButton.disabled = true;
             this.validateBetInput(this.betInput.value);
@@ -161,9 +160,7 @@ export class Game {
         this.displayCard(this.deck.drawCard(), this.playerHand);// Dealer's first card is hidden
         this.displayCard(this.deck.drawCard(), this.dealerHand);
         this.displayCard(this.deck.drawCard(), this.playerHand);
-        // Update UI values
-        this.updateHandValues(this.playerHand);
-        this.updateHandValues(this.dealerHand);
+        //update UI
         this.updateDataDisplay();
         this.isOpeningDeal = false;
     }
@@ -172,36 +169,22 @@ export class Game {
         // Update player data based on result
         this.player.action(action, betAmount);
         //display dealer hand
-        this.revealHiddenCards();
+        this.revealHiddenCard();
         this.updateHandValues(this.dealerHand);
         // set state to ended and update UI
         this.gameActive = false;
         this.hitButton.disabled = true;
         this.standButton.disabled = true;
-        this.roundOverSection.style.display = 'flex';
+        this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
         this.updateDataDisplay();
     }
 
     displayCard(card, hand, hidden = false) {
-        let containerSelector = '';
 
-        if (hand instanceof Hand) {
-            if (hand.isPlayer) {
-                this.playerHand.addCard(card);
-                containerSelector = '#playerCardSection';
-            }
-            else {
-                this.dealerHand.addCard(card, hidden);
-                containerSelector = '#dealerCardSection';
-            }
-            this.updateHandValues(hand);
-        }
-        else {
-            return console.error("Error DisplayCard(): Invalid hand type");
-        }
-
-        const container = document.querySelector(containerSelector);
+        hand.addCard(card, hidden);
+        const container = hand.isPlayer ? this.playerCardSection : this.dealerCardSection;
+        this.updateHandValues(hand);
 
         // --- Create wrapper that slides in ---
         const wrapper = document.createElement('div');
@@ -226,7 +209,7 @@ export class Game {
             delay = this.cardAnimationIndex * 1600; // 300ms spacing
             this.cardAnimationIndex++;
         }
-        
+
         setTimeout(() => {
             wrapper.classList.add('slide-in');
 
@@ -247,7 +230,7 @@ export class Game {
         this.dealerCardSection.innerHTML = '';
         this.playerValueDisplay.textContent = "Player's Hand: ";
         this.dealerValueDisplay.textContent = "Dealer's Hand: ";
-        this.roundOverSection.style.display = 'none';
+        this.roundOverSection.classList.add('hidden');
     }
 
     hit() {
@@ -261,7 +244,7 @@ export class Game {
     stand() {
         if (!this.gameActive) return;
         // Dealer's turn
-        this.revealHiddenCards();
+        this.revealHiddenCard();
         while (this.dealerHand.getValue() < 17) {
             this.displayCard(this.deck.drawCard(), this.dealerHand);
         }
@@ -282,20 +265,15 @@ export class Game {
     }
 
     updateHandValues(hand) {
-        if (hand instanceof Hand) {
-            if (hand.isPlayer) {
-                this.playerValueDisplay.textContent = `Player's Hand: ${hand.getValue()}`;
-            }
-            else {
-                this.dealerValueDisplay.textContent = `Dealer's Hand: ${hand.getValue()}`;
-            }
+        if (hand.isPlayer) {
+            this.playerValueDisplay.textContent = `Player's Hand: ${hand.getValue()}`;
         }
         else {
-            return console.error("Error UpdateHandValues(): Invalid hand type");
+            this.dealerValueDisplay.textContent = `Dealer's Hand: ${hand.getValue()}`;
         }
     }
 
-    revealHiddenCards() {
+    revealHiddenCard() {
         for (let card of this.dealerHand.cards) {
             if (card.hidden) {
                 card.reveal();
@@ -336,7 +314,7 @@ export class Game {
             this.betBtn.disabled = true;
             return;
         }
-        document.getElementById('errorMsg').textContent = '';
+        this.errorMsg.textContent = '';
         this.betBtn.disabled = false;
     }
 }
