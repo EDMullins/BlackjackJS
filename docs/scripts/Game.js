@@ -20,6 +20,7 @@ export class Game {
         this.hitButton = document.getElementById('hit');
         this.standButton = document.getElementById('stand');
         this.moneyDisplay = document.getElementById('money');
+        this.moneyPopup = document.getElementById('moneyPopup');
         this.playerValueDisplay = document.getElementById('playerHandValue');
         this.dealerValueDisplay = document.getElementById('dealerHandValue');
         this.roundOverSection = document.getElementById('roundOverSection');
