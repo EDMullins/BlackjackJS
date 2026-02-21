@@ -108,9 +108,17 @@ export class Player {
             this.xp += 20 * this.multiplier;
             moneyPopup.textContent = "";
         }
-        console.log(`Current Level: ${this.level}`);
+        //trigger animation for popup
+        moneyPopup.classList.remove("show");
+        void moneyPopup.offsetWidth;
+        moneyPopup.classList.add("show");
+
         this.checkState();
         this.PutPlayerData();
+
+        setTimeout(() => {
+            moneyPopup.classList.remove("show");
+        }, 800);
     }
 
     checkState() {

@@ -45,6 +45,7 @@ h1 {
     font-weight: bold !important;
     box-shadow: 3px 3px 0 #094d36;
 }
+
 .btn-primary:hover {
     background-color: var(--primary-color-hover) !important;
     color: var(--text-color) !important;
@@ -151,8 +152,14 @@ h1 {
 }
 
 #moneyPopup {
-    display: flex;
     position: absolute;
+    opacity: 0;
+    transition: opacity 0.8s ease-out, transform 3s ease-in;
+    pointer-events: none;
+}
+#moneyPopup.show {
+    opacity: 1;
+    transform: translateY(-5px);
 }
 
 footer {
