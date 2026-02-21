@@ -37,6 +37,9 @@ export class Game {
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
         this.mult = document.getElementById('mult');
+        //logic variables
+        this.cardAnimationIndex = 0;
+        this.isOpeningDeal = false;
         // Event Listeners
         this.setupEventListeners();
     }
@@ -151,15 +154,18 @@ export class Game {
         this.playerHand.clear();
         this.dealerHand.clear();
         this.clearScreen();
+        this.cardAnimationIndex = 0;
+        this.isOpeningDeal = true;
         // Initial deal
-        this.displayCard(this.deck.drawCard(), this.playerHand);
-        this.displayCard(this.deck.drawCard(), this.dealerHand, true);// Dealer's first card is hidden
-        this.displayCard(this.deck.drawCard(), this.playerHand);
+        this.displayCard(this.deck.drawCard(), this.dealerHand, true);
+        this.displayCard(this.deck.drawCard(), this.playerHand);// Dealer's first card is hidden
         this.displayCard(this.deck.drawCard(), this.dealerHand);
+        this.displayCard(this.deck.drawCard(), this.playerHand);
         // Update UI values
         this.updateHandValues(this.playerHand);
         this.updateHandValues(this.dealerHand);
         this.updateDataDisplay();
+        this.isOpeningDeal = false;
     }
 
     end(result, action, betAmount) {
@@ -179,6 +185,7 @@ export class Game {
 
     displayCard(card, hand, hidden = false) {
         let containerSelector = '';
+
         if (hand instanceof Hand) {
             if (hand.isPlayer) {
                 this.playerHand.addCard(card);
@@ -193,18 +200,47 @@ export class Game {
         else {
             return console.error("Error DisplayCard(): Invalid hand type");
         }
+
         const container = document.querySelector(containerSelector);
+
+        // --- Create wrapper that slides in ---
+        const wrapper = document.createElement('div');
+        wrapper.className = 'cardSlideWrapper';
+
+        // --- Cat image ---
+        const cat = document.createElement('img');
+        cat.src = './imgs/catArms.png';
+        cat.className = 'catArm';
+
         const img = document.createElement('img');
         img.className = 'cardImage';
         img.src = card.getImage();
-        if (hidden) {
-            img.alt = "Hidden Card";
+        img.alt = hidden ? "Hidden Card" : card.rank;
+
+        wrapper.appendChild(cat);
+        wrapper.appendChild(img);
+        container.appendChild(wrapper);
+
+        let delay = 0;
+        if (this.isOpeningDeal) {
+            delay = this.cardAnimationIndex * 1600; // 300ms spacing
+            this.cardAnimationIndex++;
         }
-        else {
-            img.alt = card.rank;
-        }
-        container.appendChild(img);
-    };
+        
+        setTimeout(() => {
+            wrapper.classList.add('slide-in');
+
+            // After slide-in, remove cat
+            setTimeout(() => {
+                cat.classList.add('slide-out');
+            }, 800);
+
+            // Remove cat from DOM after animation
+            setTimeout(() => {
+                cat.remove();
+            }, 2600);
+        }, delay);
+    }
 
     clearScreen() {
         this.playerCardSection.innerHTML = '';

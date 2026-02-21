@@ -72,6 +72,36 @@ h1 {
     box-shadow: 2px 2px 5px #222222;
 }
 
+.cardSlideWrapper {
+    position: relative;
+    display: inline-block;
+    /* start off-screen left */
+    transform: translateX(-1000px);
+    opacity: 0;
+    transition: transform 0.8s ease-out;
+}
+
+.cardSlideWrapper.slide-in {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.catArm {
+    position: absolute;
+    left: -540px;
+    /* cat sits left of the card */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 600px;
+    pointer-events: none;
+    opacity: 1;
+    transition: transform 1s ease-out;
+}
+.catArm.slide-out {
+    transform: translate(-65vw, -50%);
+}
+
+
 .cardSection {
     display: flex;
     flex-wrap: wrap;
@@ -157,6 +187,7 @@ h1 {
     transition: opacity 0.8s ease-out, transform 3s ease-in;
     pointer-events: none;
 }
+
 #moneyPopup.show {
     opacity: 1;
     transform: translateY(-5px);
