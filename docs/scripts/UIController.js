@@ -20,7 +20,6 @@ export class UIController {
         this.errorMsg = document.getElementById('errorMsg');
         this.betBtn = document.getElementById('betBtn');
         this.newHandBtn = document.getElementById('newHand');
-
         this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
@@ -29,6 +28,15 @@ export class UIController {
         this.emailInput = document.getElementById('email');
         this.passwordInput = document.getElementById('password');
         this.authMessage = document.getElementById('authMessage');
+
+        this.statsMenuBtn = document.getElementById('statsMenuBtn');
+        this.statsSection = document.getElementById('statsSection');
+        this.statsCloseBtn = document.getElementById('statsCloseBtn');
+        this.statsMoney = document.getElementById('statsMoney');
+        this.statsWins = document.getElementById('statsWins');
+        this.statsLosses = document.getElementById('statsLosses');
+        this.statsLevel = document.getElementById('statsLevel');
+        this.statsXP = document.getElementById('statsXP');
 
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
@@ -45,7 +53,9 @@ export class UIController {
         });
 
         this.betBtn.onclick = () => {
-            const bet = Number(this.betInput.value);
+            const betValue = this.betInput.value;
+            const bet = Number(betValue);
+
             game.playerBet = bet;
             this.hideBetSection();
             this.enableGameButtons();
@@ -54,6 +64,14 @@ export class UIController {
 
         this.newHandBtn.onclick = () => {
             game.reset();
+        };
+
+        this.statsMenuBtn.onclick = () => {
+            this.statsSection.classList.toggle('hidden');
+        };
+
+        this.statsCloseBtn.onclick = () => {
+            this.statsSection.classList.add('hidden');
         };
     }
 
@@ -149,6 +167,14 @@ export class UIController {
         this.xpBar.style.width = `${player.xp / player.xpToNextLvl * 100}%`;
         this.levelDisplay.textContent = `Level: ${player.level}`;
         this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
+        //stats Menu
+        this.statsMoney.textContent = `Money: ${player.money}`;
+        this.statsWins.textContent = `Wins: ${player.wins}`;
+        this.statsLosses.textContent = `Losses: ${player.losses}`;
+        this.statsLevel.textContent = `Level: ${player.level}`;
+        this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
+
+        this.validateBet(this.betInput.value, player.money);
     }
 
     clearCards() {
@@ -187,6 +213,12 @@ export class UIController {
     }
 
     validateBet(value, money) {
+        if (value === "") {
+            this.errorMsg.textContent = "";
+            this.betBtn.disabled = true;
+            return;
+        }
+        
         if (!/^\d+$/.test(value)) {
             this.errorMsg.textContent = "Invalid number";
             this.betBtn.disabled = true;

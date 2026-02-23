@@ -136,6 +136,13 @@ h1 {
     min-width: 300px;
 }
 
+#betSection input {
+    padding: 0.5vw;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(232, 232, 232);
+}
+
 #errorMsg {
     color:red;
 }
@@ -179,6 +186,32 @@ h1 {
 #moneyPopup.show {
     opacity: 1;
     transform: translateY(-5px);
+}
+
+.stats-panel {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 260px;
+    background: var(--background-color-secondary);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    border: #222222 solid 2px;
+    z-index: 1000;
+    font-family: var(--primary-font);
+    color: var(--primary-color);
+}
+
+.hidden {
+    display: none;
+}
+
+.stats-header {
+    color: var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 footer {

@@ -15,8 +15,7 @@
         <h1><i class="bi bi-suit-spade"></i></h1>
         <h1 class="text-center">Blackjack</h1>
         <div>
-            <button id="loginMenuBtn" class="btn btn-primary">Login</button>
-            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">Repo</a>
+            <button id="statsMenuBtn" class="btn btn-primary"><i class="bi bi-list"></i></button>
         </div>
     </header>
 
@@ -63,7 +62,7 @@
         <div class="menuPanel hidden" id="betSection">
             <h2>Enter your Bet</h2>
             <input type="text" id="bet" name="bet">
-            <div><span id="errorMsg"></span></div>
+            <div class="mt-1"><span id="errorMsg"></span></div>
             <button id="betBtn" class="btn btn-primary mt-3" disabled>Place Bet</button>
         </div>
     </div>
@@ -86,6 +85,23 @@
             <button type="button" class="btn btn-secondary mt-2" id="registerBtn">Register</button>
             <div id="authMessage" class="mt-2"></div>
         </form>
+    </div>
+
+    <div id="statsSection" class="stats-panel hidden">
+        <div class="stats-header mb-2">
+            <button id="loginMenuBtn" class="btn btn-primary">Login</button>
+            <button id="statsCloseBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <h4>Player Stats:</h4>
+        <div class="stats-content">
+            <p id="statsMoney"></p>
+            <p id="statsWins"></p>
+            <p id="statsLosses"></p>
+            <p id="statsLevel"></p>
+            <p id="statsXP"></p>
+            <hr>
+            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">View Repo</a>
+        </div>
     </div>
 
     <footer class="d-flex align-items-center">
