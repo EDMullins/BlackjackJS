@@ -118,7 +118,7 @@ export class UIController {
                 cat.remove();
             }, 2600);
 
-        }, 50);
+        }, 200);
     }
 
     updateHandValue(hand, value) {
@@ -209,5 +209,20 @@ export class UIController {
 
         this.errorMsg.textContent = "";
         this.betBtn.disabled = false;
+    }
+
+    showMoneyPopup(amount) {
+        if (!amount) return;
+
+        this.moneyPopup.textContent =
+            amount > 0 ? `+${amount}` : `${amount}`;
+
+        this.moneyPopup.classList.remove("show");
+        void this.moneyPopup.offsetWidth;
+        this.moneyPopup.classList.add("show");
+
+        setTimeout(() => {
+            this.moneyPopup.classList.remove("show");
+        }, 800);
     }
 }

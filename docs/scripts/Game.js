@@ -8,8 +8,9 @@ export class Game {
         this.ui = ui;
         this.auth = auth;
 
-        this.player = new Player(() => {
+        this.player = new Player((popupAmount) => {
             this.ui.updatePlayerData(this.player);
+            this.ui.showMoneyPopup(popupAmount);
         });
 
         this.deck = new Deck();
@@ -95,7 +96,7 @@ export class Game {
         this.player.action(action, this.playerBet);
         this.gameActive = false;
         this.ui.showRoundOver(message);
-        this.ui.updatePlayerData(this.player);
+        this.auth.savePlayerData(this.player, this.auth.currentUid);
     }
 
     delay(ms) {
