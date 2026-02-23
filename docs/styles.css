@@ -7,7 +7,7 @@
     --background-color: #7fb572;
     --background-color-secondary: #14564b;
     --shadow-color: #094d36;
-    --text-color: #222222;
+    --text-color: #edd51e;
     --soft-text-color: #496e3f;
     --primary-font: 'Noto Serif', serif;
     --secondary-font: 'Young Serif', serif;
@@ -18,8 +18,7 @@ body {
     color: var(--text-color);
     font-family: var(--primary-font) !important;
     margin: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -32,7 +31,7 @@ header {
     border-radius: 0 0 15px 15px;
 }
 
-h1 {
+h1, h2, h3, h4 {
     font-family: var(--secondary-font);
     color: var(--primary-color);
 }
@@ -48,7 +47,7 @@ h1 {
 
 .btn-primary:hover {
     background-color: var(--primary-color-hover) !important;
-    color: var(--text-color) !important;
+    color: #222222 !important;
     box-shadow: 5px 5px 0 #094d36;
 }
 
@@ -59,6 +58,13 @@ h1 {
     white-space: nowrap;
 }
 
+.dealerSection,
+.playerSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .playerSection button {
     width: 120px;
     height: 50px;
@@ -66,12 +72,13 @@ h1 {
 }
 
 .cardImage {
-    width: 150px;
-    margin-right: 0.33vw;
+    width: 145px;
     border-radius: 6px;
     box-shadow: 2px 2px 5px #222222;
 }
-
+.cardImage:first-child {
+  margin-left: 0; /* Keeps first item in place */
+}
 .cardSlideWrapper {
     position: relative;
     display: inline-block;
@@ -105,15 +112,29 @@ h1 {
     display: none !important;
 }
 
+.cardSlideWrapper {
+    margin-left: -50px;
+}
+.cardSlideWrapper:first-of-type {
+    margin-left: 0;
+}
+
 .cardSection {
     display: flex;
-    flex-wrap: wrap;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
     margin-top: 1vw;
+}
+
+#hitStandBtns button{
+    width: 250px;
+    height: 60px;
 }
 
 .menuPanel {
     background-color: var(--background-color-secondary);
-    color: var(--primary-color);
+    color: var(--text-color);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -150,7 +171,7 @@ h1 {
 #loginSection {
     display: flex;
     flex-direction: column;
-    min-width: 350px;
+    min-width: 450px;
 }
 
 #loginXBtn {
@@ -246,4 +267,17 @@ footer {
 #mult {
     margin-inline: 25px;
     white-space: nowrap;
+}
+
+@media (max-width: 450px) {
+    .cardImage {
+        width: 100px;
+    }
+
+    #topRow {
+        flex-direction: column-reverse;
+    }
+    #topRow div {
+        float: right;
+    }
 }
