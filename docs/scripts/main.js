@@ -6,4 +6,5 @@ document.addEventListener("DOMContentLoaded", () => {
     const ui = new UIController();
     const auth = new AuthController(ui);
     const game = new Game(ui, auth);
+    game.reset();
 });

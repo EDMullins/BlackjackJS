@@ -22,12 +22,9 @@ export class Game {
         this.ui.bindGameEvents(this);
         this.ui.bindAuthEvents(auth);
         this.auth.init(this);
-        this.reset();
     }
 
     async start() {
-        console.log('start');
-
         //reset
         this.gameActive = true;
         //initial deal
@@ -52,7 +49,6 @@ export class Game {
         this.ui.disableGameButtons();
         this.ui.hideRoundOver();
         this.ui.showBetSection();
-        console.log('reset');
     }
 
     drawCard(hand, hidden = false) {
@@ -75,14 +71,15 @@ export class Game {
     async stand() {
         if (!this.gameActive) return;
 
+        //dealers turn
         this.ui.revealDealerHiddenCard(this.dealerHand);
         this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue());
         await this.delay(200);
-
         while (this.dealerHand.getValue() < 17) {
             this.drawCard(this.dealerHand);
             await this.delay(1000);
         }
+        //win logic
         const playerVal = this.playerHand.getValue();
         const dealerVal = this.dealerHand.getValue();
 
@@ -99,7 +96,6 @@ export class Game {
         this.gameActive = false;
         this.ui.showRoundOver(message);
         this.ui.updatePlayerData(this.player);
-
     }
 
     delay(ms) {
