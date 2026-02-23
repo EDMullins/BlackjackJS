@@ -1,7 +1,9 @@
 import { Game } from "./Game.js";
+import { UIController } from "./UIController.js";
+import { AuthController } from "./AuthController.js";
 
-document.addEventListener("DOMContentLoaded", (event) => {
-    console.log("DOM fully loaded and parsed");
-    const game = new Game();
-    game.start();
+document.addEventListener("DOMContentLoaded", () => {
+    const ui = new UIController();
+    const auth = new AuthController(ui);
+    const game = new Game(ui, auth);
 });
