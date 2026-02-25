@@ -8,11 +8,13 @@ const db = getFirestore();
 export class AuthController {
     constructor(ui) {
         this.ui = ui;
+        this.currentUid = null;
     }
 
     init(game) {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                this.currentUid = user.uid;
                 this.ui.loginMenuBtn.textContent = "Logout";
                 this.ui.loginMenuBtn.onclick = () => this.logout(game);
 
@@ -20,12 +22,14 @@ export class AuthController {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
+
                     Object.assign(game.player, docSnap.data());
                 }
 
                 game.reset();
                 this.ui.updatePlayerData(game.player);
             } else {
+                this.currentUid = null;
                 this.ui.loginMenuBtn.textContent = "Login";
                 game.player.resetData();
                 game.reset();

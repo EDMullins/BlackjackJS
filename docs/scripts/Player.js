@@ -40,9 +40,9 @@ export class Player {
 
     checkState() {
         //check level up
-        if (this.xp >= this.xpToNextLvl) {
+        while (this.xp >= this.xpToNextLvl) {
             this.level++;
-            this.xp = this.xp - this.xpToNextLvl;
+            this.xp -= this.xpToNextLvl;
             this.moneyOnNewRound = 100 + (this.level * 20);
             this.xpToNextLvl = 100 * (this.level * 1.5);
         }
