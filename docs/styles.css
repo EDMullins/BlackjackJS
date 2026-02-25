@@ -31,7 +31,10 @@ header {
     border-radius: 0 0 15px 15px;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: var(--secondary-font);
     color: var(--primary-color);
 }
@@ -76,9 +79,12 @@ h1, h2, h3, h4 {
     border-radius: 6px;
     box-shadow: 2px 2px 5px #222222;
 }
+
 .cardImage:first-child {
-  margin-left: 0; /* Keeps first item in place */
+    margin-left: 0;
+    /* Keeps first item in place */
 }
+
 .cardSlideWrapper {
     position: relative;
     display: inline-block;
@@ -104,8 +110,9 @@ h1, h2, h3, h4 {
     opacity: 1;
     transition: transform 1s ease-out;
 }
+
 .catArm.slide-out {
-    transform: translate(-65vw, -50%);
+    transform: translate(-75vw, -50%);
 }
 
 .hidden {
@@ -115,6 +122,7 @@ h1, h2, h3, h4 {
 .cardSlideWrapper {
     margin-left: -50px;
 }
+
 .cardSlideWrapper:first-of-type {
     margin-left: 0;
 }
@@ -127,7 +135,7 @@ h1, h2, h3, h4 {
     margin-top: 1vw;
 }
 
-#hitStandBtns button{
+#hitStandBtns button {
     width: 250px;
     height: 60px;
 }
@@ -155,17 +163,17 @@ h1, h2, h3, h4 {
     flex-direction: column;
     align-items: center;
     min-width: 300px;
-}
 
-#betSection input {
-    padding: 0.5vw;
-    border: none;
-    border-radius: 5px;
-    background-color: rgb(232, 232, 232);
+    input {
+        padding: 0.5vw;
+        border: none;
+        border-radius: 5px;
+        background-color: rgb(232, 232, 232);
+    }
 }
 
 #errorMsg {
-    color:red;
+    color: red;
 }
 
 #loginSection {
@@ -183,14 +191,16 @@ h1, h2, h3, h4 {
 .authForm {
     display: flex;
     flex-direction: column;
+
+    input {
+        margin-bottom: 1vw;
+        padding: 0.5vw;
+        border: none;
+        border-radius: 5px;
+    }
 }
 
-.authForm input {
-    margin-bottom: 1vw;
-    padding: 0.5vw;
-    border: none;
-    border-radius: 5px;
-}
+
 
 #authMessage {
     margin-top: 1vw;
@@ -217,7 +227,7 @@ h1, h2, h3, h4 {
     background: var(--background-color-secondary);
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     border: #222222 solid 2px;
     z-index: 1000;
     font-family: var(--primary-font);
@@ -277,7 +287,12 @@ footer {
     #topRow {
         flex-direction: column-reverse;
     }
+
     #topRow div {
         float: right;
+    }
+
+    .cardSlideWrapper {
+        margin-left: -70px;
     }
 }
