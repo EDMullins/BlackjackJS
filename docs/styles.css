@@ -241,10 +241,19 @@ h4 {
 footer {
     margin-top: auto;
     padding: 10px;
+    padding-top: 10px;
     border-top: 4px solid var(--shadow-color);
     border-radius: 15px 15px 0 0;
     background-color: var(--background-color-secondary);
     color: var(--primary-color);
+    transition: padding-top 0.2s ease-out, background-color 0.2s ease;
+    transform: translateY(0px);
+
+}
+footer:hover {
+    padding-top: 20px;
+    background-color: var(--shadow-color);
+    cursor: pointer;
 }
 
 #levelDisplay {
