@@ -36,6 +36,7 @@ export class UIController {
         this.statsWins = document.getElementById('statsWins');
         this.statsLosses = document.getElementById('statsLosses');
         this.statsLevel = document.getElementById('statsLevel');
+        this.statsMoneyOnNewRound = document.getElementById('statsMoneyOnNewRound');
         this.statsXP = document.getElementById('statsXP');
 
         this.xpBar = document.getElementById('xpBar');
@@ -172,6 +173,7 @@ export class UIController {
         this.statsWins.textContent = `Wins: ${player.wins}`;
         this.statsLosses.textContent = `Losses: ${player.losses}`;
         this.statsLevel.textContent = `Level: ${player.level}`;
+        this.statsMoneyOnNewRound.textContent = `Money On Loss: ${player.moneyOnNewRound}`;
         this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
 
         this.validateBet(this.betInput.value, player.money);
@@ -218,7 +220,7 @@ export class UIController {
             this.betBtn.disabled = true;
             return;
         }
-        
+
         if (!/^\d+$/.test(value)) {
             this.errorMsg.textContent = "Invalid number";
             this.betBtn.disabled = true;
