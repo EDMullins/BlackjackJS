@@ -28,7 +28,6 @@ export class AuthController {
                 game.reset();
                 this.ui.updatePlayerData(game.player);
                 this.ui.setTheme(game.player.theme);
-                console.log(`set theme to ${game.player.theme}`)
             } else {
                 this.currentUid = null;
                 this.ui.loginMenuBtn.textContent = "Login";
@@ -36,8 +35,7 @@ export class AuthController {
                 game.reset();
                 this.ui.updatePlayerData(game.player);
                 this.ui.setTheme("default");
-                console.log("log out load default theme");
-                
+
                 this.ui.loginMenuBtn.onclick = () => {
                     this.ui.loginSection.classList.toggle('hidden');
                 };
