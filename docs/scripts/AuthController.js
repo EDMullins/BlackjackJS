@@ -22,22 +22,26 @@ export class AuthController {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-
                     Object.assign(game.player, docSnap.data());
                 }
 
                 game.reset();
                 this.ui.updatePlayerData(game.player);
+                this.ui.setTheme(game.player.theme);
+                console.log(`set theme to ${game.player.theme}`)
             } else {
                 this.currentUid = null;
                 this.ui.loginMenuBtn.textContent = "Login";
                 game.player.resetData();
                 game.reset();
                 this.ui.updatePlayerData(game.player);
+                this.ui.setTheme("default");
+                console.log("log out load default theme");
+                
                 this.ui.loginMenuBtn.onclick = () => {
                     this.ui.loginSection.classList.toggle('hidden');
                 };
-            }
+            }   
         });
     }
 
@@ -75,8 +79,9 @@ export class AuthController {
             wins: player.wins,
             losses: player.losses,
             moneyOnNewRound: player.moneyOnNewRound,
-            xpToNextLvl: player.xpToNextLvl
-        });
+            xpToNextLvl: player.xpToNextLvl,
+            theme: player.theme
+        }, { merge: true });
     }
 
     logout(game) {

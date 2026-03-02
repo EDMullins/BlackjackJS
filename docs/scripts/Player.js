@@ -10,6 +10,7 @@ export class Player {
         this.losses = 0;
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
+        this.theme = "default";
     }
 
     action(winner, betAmount) {
@@ -62,5 +63,6 @@ export class Player {
         this.losses = 0;
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
+        this.theme = "default";
     }
 }

@@ -1,6 +1,18 @@
 export class UIController {
     constructor() {
         this.domElements();
+        this.currentTheme = "default";
+        this.themes = [
+            { name: "Default", value: "default" },
+            { name: "Light", value: "light" },
+            { name: "Dark", value: "dark" }
+        ];
+        this.renderThemes();
+    }
+
+    connectGame(game, auth) {
+        this.game = game;
+        this.auth = auth;
     }
 
     domElements() {
@@ -15,11 +27,13 @@ export class UIController {
         this.dealerValueDisplay = document.getElementById('dealerHandValue');
         this.roundOverSection = document.getElementById('roundOverSection');
         this.roundResultDisplay = document.getElementById('roundResult');
+
         this.betSection = document.getElementById('betSection');
         this.betInput = document.getElementById('bet');
         this.errorMsg = document.getElementById('errorMsg');
         this.betBtn = document.getElementById('betBtn');
         this.newHandBtn = document.getElementById('newHand');
+
         this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
@@ -31,13 +45,18 @@ export class UIController {
 
         this.statsMenuBtn = document.getElementById('statsMenuBtn');
         this.statsSection = document.getElementById('statsSection');
-        this.statsCloseBtn = document.getElementById('statsCloseBtn');
+        this.statsXBtn = document.getElementById('statsXBtn');
         this.statsMoney = document.getElementById('statsMoney');
         this.statsWins = document.getElementById('statsWins');
         this.statsLosses = document.getElementById('statsLosses');
         this.statsLevel = document.getElementById('statsLevel');
         this.statsMoneyOnNewRound = document.getElementById('statsMoneyOnNewRound');
         this.statsXP = document.getElementById('statsXP');
+
+        this.themeMenuBtn = document.getElementById('themeMenuBtn');
+        this.themeSection = document.getElementById('themeSection');
+        this.themeXBtn = document.getElementById('themeXBtn');
+        this.themeOptions = document.getElementById('themeOptions');
 
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
@@ -71,9 +90,19 @@ export class UIController {
             this.statsSection.classList.toggle('hidden');
         };
 
-        this.statsCloseBtn.onclick = () => {
+        this.statsXBtn.onclick = () => {
             this.statsSection.classList.add('hidden');
         };
+
+        this.themeMenuBtn.onclick = () => {
+            this.themeSection.classList.toggle('hidden');
+        }
+
+        this.themeXBtn.onclick = () => {
+            this.themeSection.classList.add('hidden');
+        };
+
+
     }
 
     bindAuthEvents(authController) {
@@ -258,5 +287,29 @@ export class UIController {
         setTimeout(() => {
             this.moneyPopup.classList.remove("show");
         }, 800);
+    }
+
+    setTheme(themeName) {
+        document.documentElement.setAttribute("data-theme", themeName);
+        this.currentTheme = themeName;
+    }
+
+    renderThemes() {
+        this.themeOptions.innerHTML = "";
+        this.themes.forEach(theme => {
+            const btn = document.createElement("button");
+            btn.classList.add("btn", "btn-secondary", "mb-2");
+            btn.textContent = theme.name;
+
+            btn.addEventListener("click", () => {
+                this.setTheme(theme.value);
+                this.game.player.theme = theme.value;
+                if (this.auth.currentUid) {
+                    this.auth.savePlayerData(this.game.player, this.auth.currentUid);
+                }
+            });
+
+            this.themeOptions.appendChild(btn);
+        });
     }
 }

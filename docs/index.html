@@ -77,9 +77,9 @@
     </div>
 
     <div id="statsSection" class="stats-panel hidden">
-        <div class="stats-header mb-2">
+        <div class="menu-header mb-2">
             <button id="loginMenuBtn" class="btn btn-primary">Login</button>
-            <button id="statsCloseBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
+            <button id="statsXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
         </div>
         <h4>Player Stats:</h4>
         <div class="stats-content">
@@ -90,7 +90,19 @@
             <p id="statsMoneyOnNewRound"></p>
             <p id="statsXP"></p>
             <hr>
+            <button id="themeMenuBtn" class="btn btn-primary">Themes</button>
             <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">View Repo</a>
+        </div>
+    </div>
+
+    <div id="themeSection" class="menuPanel">
+        <div class="menu-header mb-2">
+            <h2>Themes</h2>
+            <button id="themeXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <hr>
+        <div id="themeOptions">
+            
         </div>
     </div>
 
@@ -99,7 +111,7 @@
             <h2>Login or Sign Up</h2>
             <button id="loginXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
         </div>
-        <form class="authForm">
+        <form id="authForm">
             <div class="mb-3">
                 <p>Email</p>
                 <input type="email" class="form-control" id="email" placeholder="Email" required>
