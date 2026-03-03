@@ -2,7 +2,7 @@
 
 :root {
     --primary-color: #edd51e;
-    --primary-color-hover: #ecb02e;
+    --primary-color-hover: #237856;
     --background-color: #7fb572;
     --background-color-secondary: #14564b;
     --shadow-color: #094d36;
@@ -28,11 +28,11 @@
     --primary-color: #ffffff;
     --primary-color-hover: #323232;
     --background-color: #505050;
-    --background-color-secondary: #3b3b3b;
+    --background-color-secondary: #2d2d2d;
     --shadow-color: #282828;
     --soft-text-color: #000000;
-    --header-gradient-1: rgba(52, 52, 52, 0.95);
-    --header-gradient-2: rgba(52, 52, 52, 0.9);
+    --header-gradient-1: rgba(39, 39, 39, 0.95);
+    --header-gradient-2: rgba(39, 39, 39, 0.9);
 }
 
 body {
@@ -262,6 +262,10 @@ h4 {
 
 #themeSection {
     min-width: 450px;
+}
+
+#themeOptions {
+
 }
 
 footer {

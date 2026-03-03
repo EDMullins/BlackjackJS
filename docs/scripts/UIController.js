@@ -3,11 +3,17 @@ export class UIController {
         this.domElements();
         this.currentTheme = "default";
         this.themes = [
-            { name: "Default", value: "default" },
-            { name: "Light", value: "light" },
-            { name: "Dark", value: "dark" }
+            { name: "Default", value: "default", level: 0 },
+            { name: "Light", value: "light", level: 1 },
+            { name: "Dark", value: "dark", level: 2 },
+            { name: "Light", value: "light", level: 5 },
+            { name: "Light", value: "light", level: 10 },
+            { name: "Light", value: "light", level: 15 },
+            { name: "Light", value: "light", level: 25 },
+            { name: "Light", value: "light", level: 45 },
+            { name: "Light", value: "light", level: 75 },
+            { name: "Light", value: "light", level: 100 },
         ];
-        this.renderThemes();
     }
 
     connectGame(game, auth) {
@@ -206,6 +212,8 @@ export class UIController {
         this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
 
         this.validateBet(this.betInput.value, player.money);
+
+        this.renderThemes();
     }
 
     clearCards() {
@@ -296,18 +304,30 @@ export class UIController {
 
     renderThemes() {
         this.themeOptions.innerHTML = "";
+
+        const level = this.game.player.level;
+
         this.themes.forEach(theme => {
             const btn = document.createElement("button");
-            btn.classList.add("btn", "btn-secondary", "mb-2");
-            btn.textContent = theme.name;
+            btn.classList.add("btn", "btn-secondary", "mb-1");
 
-            btn.addEventListener("click", () => {
-                this.setTheme(theme.value);
-                this.game.player.theme = theme.value;
-                if (this.auth.currentUid) {
-                    this.auth.savePlayerData(this.game.player, this.auth.currentUid);
-                }
-            });
+            const unlocked = level >= theme.level;
+            if (unlocked) {
+                btn.textContent = theme.name;
+
+                btn.addEventListener("click", () => {
+                    this.setTheme(theme.value);
+                    this.game.player.theme = theme.value;
+                    if (this.auth.currentUid) {
+                        this.auth.savePlayerData(this.game.player, this.auth.currentUid);
+                    }
+                });
+            }
+            else {
+                btn.classList.add("btn-dark");
+                btn.textContent = `${theme.name} (Lvl ${theme.level})`;
+                btn.disabled = true;
+            }
 
             this.themeOptions.appendChild(btn);
         });
