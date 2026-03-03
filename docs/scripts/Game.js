@@ -52,10 +52,11 @@ export class Game {
         this.ui.showBetSection();
     }
 
-    drawCard(hand, hidden = false) {
+    async drawCard(hand, hidden = false) {
         const card = this.deck.drawCard();
         hand.addCard(card, hidden);
         this.ui.renderCard(card, hand, hidden);
+        await this.delay(1000);
         this.ui.updateHandValue(hand, hand.getValue());
     }
 

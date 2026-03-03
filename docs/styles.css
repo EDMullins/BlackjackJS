@@ -16,16 +16,16 @@
 [data-theme="light"] {
     --primary-color: #404040;
     --primary-color-hover: #ebebeb;
-    --background-color: #e9e9e9;
-    --background-color-secondary: #dbdbdb;
+    --background-color: #dbd9d2;
+    --background-color-secondary: #b9b9b9;
     --shadow-color: #d9d9d9;
     --soft-text-color: #7d7d7d;
-    --header-gradient-1: rgba(173, 173, 173, 0.95);
-    --header-gradient-2: rgba(173, 173, 173, 0.9);
+    --header-gradient-1: rgba(150, 150, 150, 0.95);
+    --header-gradient-2: rgba(150, 150, 150, 0.9);
 }
 
 [data-theme="dark"] {
-    --primary-color: #ffffff;
+    --primary-color: #ececec;
     --primary-color-hover: #323232;
     --background-color: #505050;
     --background-color-secondary: #2d2d2d;
@@ -171,7 +171,7 @@ h4 {
     transform: translate(-50%, -50%);
     padding: 2vw;
     border: #222222 solid 2px;
-    border-radius: 15px;
+    border-radius: 10px;
     box-shadow: var(--shadow-color) 3px 1px 15px;
 }
 
@@ -264,10 +264,6 @@ h4 {
     min-width: 450px;
 }
 
-#themeOptions {
-
-}
-
 footer {
     margin-top: auto;
     padding: 10px;
@@ -324,6 +320,10 @@ footer {
     }
 
     #loginSection {
+        min-width: 300px;
+    }
+
+    #themeSection {
         min-width: 300px;
     }
 }
