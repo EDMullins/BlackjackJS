@@ -11,12 +11,15 @@ export class Player {
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
         this.theme = "default";
+        this.winStreak = 0;
+        this.winHigh = 0;
     }
 
     action(winner, betAmount) {
         let popupAmount = 0;
         if (winner === 1) {
             this.wins++;
+            this.winStreak++;
             this.money += betAmount;
             this.xp += 50 * this.multiplier;
             this.multiplier += betAmount / this.money;
@@ -24,6 +27,7 @@ export class Player {
         }
         else if (winner === 0) {
             this.losses++;
+            this.winStreak = 0;
             this.money -= betAmount;
             this.xp += 10;
             popupAmount = -betAmount;
@@ -52,6 +56,9 @@ export class Player {
             this.money = this.moneyOnNewRound;
             this.multiplier = 1;
         }
+        if (this.winStreak > this.winHigh) {
+            this.winHigh = this.winStreak;
+        }
     }
 
     resetData() {
@@ -64,5 +71,7 @@ export class Player {
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
         this.theme = "default";
+        this.winStreak = 0;
+        this.winHigh = 0;
     }
 }
