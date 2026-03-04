@@ -67,6 +67,7 @@ export class Game {
 
         if (this.playerHand.isBust()) {
             this.ui.revealDealerHiddenCard(this.dealerHand);
+            this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue());
             this.end("You bust! Dealer wins.", 0);
         }
     }

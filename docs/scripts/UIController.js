@@ -58,7 +58,6 @@ export class UIController {
         this.statsLevel = document.getElementById('statsLevel');
         this.statsMoneyOnNewRound = document.getElementById('statsMoneyOnNewRound');
         this.statsXP = document.getElementById('statsXP');
-        this.statsWinStreak = document.getElementById('statsWinStreak');
         this.statsWinHigh = document.getElementById('statsWinHigh');
 
         this.themeMenuBtn = document.getElementById('themeMenuBtn');
@@ -66,6 +65,7 @@ export class UIController {
         this.themeXBtn = document.getElementById('themeXBtn');
         this.themeOptions = document.getElementById('themeOptions');
 
+        this.winStreak = document.getElementById('winStreak');
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
         this.mult = document.getElementById('mult');
@@ -205,6 +205,7 @@ export class UIController {
         this.xpBar.style.width = `${player.xp / player.xpToNextLvl * 100}%`;
         this.levelDisplay.textContent = `Level: ${player.level}`;
         this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
+        this.winStreak.textContent = player.winStreak > 1 ? `x${player.winStreak}` : "";
         //stats Menu
         this.statsMoney.textContent = `Money: ${player.money}`;
         this.statsWins.textContent = `Wins: ${player.wins}`;
@@ -288,8 +289,7 @@ export class UIController {
     showMoneyPopup(amount) {
         if (!amount) return;
 
-        this.moneyPopup.textContent =
-            amount > 0 ? `+${amount}` : `${amount}`;
+        this.moneyPopup.textContent = amount > 0 ? `+${amount}` : `${amount}`;
 
         this.moneyPopup.classList.remove("show");
         void this.moneyPopup.offsetWidth;

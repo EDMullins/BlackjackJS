@@ -61,6 +61,10 @@ h4 {
     color: var(--primary-color);
 }
 
+.hidden {
+    display: none !important;
+}
+
 .btn-primary {
     background-color: var(--primary-color) !important;
     font-family: var(--primary-font) !important;
@@ -90,12 +94,6 @@ h4 {
     flex-direction: column;
 }
 
-.playerSection button {
-    width: 120px;
-    height: 50px;
-    font-size: 20px;
-}
-
 .cardImage {
     width: 145px;
     border-radius: 6px;
@@ -114,11 +112,16 @@ h4 {
     transform: translateX(-1000px);
     opacity: 0;
     transition: transform 0.8s ease-out;
+    margin-left: -50px;
 }
 
 .cardSlideWrapper.slide-in {
     transform: translateX(0);
     opacity: 1;
+}
+
+.cardSlideWrapper:first-of-type {
+    margin-left: 0;
 }
 
 .catArm {
@@ -135,18 +138,6 @@ h4 {
 
 .catArm.slide-out {
     transform: translate(-75vw, -50%);
-}
-
-.hidden {
-    display: none !important;
-}
-
-.cardSlideWrapper {
-    margin-left: -50px;
-}
-
-.cardSlideWrapper:first-of-type {
-    margin-left: 0;
 }
 
 .cardSection {
@@ -222,9 +213,9 @@ h4 {
     }
 }
 
-#authMessage {
-    margin-top: 1vw;
-    color: var(--primary-color);
+#moneySection {
+    position: absolute;
+    right: 20px;
 }
 
 #moneyPopup {
@@ -243,7 +234,7 @@ h4 {
     position: absolute;
     top: 60px;
     right: 20px;
-    width: 260px;
+    width: 275px;
     background: var(--background-color-secondary);
     padding: 15px;
     border-radius: 10px;
@@ -302,17 +293,19 @@ footer {
     white-space: nowrap;
 }
 
-@media (max-width: 450px) {
+#winStreak {
+    position: absolute;
+    bottom: 75px;
+    left: 25px;
+}
+
+@media (max-width: 600px) {
     .cardImage {
         width: 100px;
     }
 
-    #topRow {
-        flex-direction: column-reverse;
-    }
-
-    #topRow div {
-        float: right;
+    #moneySection {
+        bottom: 125px;
     }
 
     .cardSlideWrapper {
@@ -325,5 +318,9 @@ footer {
 
     #themeSection {
         min-width: 300px;
+    }
+
+    #winStreak {
+        bottom: 125px;
     }
 }
