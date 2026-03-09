@@ -71,6 +71,9 @@ export class UIController {
         this.xpBar = document.getElementById('xpBar');
         this.levelDisplay = document.getElementById('levelDisplay');
         this.mult = document.getElementById('mult');
+
+        this.gameOver = document.getElementById('gameOver');
+        this.newGameBtn = document.getElementById('newGame')
     }
 
     // Bind Events
@@ -93,6 +96,10 @@ export class UIController {
         };
 
         this.newHandBtn.onclick = () => {
+            game.reset();
+        };
+
+        this.newGameBtn.onclick = () => {
             game.reset();
         };
 
@@ -251,6 +258,15 @@ export class UIController {
 
     hideBetSection() {
         this.betSection.classList.add('hidden');
+    }
+
+    showGameOver() {
+        this.gameOver.classList.remove('hidden');
+        this.disableGameButtons();
+    }
+
+    hideGameOver() {
+        this.gameOver.classList.add('hidden');
     }
 
     enableGameButtons() {

@@ -49,6 +49,7 @@ export class Game {
         this.ui.clearCards();
         this.ui.disableGameButtons();
         this.ui.hideRoundOver();
+        this.ui.hideGameOver();
         this.ui.showBetSection();
     }
 
@@ -98,7 +99,12 @@ export class Game {
     end(message, action) {
         const roundData = this.player.action(action, this.playerBet);
         this.gameActive = false;
-        this.ui.showRoundOver(message, roundData);
+        if (roundData.lost === true) {
+            this.ui.showGameOver();
+        }
+        else {
+            this.ui.showRoundOver(message, roundData);
+        }
         this.auth.savePlayerData(this.player, this.auth.currentUid);
     }
 

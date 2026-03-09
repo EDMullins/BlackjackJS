@@ -40,15 +40,18 @@ export class Player {
         }
 
         xpGained = this.xp - xpGained;
+        //TODO: Fix mulitplier bug on Game over doesnt show properly
         const roundData = {
             bet: betAmount,
             moneyChange: this.money - oldMoney,
             multiplierChange: this.multiplier - oldMultiplier,
-            xp: xpGained
+            xp: xpGained,
+            lost: false
         };
 
-        this.checkState();
-        
+        const didLose = this.checkState();
+        roundData.lost = didLose;
+
         if (this.onUpdate) {
             this.onUpdate(popupAmount);
         }
@@ -57,6 +60,7 @@ export class Player {
     }
 
     checkState() {
+        let lost = false;
         //check level up
         while (this.xp >= this.xpToNextLvl) {
             this.level++;
@@ -69,10 +73,12 @@ export class Player {
             this.money = this.moneyOnNewRound;
             this.winStreak = 0;
             this.multiplier = 1;
+            lost = true;
         }
         if (this.winStreak > this.winHigh) {
             this.winHigh = this.winStreak;
         }
+        return lost;
     }
 
     resetData() {
