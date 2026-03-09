@@ -173,6 +173,14 @@ h4 {
     min-width: 500px;
 }
 
+#roundData {
+    width: 80%;
+    border-radius: 10px;
+    background-color: var(--shadow-color);
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
 #betSection {
     display: flex;
     flex-direction: column;

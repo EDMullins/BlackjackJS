@@ -240,11 +240,21 @@ export class UIController {
         this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
         this.roundData.innerHTML = `
-            Bet: $${roundData.bet}<br>
-            Multiplier Bonus: $${roundData.bonus}<br>
-            Money Change: $${roundData.moneyChange}<br>
-            Multiplier Change: ${roundData.multiplierChange.toFixed(2)}<br>
-            XP Gained: ${roundData.xp.toFixed(0)}
+            <div class="d-flex justify-content-between">
+                <p>Bet</p><p>${roundData.bet}</p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <p>Multiplier Bonus</p><p>${roundData.bonus}</p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <p>Money Gained</p><p>${roundData.moneyChange}</p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <p>Multiplier Gained</p><p>${roundData.multiplierChange.toFixed(2)}</p>
+            </div>
+            <div class="d-flex justify-content-between">
+                <p>XP Gained</p><p>${roundData.xp.toFixed(0)}</p>
+            </div>
         `;
         this.disableGameButtons();
     }
