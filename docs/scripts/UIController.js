@@ -241,6 +241,7 @@ export class UIController {
         this.roundResultDisplay.textContent = result;
         this.roundData.innerHTML = `
             Bet: $${roundData.bet}<br>
+            Multiplier Bonus: $${roundData.bonus}<br>
             Money Change: $${roundData.moneyChange}<br>
             Multiplier Change: ${roundData.multiplierChange.toFixed(2)}<br>
             XP Gained: ${roundData.xp.toFixed(0)}

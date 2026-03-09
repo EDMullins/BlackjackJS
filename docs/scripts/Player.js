@@ -18,15 +18,18 @@ export class Player {
     action(winner, betAmount) {
         let popupAmount = 0;
         let xpGained = this.xp;
+        let multBonus = 0;
         const oldMultiplier = this.multiplier;
         const oldMoney = this.money;
 
         if (winner === 1) {
             this.wins++;
             this.winStreak++;
-            this.money += betAmount;
+
+            multBonus = Math.floor(this.multiplier * (betAmount * 0.10));
+            this.money += betAmount + multBonus;
             this.xp += 50 * this.multiplier;
-            this.multiplier += betAmount / this.money;
+            this.multiplier += 0.25;
             popupAmount = betAmount;
         }
         else if (winner === 0) {
@@ -43,6 +46,7 @@ export class Player {
         //TODO: Fix mulitplier bug on Game over doesnt show properly
         const roundData = {
             bet: betAmount,
+            bonus: multBonus,
             moneyChange: this.money - oldMoney,
             multiplierChange: this.multiplier - oldMultiplier,
             xp: xpGained,
