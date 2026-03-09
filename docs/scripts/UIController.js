@@ -31,8 +31,10 @@ export class UIController {
         this.moneyPopup = document.getElementById('moneyPopup');
         this.playerValueDisplay = document.getElementById('playerHandValue');
         this.dealerValueDisplay = document.getElementById('dealerHandValue');
+
         this.roundOverSection = document.getElementById('roundOverSection');
         this.roundResultDisplay = document.getElementById('roundResult');
+        this.roundData = document.getElementById('roundData');
 
         this.betSection = document.getElementById('betSection');
         this.betInput = document.getElementById('bet');
@@ -205,8 +207,8 @@ export class UIController {
         this.xpBar.style.width = `${player.xp / player.xpToNextLvl * 100}%`;
         this.levelDisplay.textContent = `Level: ${player.level}`;
         this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
-        this.winStreak.textContent = player.winStreak > 1 ? `x${player.winStreak}` : "";
-        //stats Menu
+        this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
+        //stats Menu 
         this.statsMoney.textContent = `Money: ${player.money}`;
         this.statsWins.textContent = `Wins: ${player.wins}`;
         this.statsLosses.textContent = `Losses: ${player.losses}`;
@@ -227,9 +229,15 @@ export class UIController {
         this.dealerValueDisplay.textContent = "Dealer's Hand:";
     }
 
-    showRoundOver(result) {
+    showRoundOver(result, roundData) {
         this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
+        this.roundData.innerHTML = `
+            Bet: $${roundData.bet}<br>
+            Money Change: $${roundData.moneyChange}<br>
+            Multiplier Change: ${roundData.multiplierChange.toFixed(2)}<br>
+            XP Gained: ${roundData.xp.toFixed(0)}
+        `;
         this.disableGameButtons();
     }
 

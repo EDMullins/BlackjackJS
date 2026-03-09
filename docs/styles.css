@@ -265,7 +265,6 @@ footer {
     color: var(--primary-color);
     transition: padding-top 0.2s ease-out, background-color 0.2s ease;
     transform: translateY(0px);
-
 }
 
 #levelDisplay {

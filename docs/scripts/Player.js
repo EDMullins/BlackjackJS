@@ -17,6 +17,10 @@ export class Player {
 
     action(winner, betAmount) {
         let popupAmount = 0;
+        let xpGained = this.xp;
+        const oldMultiplier = this.multiplier;
+        const oldMoney = this.money;
+
         if (winner === 1) {
             this.wins++;
             this.winStreak++;
@@ -27,7 +31,6 @@ export class Player {
         }
         else if (winner === 0) {
             this.losses++;
-            this.winStreak = 0;
             this.money -= betAmount;
             this.xp += 10;
             popupAmount = -betAmount;
@@ -36,11 +39,21 @@ export class Player {
             this.xp += 20 * this.multiplier;
         }
 
+        xpGained = this.xp - xpGained;
+        const roundData = {
+            bet: betAmount,
+            moneyChange: this.money - oldMoney,
+            multiplierChange: this.multiplier - oldMultiplier,
+            xp: xpGained
+        };
+
         this.checkState();
         
         if (this.onUpdate) {
             this.onUpdate(popupAmount);
         }
+
+        return roundData;
     }
 
     checkState() {
@@ -54,6 +67,7 @@ export class Player {
         //check money
         if (this.money <= 0) {
             this.money = this.moneyOnNewRound;
+            this.winStreak = 0;
             this.multiplier = 1;
         }
         if (this.winStreak > this.winHigh) {

@@ -96,9 +96,9 @@ export class Game {
     }
 
     end(message, action) {
-        this.player.action(action, this.playerBet);
+        const roundData = this.player.action(action, this.playerBet);
         this.gameActive = false;
-        this.ui.showRoundOver(message);
+        this.ui.showRoundOver(message, roundData);
         this.auth.savePlayerData(this.player, this.auth.currentUid);
     }
 
