@@ -11,8 +11,10 @@ export class Player {
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
         this.theme = "default";
+        this.gameWins = 0;
         this.winStreak = 0;
-        this.winHigh = 0;
+        this.gameWinsHigh = 0;
+        this.winStreakHigh = 0;
     }
 
     action(winner, betAmount) {
@@ -25,6 +27,7 @@ export class Player {
         if (winner === 1) {
             this.wins++;
             this.winStreak++;
+            this.gameWins++;
 
             multBonus = Math.floor(this.multiplier * (betAmount * 0.10));
             this.money += betAmount + multBonus;
@@ -37,6 +40,7 @@ export class Player {
             this.money -= betAmount;
             this.xp += 10;
             popupAmount = -betAmount;
+            this.winStreak = 0;
         }
         else {//tie
             this.xp += 20 * this.multiplier;
@@ -75,12 +79,15 @@ export class Player {
         //check money
         if (this.money <= 0) {
             this.money = this.moneyOnNewRound;
-            this.winStreak = 0;
+            this.gameWins = 0;
             this.multiplier = 1;
             lost = true;
         }
-        if (this.winStreak > this.winHigh) {
-            this.winHigh = this.winStreak;
+        if (this.winStreak > this.winStreakHigh) {
+            this.winStreakHigh = this.winStreak;
+        }
+        if (this.gameWins > this.gameWinsHigh) {
+            this.gameWinsHigh = this.gameWins;
         }
         return lost;
     }
@@ -95,7 +102,9 @@ export class Player {
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 100;
         this.theme = "default";
+        this.gameWins = 0;
         this.winStreak = 0;
-        this.winHigh = 0;
+        this.gameWinsHigh = 0;
+        this.winStreakHigh = 0;
     }
 }

@@ -79,7 +79,8 @@ export class AuthController {
             moneyOnNewRound: player.moneyOnNewRound,
             xpToNextLvl: player.xpToNextLvl,
             theme: player.theme,
-            winHigh: player.winHigh
+            winStreakHigh: player.winStreakHigh,
+            gameWinsHigh: player.gameWinsHigh
         }, { merge: true });
     }
 
