@@ -62,9 +62,9 @@ export class UIController {
         this.statsXP = document.getElementById('statsXP');
         this.statsWinStreakHigh = document.getElementById('statsWinStreakHigh');
 
-        this.themeMenuBtn = document.getElementById('themeMenuBtn');
-        this.themeSection = document.getElementById('themeSection');
-        this.themeXBtn = document.getElementById('themeXBtn');
+        this.storeMenuBtn = document.getElementById('storeMenuBtn');
+        this.storeSection = document.getElementById('storeSection');
+        this.storeXBtn = document.getElementById('storeXBtn');
         this.themeOptions = document.getElementById('themeOptions');
 
         this.winStreak = document.getElementById('winStreak');
@@ -111,12 +111,12 @@ export class UIController {
             this.statsSection.classList.add('hidden');
         };
 
-        this.themeMenuBtn.onclick = () => {
-            this.themeSection.classList.toggle('hidden');
+        this.storeMenuBtn.onclick = () => {
+            this.storeSection.classList.toggle('hidden');
         }
 
-        this.themeXBtn.onclick = () => {
-            this.themeSection.classList.add('hidden');
+        this.storeXBtn.onclick = () => {
+            this.storeSection.classList.add('hidden');
         };
 
 

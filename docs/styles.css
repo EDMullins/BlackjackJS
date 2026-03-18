@@ -262,9 +262,22 @@ h4 {
     align-items: center;
 }
 
-#themeSection {
-    min-width: 450px;
+#storeSection {
+    width: 450px;
+    max-height: 400px;
+    overflow: scroll;
+    #storeXBtn {
+        float: right;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+    #themeOptions {
+        display: grid;
+        grid-template-columns: auto auto auto;
+    }
     #themeOptions button {
+        height: 50px;
         margin-bottom: 5px;
     }
 }
