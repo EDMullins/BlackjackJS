@@ -22,31 +22,31 @@
     <!-- Game Sections -->
     <div class="dealerSection">
         <div class="d-flex mt-4 mx-4">
-            <h2 class="softText" id="dealerHandValue">Dealer's Hand:</h2>
+            <h2 id="dealerHandValue" class="softText">Dealer's Hand:</h2>
             <div id="moneySection">
                 <div class="moneyTab">
-                    <h2 class="softText" id="money">$</h2>
+                    <h2 id="money" class="softText">$</h2>
                 </div>
-                <h4 class="softText" id="moneyPopup"></h4>
+                <h4 id="moneyPopup" class="softText" ></h4>
             </div>
         </div>
-        <div class="cardSection d-flex flex-wrap" id="dealerCardSection">
+        <div id="dealerCardSection" class="cardSection d-flex flex-wrap">
             <!-- Cards will be appended here -->
         </div>
     </div>
 
     <div class="playerSection mt-3">
         <div class="d-flex justify-content-between mx-4">
-            <h2 class="softText" id="playerHandValue">Player's Hand:</h2>
+            <h2 id="playerHandValue" class="softText">Player's Hand:</h2>
         </div>
-        <div class="cardSection d-flex flex-wrap" id="playerCardSection">
+        <div id="playerCardSection" class="cardSection d-flex flex-wrap">
             <!-- Cards will be appended here -->
         </div>
     </div>
 
     <div class="d-flex justify-content-end m-2" id="hitStandBtns">
-        <button disabled class="btn btn-primary me-3" id="hit">Hit</button>
-        <button disabled class="btn btn-primary" id="stand">Stand</button>
+        <button disabled id="hit" class="btn btn-primary me-3">Hit</button>
+        <button id="stand" disabled class="btn btn-primary">Stand</button>
     </div>
 
     <footer class="d-flex align-items-center">
@@ -59,19 +59,19 @@
 
     <!-- Different Menus (not always visible) -->
     <div class="d-flex justify-content-center">
-        <div class="flex-column align-items-center menuPanel hidden" id="roundOverSection">
+        <div id="roundOverSection" class="flex-column align-items-center menuPanel hidden">
             <h2 id="roundResult">
                 <!-- Result will be added here -->
             </h2>
             <div id="roundData">
                 <!-- Round data will be added here -->
             </div>
-            <button class="btn btn-primary" id="newHand">New Hand</button>
+            <button id="newHand" class="btn btn-primary">New Hand</button>
         </div>
     </div>
 
     <div class="d-flex justify-content-center">
-        <div class="menuPanel hidden" id="betSection">
+        <div id="betSection" class="menuPanel hidden">
             <h2 class="mb-4">Enter your Bet</h2>
             <input type="text" id="bet" name="bet">
             <div class="mt-1"><span id="errorMsg"></span></div>
@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    <div class="justify-content-center menuPanel hidden" id="loginSection">
+    <div id="loginSection" class="justify-content-center menuPanel hidden">
         <div class="d-flex justify-content-between">
             <h2>Login or Sign Up</h2>
             <button id="loginXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>

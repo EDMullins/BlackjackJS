@@ -216,7 +216,7 @@ export class UIController {
         this.levelDisplay.textContent = `Level: ${player.level}`;
         this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
         this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
-        //stats Menu 
+        //Stats Menu 
         this.statsMoney.textContent = `Money: ${player.money}`;
         this.statsWins.textContent = `Wins: ${player.wins}`;
         this.statsLosses.textContent = `Losses: ${player.losses}`;
@@ -298,7 +298,6 @@ export class UIController {
             this.betBtn.disabled = true;
             return;
         }
-
         if (!/^\d+$/.test(value)) {
             this.errorMsg.textContent = "Invalid number";
             this.betBtn.disabled = true;
@@ -312,7 +311,6 @@ export class UIController {
             this.betBtn.disabled = true;
             return;
         }
-
         if (bet > money) {
             this.errorMsg.textContent = `Can't exceed ${money}`;
             this.betBtn.disabled = true;

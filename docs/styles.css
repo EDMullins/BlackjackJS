@@ -264,6 +264,9 @@ h4 {
 
 #themeSection {
     min-width: 450px;
+    #themeOptions button {
+        margin-bottom: 5px;
+    }
 }
 
 footer {
