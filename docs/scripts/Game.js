@@ -91,9 +91,9 @@ export class Game {
         if (this.dealerHand.isBust() || playerVal > dealerVal)
             this.end("You win!", 1);
         else if (playerVal < dealerVal)
-            this.end("Dealer wins.", 0);
+            this.end("Dealer wins.", 1);
         else
-            this.end("It's a tie!", 2);
+            this.end("It's a tie!", 1);
     }
 
     end(message, action) {

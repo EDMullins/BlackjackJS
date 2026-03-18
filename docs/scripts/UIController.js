@@ -61,7 +61,6 @@ export class UIController {
         this.statsMoneyOnNewRound = document.getElementById('statsMoneyOnNewRound');
         this.statsXP = document.getElementById('statsXP');
         this.statsWinStreakHigh = document.getElementById('statsWinStreakHigh');
-        this.statsGameWinsHigh = document.getElementById('statsGameWinsHigh');
 
         this.themeMenuBtn = document.getElementById('themeMenuBtn');
         this.themeSection = document.getElementById('themeSection');
@@ -224,7 +223,6 @@ export class UIController {
         this.statsMoneyOnNewRound.textContent = `Money On Loss: ${player.moneyOnNewRound}`;
         this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
         this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
-        this.statsGameWinsHigh.textContent = `Most wins in a game: ${player.gameWinsHigh}`;
 
         this.validateBet(this.betInput.value, player.money);
 
