@@ -85,7 +85,7 @@
             <button id="statsXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
         </div>
         <h4>Player Stats:</h4>
-        <div class="stats-content">
+        <div id="stats-content">
             <p id="statsMoney"></p>
             <p id="statsWins"></p>
             <p id="statsLosses"></p>
@@ -94,9 +94,12 @@
             <p id="statsXP"></p>
             <p id="statsWinStreakHigh"></p>
             <p id="statsGameWinsHigh"></p>
-            <hr>
-            <button id="storeMenuBtn" class="btn btn-primary">Store</button>
-            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary">View Repo</a>
+        </div>
+        <hr>
+        <div class="d-flex flex-column">
+            <button id="storeMenuBtn" class="btn btn-primary ">Store</button>
+            <button id="inventoryMenuBtn" class="btn btn-primary mt-2">Inventory</button>
+            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View Repo</a>
         </div>
     </div>
 
@@ -122,14 +125,15 @@
         <form id="authForm">
             <div class="mb-3">
                 <p>Email</p>
-                <input type="email" class="form-control" id="email" placeholder="Email" required>
+                <input type="email" id="email" class="form-control" placeholder="Email" required>
             </div>
             <div class="mb-3">
                 <p>Password</p>
-                <input type="password" class="form-control" id="password" placeholder="Password" required>
+                <input type="password" id="password" class="form-control" placeholder="Password" required>
             </div>
             <button type="button" class="btn btn-primary" id="loginBtn">Login</button>
             <button type="button" class="btn btn-secondary mt-2" id="registerBtn">Register</button>
+            <button type="button" class="btn btn-secondary mt-2" id="resetBtn">Reset Password</button>
             <div id="authMessage" class="mt-2"></div>
         </form>
     </div>

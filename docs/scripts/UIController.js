@@ -122,7 +122,7 @@ export class UIController {
 
     }
 
-    bindAuthEvents(authController) {
+    bindAuthEvents(auth) {
         this.loginMenuBtn.onclick = () => {
             this.loginSection.classList.toggle('hidden');
         };
@@ -132,7 +132,7 @@ export class UIController {
         };
 
         this.loginBtn.onclick = () => {
-            authController.login(
+            auth.login(
                 this.emailInput.value,
                 this.passwordInput.value,
                 this.authMessage
@@ -140,9 +140,16 @@ export class UIController {
         };
 
         this.registerBtn.onclick = () => {
-            authController.register(
+            auth.register(
                 this.emailInput.value,
                 this.passwordInput.value,
+                this.authMessage
+            );
+        };
+
+        document.getElementById("resetBtn").onclick = () => {
+            auth.resetPassword(
+                this.emailInput.value, 
                 this.authMessage
             );
         };

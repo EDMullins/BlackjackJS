@@ -1,4 +1,4 @@
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import { auth } from "./firebase-config.js";
@@ -39,7 +39,7 @@ export class AuthController {
                 this.ui.loginMenuBtn.onclick = () => {
                     this.ui.loginSection.classList.toggle('hidden');
                 };
-            }   
+            }
         });
     }
 
@@ -65,6 +65,17 @@ export class AuthController {
         }
     }
 
+    async resetPassword(email, msgElement) {
+        try {
+            await sendPasswordResetEmail(auth, email);
+            msgElement.textContent = "Reset email sent! Check your inbox.";
+            msgElement.style.color = "green";
+        } catch (error) {
+            msgElement.textContent = error.message;
+            msgElement.style.color = "red";
+        }
+    }
+    
     async savePlayerData(player, uid) {
         if (!uid) return;
 
