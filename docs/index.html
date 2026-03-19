@@ -97,26 +97,10 @@
         </div>
         <hr>
         <div class="d-flex flex-column">
-            <button id="storeMenuBtn" class="btn btn-primary ">Store</button>
-            <button id="inventoryMenuBtn" class="btn btn-primary mt-2">Inventory</button>
+            <button class="storeBtn btn btn-primary ">Store</button>
+            <button class="inventoryBtn btn btn-primary mt-2">Inventory</button>
             <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View
                 Repo</a>
-        </div>
-    </div>
-
-    <div id="storeSection" class="menuPanel hidden">
-        <button id="storeXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
-        <h1>Store</h1>
-        <hr>
-        <div id="scrolling">
-            <h2>Themes</h2>
-            <div id="themeOptions">
-                <!-- Themes from UIController get displayed here -->
-            </div>
-            <hr>
-            <h2>Dealers</h2>
-            <hr>
-            <h2>Decks</h2>
         </div>
     </div>
 
@@ -141,12 +125,59 @@
         </form>
     </div>
 
+    <div id="storeSection" class="menuPanel hidden">
+        <div>
+            <h1>Store</h1>
+            <div>
+                <button class="inventoryBtn btn btn-primary">Inventory</button>
+                <button id="storeXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
+            </div>
+        </div>
+
+        <hr>
+        <div class="scrolling">
+            <h2>Themes</h2>
+            <div id="themeOptions">
+                <!-- Themes from UIController get displayed here -->
+            </div>
+            <hr>
+            <h2>Dealers</h2>
+            <hr>
+            <h2>Decks</h2>
+        </div>
+    </div>
+
+    <div id="inventorySection" class="menuPanel hidden">
+        <div>
+            <h1>Inventory</h1>
+            <div>
+                <button class="storeBtn btn btn-primary">Store</button>
+                <button id="inventoryXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
+            </div>
+        </div>
+
+        <hr>
+        <div class="scrolling">
+            <h2>Themes</h2>
+            <div id="themeOptions">
+                <!-- Themes from UIController get displayed here -->
+            </div>
+            <hr>
+            <h2>Dealers</h2>
+            <hr>
+            <h2>Decks</h2>
+        </div>
+    </div>
+
     <h2 id="winStreak" class="softText"><!-- Current Win Streak --></h2>
 
     <div id="gameOver" class="justify-content-center align-items-center hidden">
         <h1 class="softText">Game Over</h1>
         <p class="softText">XP reset to 0</p>
         <button class="btn btn-primary" id="newGame">New Game</button>
+        <div class="d-flex">
+            <button class="inventoryBtn btn btn-primary"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
     <script src="scripts/main.js" type="module"></script>
 </body>

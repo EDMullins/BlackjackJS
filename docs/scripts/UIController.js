@@ -62,10 +62,14 @@ export class UIController {
         this.statsXP = document.getElementById('statsXP');
         this.statsWinStreakHigh = document.getElementById('statsWinStreakHigh');
 
-        this.storeMenuBtn = document.getElementById('storeMenuBtn');
+        this.storeBtns = document.querySelectorAll('.storeBtn');
         this.storeSection = document.getElementById('storeSection');
         this.storeXBtn = document.getElementById('storeXBtn');
         this.themeOptions = document.getElementById('themeOptions');
+
+        this.inventoryBtns = document.querySelectorAll('.inventoryBtn');
+        this.inventorySection = document.getElementById('inventorySection');
+        this.inventoryXBtn = document.getElementById('inventoryXBtn');
 
         this.winStreak = document.getElementById('winStreak');
         this.xpBar = document.getElementById('xpBar');
@@ -111,15 +115,27 @@ export class UIController {
             this.statsSection.classList.add('hidden');
         };
 
-        this.storeMenuBtn.onclick = () => {
-            this.storeSection.classList.toggle('hidden');
-        }
+        this.storeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.storeSection.classList.toggle('hidden');
+                this.inventorySection.classList.add('hidden');
+            });
+        });
 
         this.storeXBtn.onclick = () => {
             this.storeSection.classList.add('hidden');
         };
 
+        this.inventoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.inventorySection.classList.toggle('hidden');
+                this.storeSection.classList.add('hidden');
+            });
+        });
 
+        this.inventoryXBtn.onclick = () => {
+            this.inventorySection.classList.add('hidden');
+        };
     }
 
     bindAuthEvents(auth) {
@@ -149,7 +165,7 @@ export class UIController {
 
         document.getElementById("resetBtn").onclick = () => {
             auth.resetPassword(
-                this.emailInput.value, 
+                this.emailInput.value,
                 this.authMessage
             );
         };

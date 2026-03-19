@@ -270,26 +270,24 @@ h4 {
     min-width: 450px;
     max-height: 500px;
     overflow: hidden;
-    #storeXBtn {
-        float: right;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
+
     #themeOptions {
         display: grid;
         grid-template-columns: auto auto auto;
     }
+
     #themeOptions button {
         height: 50px;
         margin-block: 3px;
         margin-inline: 3px;
     }
-    #scrolling {
-        max-height: 350px;
-        overflow-y: scroll;
-        scrollbar-color: var(--primary-color) var(--background-color-secondary);
-    }
+
+}
+
+.scrolling {
+    max-height: 350px;
+    overflow-y: scroll;
+    scrollbar-color: var(--primary-color) var(--background-color-secondary);
 }
 
 footer {
@@ -369,6 +367,7 @@ footer {
 
     #storeSection {
         min-width: 300px;
+
         #themeOptions {
             grid-template-columns: auto;
         }
