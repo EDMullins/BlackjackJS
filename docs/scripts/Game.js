@@ -30,9 +30,11 @@ export class Game {
         this.gameActive = true;
         //initial deal
         this.drawCard(this.dealerHand, true);
+        await this.delay(1000);
         this.drawCard(this.playerHand);
         await this.delay(1000);
         this.drawCard(this.dealerHand);
+        await this.delay(1000);
         this.drawCard(this.playerHand);
 
         this.ui.updatePlayerData(this.player);
@@ -91,9 +93,9 @@ export class Game {
         if (this.dealerHand.isBust() || playerVal > dealerVal)
             this.end("You win!", 1);
         else if (playerVal < dealerVal)
-            this.end("Dealer wins.", 1);
+            this.end("Dealer wins.", 0);
         else
-            this.end("It's a tie!", 1);
+            this.end("It's a tie!", 2);
     }
 
     end(message, action) {

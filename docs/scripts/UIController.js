@@ -179,10 +179,10 @@ export class UIController {
         const wrapper = document.createElement('div');
         wrapper.className = 'cardSlideWrapper';
 
-        // Cat arm image
-        const cat = document.createElement('img');
-        cat.src = './imgs/cat.png';
-        cat.className = 'catArm';
+        // Dealer arm image
+        const dealer = document.createElement('img');
+        dealer.src = './imgs/hand.png';
+        dealer.className = 'dealerArm';
 
         // Card image
         const img = document.createElement('img');
@@ -190,7 +190,7 @@ export class UIController {
         img.src = card.getImage();
         img.alt = hidden ? "Hidden Card" : card.rank;
 
-        wrapper.appendChild(cat);
+        wrapper.appendChild(dealer);
         wrapper.appendChild(img);
         container.appendChild(wrapper);
 
@@ -199,11 +199,11 @@ export class UIController {
             wrapper.classList.add('slide-in');
 
             setTimeout(() => {
-                cat.classList.add('slide-out');
+                dealer.classList.add('slide-out');
             }, 800);
 
             setTimeout(() => {
-                cat.remove();
+                dealer.remove();
             }, 2600);
 
         }, 200);

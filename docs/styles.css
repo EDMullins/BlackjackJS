@@ -125,19 +125,19 @@ h4 {
     margin-left: 0;
 }
 
-.catArm {
+.dealerArm {
     position: absolute;
-    left: -500px;
-    /* cat sits left of the card */
+    left: -800px;
+    /* arm sits left of the card */
     top: 35%;
     transform: translateY(-50%);
-    width: 600px;
+    width: 900px;
     pointer-events: none;
     opacity: 1;
     transition: transform 1s ease-out;
 }
 
-.catArm.slide-out {
+.dealerArm.slide-out {
     transform: translate(-75vw, -50%);
 }
 
@@ -281,7 +281,12 @@ h4 {
         margin-block: 3px;
         margin-inline: 3px;
     }
+}
 
+#inventorySection {
+    min-width: 450px;
+    max-height: 500px;
+    overflow: hidden;
 }
 
 .scrolling {
@@ -371,5 +376,9 @@ footer {
         #themeOptions {
             grid-template-columns: auto;
         }
+    }
+
+    #inventorySection {
+        min-width: 300px;
     }
 }
