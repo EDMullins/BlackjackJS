@@ -49,7 +49,7 @@ export class Game {
         this.ui.updatePlayerData(this.player);
 
         // Show split button if the opening two cards allow it
-        if (this.playerHand.canSplit() && this.player.money >= this.playerBet) {
+        if (this.playerHand.canSplit() && this.player.money >= this.playerBet * 2) {
             this.ui.showSplitButton();
         }
     }
