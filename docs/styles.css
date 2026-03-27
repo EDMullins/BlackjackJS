@@ -103,13 +103,11 @@ h4 {
 
 .cardImage:first-child {
     margin-left: 0;
-    /* Keeps first item in place */
 }
 
 .cardSlideWrapper {
     position: relative;
     display: inline-block;
-    /* start off-screen left */
     transform: translateX(-1000px);
     opacity: 0;
     transition: transform 0.8s ease-out;
@@ -128,7 +126,6 @@ h4 {
 .dealerArm {
     position: absolute;
     left: -800px;
-    /* arm sits left of the card */
     top: 35%;
     transform: translateY(-50%);
     width: 900px;
@@ -152,6 +149,11 @@ h4 {
 #hitStandBtns button {
     width: 250px;
     height: 60px;
+}
+
+/* ── Split button is narrower so the row doesn't overflow ── */
+#split {
+    width: 120px !important;
 }
 
 .menuPanel {
@@ -349,6 +351,40 @@ footer {
     background-color: var(--background-color);
 }
 
+#splitHandsContainer {
+    width: 100%;
+    padding: 0 1vw;
+}
+
+.splitHandCol {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    padding: 8px;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    min-width: 0; /* allow flex shrink */
+}
+
+/* Active split hand — glowing border so the player knows which hand they're on */
+.splitHandCol.active-split-hand {
+    box-shadow: 0 0 0 3px var(--primary-color), 0 0 12px 2px var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Inactive split hand — dimmed */
+.splitHandCol.inactive-split-hand {
+    opacity: 0.55;
+}
+
+.splitHandCol .cardSection {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0;
+    min-height: 120px;
+}
+
 @media (max-width: 600px) {
     .cardImage {
         width: 100px;
@@ -380,5 +416,14 @@ footer {
 
     #inventorySection {
         min-width: 300px;
+    }
+
+    #split {
+        width: 90px !important;
+    }
+
+    #hitStandBtns button {
+        width: 90px;
+        height: 50px;
     }
 }

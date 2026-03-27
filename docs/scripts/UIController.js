@@ -27,6 +27,7 @@ export class UIController {
         this.dealerCardSection = document.getElementById('dealerCardSection');
         this.hitButton = document.getElementById('hit');
         this.standButton = document.getElementById('stand');
+        this.splitButton = document.getElementById('split');
         this.moneyDisplay = document.getElementById('money');
         this.moneyPopup = document.getElementById('moneyPopup');
         this.playerValueDisplay = document.getElementById('playerHandValue');
@@ -77,13 +78,13 @@ export class UIController {
         this.mult = document.getElementById('mult');
 
         this.gameOver = document.getElementById('gameOver');
-        this.newGameBtn = document.getElementById('newGame')
+        this.newGameBtn = document.getElementById('newGame');
     }
 
-    // Bind Events
     bindGameEvents(game) {
         this.hitButton.onclick = () => game.hit();
         this.standButton.onclick = async () => game.stand();
+        this.splitButton.onclick = () => game.split();
 
         this.betInput.addEventListener('input', (e) => {
             this.validateBet(e.target.value, game.player.money);
@@ -171,9 +172,22 @@ export class UIController {
         };
     }
 
-    // UI Methods
     renderCard(card, hand, hidden) {
-        const container = hand.isPlayer ? this.playerCardSection : this.dealerCardSection;
+        let container;
+
+        if (hand.isPlayer) {
+            if (hand.isSplitHand) {
+                // Find the split column that belongs to this hand object
+                const idx = this.game?.splitHands?.indexOf(hand) ?? -1;
+                container = idx >= 0
+                    ? document.querySelector(`.splitHandCol[data-hand-index="${idx}"] .cardSection`)
+                    : this.playerCardSection;
+            } else {
+                container = this.playerCardSection;
+            }
+        } else {
+            container = this.dealerCardSection;
+        }
 
         // Create wrapper for slide animation
         const wrapper = document.createElement('div');
@@ -205,15 +219,22 @@ export class UIController {
             setTimeout(() => {
                 dealer.remove();
             }, 2600);
-
         }, 200);
     }
 
-    updateHandValue(hand, value) {
-        if (hand.isPlayer) {
-            this.playerValueDisplay.textContent = `Player's Hand: ${value}`;
-        } else {
+    updateHandValue(hand, value, game) {
+        if (!hand.isPlayer) {
             this.dealerValueDisplay.textContent = `Dealer's Hand: ${value}`;
+            return;
+        }
+
+        if (game && game.isSplit && game.splitHands.length === 2) {
+            const v0 = game.splitHands[0].getValue();
+            const v1 = game.splitHands[1].getValue();
+
+            this.playerValueDisplay.innerHTML = `Player's Hand: ${v0}, ${v1}`;
+        } else {
+            this.playerValueDisplay.textContent = `Player's Hand: ${value}`;
         }
     }
 
@@ -238,7 +259,7 @@ export class UIController {
         this.levelDisplay.textContent = `Level: ${player.level}`;
         this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
         this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
-        //Stats Menu 
+        // Stats Menu
         this.statsMoney.textContent = `Money: ${player.money}`;
         this.statsWins.textContent = `Wins: ${player.wins}`;
         this.statsLosses.textContent = `Losses: ${player.losses}`;
@@ -248,7 +269,6 @@ export class UIController {
         this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
 
         this.validateBet(this.betInput.value, player.money);
-
         this.renderThemes();
     }
 
@@ -257,28 +277,94 @@ export class UIController {
         this.dealerCardSection.innerHTML = '';
         this.playerValueDisplay.textContent = "Player's Hand:";
         this.dealerValueDisplay.textContent = "Dealer's Hand:";
+
+        // Remove any split columns that were injected
+        const splitContainer = document.getElementById('splitHandsContainer');
+        if (splitContainer) splitContainer.remove();
+
+        // Restore the original playerCardSection visibility
+        this.playerCardSection.classList.remove('hidden');
+    }
+
+    renderSplitLayout(hand1, hand2) {
+        // Hide the original single-hand container
+        this.playerCardSection.classList.add('hidden');
+
+        // Remove any previous split container
+        const existing = document.getElementById('splitHandsContainer');
+        if (existing) existing.remove();
+
+        const playerSection = document.querySelector('.playerSection');
+
+        const container = document.createElement('div');
+        container.id = 'splitHandsContainer';
+        container.className = 'd-flex justify-content-center gap-3 mt-2';
+
+        [hand1, hand2].forEach((hand, i) => {
+            const col = document.createElement('div');
+            col.className = 'splitHandCol';
+            col.dataset.handIndex = i;
+
+            const cardSection = document.createElement('div');
+            cardSection.className = 'cardSection d-flex flex-wrap justify-content-center';
+
+            col.appendChild(cardSection);
+            container.appendChild(col);
+
+            // Re-render the one card already in this hand
+            hand.cards.forEach(card => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cardSlideWrapper slide-in';
+
+                const img = document.createElement('img');
+                img.className = 'cardImage';
+                img.src = card.getImage();
+                img.alt = card.rank;
+
+                wrapper.appendChild(img);
+                cardSection.appendChild(wrapper);
+            });
+        });
+
+        playerSection.appendChild(container);
+    }
+
+    highlightSplitHand(activeIndex) {
+        document.querySelectorAll('.splitHandCol').forEach((col, i) => {
+            col.classList.toggle('active-split-hand', i === activeIndex);
+            col.classList.toggle('inactive-split-hand', i !== activeIndex);
+        });
+    }
+
+    showSplitButton() {
+        this.splitButton.classList.remove('hidden');
+    }
+
+    hideSplitButton() {
+        this.splitButton.classList.add('hidden');
     }
 
     showRoundOver(result, roundData) {
         this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
         this.roundData.innerHTML = `
-            <div class="d-flex justify-content-between">
-                <p>Bet</p><p>${roundData.bet}</p>
-            </div>
-            <div class="d-flex justify-content-between">
-                <p>Multiplier Bonus</p><p>${roundData.bonus}</p>
-            </div>
-            <div class="d-flex justify-content-between">
-                <p>Money Gained</p><p>${roundData.moneyChange}</p>
-            </div>
-            <div class="d-flex justify-content-between">
-                <p>Multiplier Gained</p><p>${roundData.multiplierChange.toFixed(2)}</p>
-            </div>
-            <div class="d-flex justify-content-between">
-                <p>XP Gained</p><p>${roundData.xp.toFixed(0)}</p>
-            </div>
-        `;
+                <div class="d-flex justify-content-between">
+                    <p>Bet</p><p>${roundData.bet}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Multiplier Bonus</p><p>${roundData.bonus}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Net Money Change</p><p>${roundData.moneyChange}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Multiplier Gained</p><p>${roundData.multiplierChange.toFixed(2)}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>XP Gained</p><p>${roundData.xp.toFixed(0)}</p>
+                </div>
+            `;
+
         this.disableGameButtons();
     }
 
@@ -381,8 +467,7 @@ export class UIController {
                         this.auth.savePlayerData(this.game.player, this.auth.currentUid);
                     }
                 });
-            }
-            else {
+            } else {
                 btn.classList.add("btn-dark");
                 btn.textContent = `${theme.name} (Lvl ${theme.level})`;
                 btn.disabled = true;

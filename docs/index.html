@@ -30,7 +30,7 @@
                 <h4 id="moneyPopup" class="softText"></h4>
             </div>
         </div>
-        <div id="dealerCardSection" class="cardSection d-flex flex-wrap">
+        <div id="dealerCardSection" class="cardSection flex-wrap">
             <!-- Cards will be appended here -->
         </div>
     </div>
@@ -39,12 +39,15 @@
         <div class="d-flex justify-content-between mx-4">
             <h2 id="playerHandValue" class="softText">Player's Hand:</h2>
         </div>
-        <div id="playerCardSection" class="cardSection d-flex flex-wrap">
+        <div id="playerCardSection" class="cardSection flex-wrap">
             <!-- Cards will be appended here -->
         </div>
+        <!-- Split hand columns injected here by JS when splitting -->
     </div>
 
     <div class="d-flex justify-content-end m-2" id="hitStandBtns">
+        <!-- Split button appears above Hit when a split is available -->
+        <button id="split" class="btn btn-primary me-3 hidden">Split</button>
         <button disabled id="hit" class="btn btn-primary me-3">Hit</button>
         <button id="stand" disabled class="btn btn-primary">Stand</button>
     </div>
@@ -99,8 +102,7 @@
         <div class="d-flex flex-column">
             <button class="storeBtn btn btn-primary ">Store</button>
             <button class="inventoryBtn btn btn-primary mt-2">Inventory</button>
-            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View
-                Repo</a>
+            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View Repo</a>
         </div>
     </div>
 
@@ -175,8 +177,9 @@
         <h1 class="softText">Game Over</h1>
         <p class="softText">XP reset to 0</p>
         <button class="btn btn-primary" id="newGame">New Game</button>
-        <div class="d-flex">
-            <button class="inventoryBtn btn btn-primary"><i class="bi bi-x-lg"></i></button>
+        <div class="d-flex mt-3">
+            <button class="storeBtn btn btn-primary me-3">Store</button>
+            <button class="inventoryBtn btn btn-primary">Inventory</button>
         </div>
     </div>
     <script src="scripts/main.js" type="module"></script>

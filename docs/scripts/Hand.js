@@ -2,6 +2,7 @@ export class Hand {
   constructor(isPlayer = false) {
     this.cards = [];
     this.isPlayer = isPlayer;
+    this.isSplit = false;
   }
 
   addCard(card, hidden = false) {
@@ -33,6 +34,12 @@ export class Hand {
 
   isBust() {
     return this.getValue() > 21;
+  }
+
+  canSplit() {
+    if (this.isSplit) return false;
+    if (this.cards.length !== 2) return false;
+    return this.cards[0].getValue() === this.cards[1].getValue();
   }
 
   clear() {
