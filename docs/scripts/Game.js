@@ -1,4 +1,3 @@
-// Game.js
 import { Deck } from "./Deck.js";
 import { Hand } from "./Hand.js";
 import { Player } from "./Player.js";
@@ -38,19 +37,23 @@ export class Game {
         this.gameActive = true;
 
         // Initial deal
-        this.drawCard(this.dealerHand, true);
+        await this.drawCard(this.dealerHand, true);
         await this.delay(1000);
-        this.drawCard(this.playerHand);
+        await this.drawCard(this.playerHand);
         await this.delay(1000);
-        this.drawCard(this.dealerHand);
+        await this.drawCard(this.dealerHand);
         await this.delay(1000);
         await this.drawCard(this.playerHand);
 
         this.ui.updatePlayerData(this.player);
-
-        // Show split button if the opening two cards allow it
-        if (this.playerHand.canSplit() && this.player.money >= this.playerBet * 2) {
+        this.ui.enableGameButtons();
+        // manage split / double button if the opening two cards & money allow it
+        let gotDouble = this.player.money >= this.playerBet * 2;
+        if (this.playerHand.canSplit() && gotDouble) {
             this.ui.showSplitButton();
+        }
+        if (gotDouble) {
+            this.ui.enableDoubleButton();
         }
     }
 
@@ -68,6 +71,7 @@ export class Game {
 
         this.ui.clearCards();
         this.ui.disableGameButtons();
+        this.ui.disableDoubleButton();
         this.ui.hideSplitButton();
         this.ui.hideRoundOver();
         this.ui.hideGameOver();
@@ -85,6 +89,7 @@ export class Game {
     async hit() {
         if (!this.gameActive) return;
         this.ui.hideSplitButton(); // can't split after hitting
+        this.ui.disableDoubleButton();
 
         await this.drawCard(this.currentHand);
 
@@ -103,13 +108,43 @@ export class Game {
     async stand() {
         if (!this.gameActive) return;
         this.ui.hideSplitButton();
+        this.ui.disableDoubleButton();
 
         if (this.isSplit) {
             await this.advanceSplitHand(null);
-            this.updateHandValue(this.pla)
+            this.updateHandValue(this.currentHand)
         } else {
             await this.runDealerTurn();
             this.resolveNormalEnd();
+        }
+    }
+
+    async double() {
+        if (!this.gameActive) return;
+        if (this.player.money < this.playerBet * 2) return;
+
+        //adds one card to hand and doubles bet
+        this.playerBet *= 2;
+        await this.drawCard(this.currentHand);
+
+        if (this.currentHand.isBust()) {
+            if (this.isSplit) {
+                // Bust on this split hand, move to next or end
+                await this.advanceSplitHand(`Hand ${this.activeHandIndex + 1} busts!`);
+            } else {
+                this.ui.revealDealerHiddenCard(this.dealerHand);
+                this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
+                this.end("You bust! Dealer wins.", 0);
+            }
+        }
+        else {
+            if (this.isSplit) {
+                await this.advanceSplitHand(null);
+                this.updateHandValue(this.currentHand)
+            } else {
+                await this.runDealerTurn();
+                this.resolveNormalEnd();
+            }
         }
     }
 
@@ -119,6 +154,8 @@ export class Game {
         if (this.player.money < this.playerBet * 2) return;
 
         this.ui.hideSplitButton();
+        //TODO: disabled for now but fix logic for bets to allow for doubles on split
+        this.ui.disableDoubleButton();
         this.isSplit = true;
 
         this.ui.updatePlayerData(this.player);
@@ -174,7 +211,6 @@ export class Game {
         }
     }
 
-    // ─── Round resolution ─────────────────────────────────────────────────────
     resolveNormalEnd() {
         const playerVal = this.playerHand.getValue();
         const dealerVal = this.dealerHand.getValue();

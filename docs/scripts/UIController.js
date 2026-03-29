@@ -28,6 +28,7 @@ export class UIController {
         this.hitButton = document.getElementById('hit');
         this.standButton = document.getElementById('stand');
         this.splitButton = document.getElementById('split');
+        this.doubleButton = document.getElementById('double');
         this.moneyDisplay = document.getElementById('money');
         this.moneyPopup = document.getElementById('moneyPopup');
         this.playerValueDisplay = document.getElementById('playerHandValue');
@@ -85,6 +86,7 @@ export class UIController {
         this.hitButton.onclick = () => game.hit();
         this.standButton.onclick = async () => game.stand();
         this.splitButton.onclick = () => game.split();
+        this.doubleButton.onclick = () => game.double();
 
         this.betInput.addEventListener('input', (e) => {
             this.validateBet(e.target.value, game.player.money);
@@ -96,7 +98,6 @@ export class UIController {
 
             game.playerBet = bet;
             this.hideBetSection();
-            this.enableGameButtons();
             game.start();
         };
 
@@ -336,14 +337,6 @@ export class UIController {
         });
     }
 
-    showSplitButton() {
-        this.splitButton.classList.remove('hidden');
-    }
-
-    hideSplitButton() {
-        this.splitButton.classList.add('hidden');
-    }
-
     showRoundOver(result, roundData) {
         this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
@@ -397,6 +390,22 @@ export class UIController {
     disableGameButtons() {
         this.hitButton.disabled = true;
         this.standButton.disabled = true;
+    }
+
+    showSplitButton() {
+        this.splitButton.classList.remove('hidden');
+    }
+
+    hideSplitButton() {
+        this.splitButton.classList.add('hidden');
+    }
+
+    enableDoubleButton() {
+        this.doubleButton.disabled = false;
+    }
+
+    disableDoubleButton() {
+        this.doubleButton.disabled = true;
     }
 
     validateBet(value, money) {

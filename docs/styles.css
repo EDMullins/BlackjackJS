@@ -151,9 +151,8 @@ h4 {
     height: 60px;
 }
 
-/* ── Split button is narrower so the row doesn't overflow ── */
-#split {
-    width: 120px !important;
+#split, #double {
+    width: 80px !important;
 }
 
 .menuPanel {
