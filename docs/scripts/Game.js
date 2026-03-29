@@ -7,22 +7,18 @@ export class Game {
         this.ui = ui;
         this.auth = auth;
 
-        this.player = new Player((popupAmount) => {
+        this.player = new Player((amount) => {
             this.ui.updatePlayerData(this.player);
-            this.ui.showMoneyPopup(popupAmount);
+            this.ui.showMoneyPopup(amount);
         });
 
         this.deck = new Deck();
-        this.playerHand = new Hand(true);
         this.dealerHand = new Hand();
+        this.playerHands = []; // Always an array of Hand objects
+        this.activeHandIndex = 0;
 
         this.playerBet = null;
         this.gameActive = false;
-
-        // Split state
-        this.splitHands = [];      // Array of Hand objects when split is active
-        this.activeHandIndex = 0;  // Which split hand the player is currently playing
-        this.isSplit = false;
 
         this.ui.bindGameEvents(this);
         this.ui.bindAuthEvents(auth);
@@ -30,45 +26,179 @@ export class Game {
     }
 
     get currentHand() {
-        return this.isSplit ? this.splitHands[this.activeHandIndex] : this.playerHand;
+        return this.playerHands[this.activeHandIndex];
     }
 
+    // Initializes a new round with a single player hand.
     async start() {
         this.gameActive = true;
+        this.playerHands = [new Hand(true)];
+        this.activeHandIndex = 0;
 
-        // Initial deal
         await this.drawCard(this.dealerHand, true);
-        await this.delay(1000);
-        await this.drawCard(this.playerHand);
-        await this.delay(1000);
+        await this.delay(500);
+        await this.drawCard(this.playerHands[0]);
+        await this.delay(500);
         await this.drawCard(this.dealerHand);
-        await this.delay(1000);
-        await this.drawCard(this.playerHand);
+        await this.delay(500);
+        await this.drawCard(this.playerHands[0]);
 
         this.ui.updatePlayerData(this.player);
         this.ui.enableGameButtons();
-        // manage split / double button if the opening two cards & money allow it
-        let gotDouble = this.player.money >= this.playerBet * 2;
-        if (this.playerHand.canSplit() && gotDouble) {
-            this.ui.showSplitButton();
+
+        const canDouble = this.player.money >= this.playerBet * 2;
+        if (this.playerHands[0].canSplit() && canDouble) this.ui.showSplitButton();
+        if (canDouble) this.ui.enableDoubleButton();
+    }
+
+    async drawCard(hand, hidden = false) {
+        const card = this.deck.drawCard();
+        hand.addCard(card, hidden);
+        this.ui.renderCard(card, hand, hidden);
+        await this.delay(400);
+        this.ui.updateHandValue(hand, hand.getValue(), this);
+    }
+
+    // --- Player Actions ---
+
+    async hit() {
+        if (!this.gameActive) return;
+        this.ui.hideSplitButton();
+        this.ui.disableDoubleButton();
+
+        await this.drawCard(this.currentHand);
+
+        if (this.currentHand.isBust()) {
+            await this.advanceOrResolve();
         }
-        if (gotDouble) {
-            this.ui.enableDoubleButton();
+    }
+
+    async stand() {
+        if (!this.gameActive) return;
+        this.ui.hideSplitButton();
+        this.ui.disableDoubleButton();
+        await this.advanceOrResolve();
+    }
+
+    async double() {
+        if (!this.gameActive || this.player.money < this.playerBet * 2) return;
+
+        // Double the bet for this specific hand resolution logic
+        // Note: For simplicity, this assumes the double applies to the whole round bet.
+        this.playerBet *= 2;
+        await this.drawCard(this.currentHand);
+        await this.advanceOrResolve();
+    }
+
+    async split() {
+        if (!this.gameActive || !this.playerHands[0].canSplit()) return;
+
+        this.ui.hideSplitButton();
+        this.ui.disableDoubleButton();
+
+        const card1 = this.playerHands[0].cards[0];
+        const card2 = this.playerHands[0].cards[1];
+
+        const h1 = new Hand(true);
+        const h2 = new Hand(true);
+        h1.isSplitHand = h2.isSplitHand = true;
+
+        h1.addCard(card1);
+        h2.addCard(card2);
+
+        this.playerHands = [h1, h2];
+        this.ui.renderSplitLayout(h1, h2);
+
+        await this.drawCard(this.playerHands[0]);
+        await this.drawCard(this.playerHands[1]);
+        this.ui.highlightSplitHand(0);
+        this.ui.updateHandValue(hand1, hand1.getValue(), this);
+        this.ui.updateHandValue(hand2, hand2.getValue(), this);
+    }
+
+    // --- Flow Control ---
+
+    async advanceOrResolve() {
+        // If there's another hand in the array, move to it
+        if (this.playerHands[this.activeHandIndex + 1]) {
+            this.activeHandIndex++;
+            this.ui.highlightSplitHand(this.activeHandIndex);
+        } else {
+            // No more hands, dealer's turn
+            await this.finalizeRound();
         }
+    }
+
+    async finalizeRound() {
+        const anyActive = this.playerHands.some(hand => !hand.isBust());
+
+        if (anyActive) {
+            this.ui.revealDealerHiddenCard(this.dealerHand);
+            this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
+            while (this.dealerHand.getValue() < 17) {
+                await this.drawCard(this.dealerHand);
+                await this.delay(500);
+            }
+        } else {
+            this.ui.revealDealerHiddenCard(this.dealerHand);
+            this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
+        }
+
+        this.resolveAll();
+    }
+
+    resolveAll() {
+        const dVal = this.dealerHand.getValue();
+        const dBust = this.dealerHand.isBust();
+
+        const results = this.playerHands.map((hand, i) => {
+            const pVal = hand.getValue();
+            let action, status;
+
+            if (hand.isBust()) { action = 0; status = "Bust"; }
+            else if (dBust || pVal > dVal) { action = 1; status = "Win!"; }
+            else if (pVal < dVal) { action = 0; status = "Dealer wins"; }
+            else { action = 2; status = "Tie"; }
+
+            const label = this.playerHands.length > 1 ? `Hand ${i + 1}: ` : "";
+            return { action, message: `${label}${status}` };
+        });
+
+        this.end(results);
+    }
+
+    end(results) {
+        this.gameActive = false;
+
+        const combinedData = results
+            .map(r => this.player.action(r.action, this.playerBet))
+            .reduce((acc, curr) => ({
+                bet: acc.bet + curr.bet,
+                bonus: acc.bonus + curr.bonus,
+                moneyChange: acc.moneyChange + curr.moneyChange,
+                multiplierChange: acc.multiplierChange + curr.multiplierChange,
+                xp: acc.xp + curr.xp,
+                lost: acc.lost || curr.lost
+            }));
+
+        const finalMsg = results.map(r => r.message).join(" | ");
+
+        if (combinedData.lost) {
+            this.ui.showGameOver();
+        } else {
+            this.ui.showRoundOver(finalMsg, { ...combinedData, isSplit: this.playerHands.length > 1 });
+        }
+
+        this.auth.savePlayerData(this.player, this.auth.currentUid);
     }
 
     reset() {
         this.gameActive = false;
         this.playerBet = null;
-
-        this.playerHand.clear();
+        this.playerHands = [];
+        this.activeHandIndex = 0;
         this.dealerHand.clear();
         this.deck.reset();
-
-        this.splitHands = [];
-        this.activeHandIndex = 0;
-        this.isSplit = false;
-
         this.ui.clearCards();
         this.ui.disableGameButtons();
         this.ui.disableDoubleButton();
@@ -78,222 +208,7 @@ export class Game {
         this.ui.showBetSection();
     }
 
-    async drawCard(hand, hidden = false) {
-        const card = this.deck.drawCard();
-        hand.addCard(card, hidden);
-        this.ui.renderCard(card, hand, hidden);
-        await this.delay(500);
-        this.ui.updateHandValue(hand, hand.getValue(), this);
-    }
-
-    async hit() {
-        if (!this.gameActive) return;
-        this.ui.hideSplitButton(); // can't split after hitting
-        this.ui.disableDoubleButton();
-
-        await this.drawCard(this.currentHand);
-
-        if (this.currentHand.isBust()) {
-            if (this.isSplit) {
-                // Bust on this split hand, move to next or end
-                await this.advanceSplitHand(`Hand ${this.activeHandIndex + 1} busts!`);
-            } else {
-                this.ui.revealDealerHiddenCard(this.dealerHand);
-                this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
-                this.end("You bust! Dealer wins.", 0);
-            }
-        }
-    }
-
-    async stand() {
-        if (!this.gameActive) return;
-        this.ui.hideSplitButton();
-        this.ui.disableDoubleButton();
-
-        if (this.isSplit) {
-            await this.advanceSplitHand(null);
-            this.updateHandValue(this.currentHand)
-        } else {
-            await this.runDealerTurn();
-            this.resolveNormalEnd();
-        }
-    }
-
-    async double() {
-        if (!this.gameActive) return;
-        if (this.player.money < this.playerBet * 2) return;
-
-        //adds one card to hand and doubles bet
-        this.playerBet *= 2;
-        await this.drawCard(this.currentHand);
-
-        if (this.currentHand.isBust()) {
-            if (this.isSplit) {
-                // Bust on this split hand, move to next or end
-                await this.advanceSplitHand(`Hand ${this.activeHandIndex + 1} busts!`);
-            } else {
-                this.ui.revealDealerHiddenCard(this.dealerHand);
-                this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
-                this.end("You bust! Dealer wins.", 0);
-            }
-        }
-        else {
-            if (this.isSplit) {
-                await this.advanceSplitHand(null);
-                this.updateHandValue(this.currentHand)
-            } else {
-                await this.runDealerTurn();
-                this.resolveNormalEnd();
-            }
-        }
-    }
-
-    async split() {
-        if (!this.gameActive) return;
-        if (!this.playerHand.canSplit()) return;
-        if (this.player.money < this.playerBet * 2) return;
-
-        this.ui.hideSplitButton();
-        //TODO: disabled for now but fix logic for bets to allow for doubles on split
-        this.ui.disableDoubleButton();
-        this.isSplit = true;
-
-        this.ui.updatePlayerData(this.player);
-
-        // Build two new hands from the original two cards
-        const hand1 = new Hand(true);
-        const hand2 = new Hand(true);
-        hand1.isSplitHand = true;
-        hand2.isSplitHand = true;
-
-        hand1.addCard(this.playerHand.cards[0]);
-        hand2.addCard(this.playerHand.cards[1]);
-
-        this.splitHands = [hand1, hand2];
-        this.activeHandIndex = 0;
-
-        // clear the single player section and build two columns
-        this.ui.renderSplitLayout(hand1, hand2);
-
-        // Deal one card to each split hand
-        await this.drawCard(hand1);
-        await this.delay(1000);
-        await this.drawCard(hand2);
-
-        // Highlight the active hand
-        this.ui.highlightSplitHand(this.activeHandIndex);
-        this.ui.updateHandValue(hand1, hand1.getValue(), this);
-        this.ui.updateHandValue(hand2, hand2.getValue(), this);
-    }
-
-    /**
-     * Called when the current split hand is done (bust or stand).
-     */
-    async advanceSplitHand(bustMessage) {
-        if (this.activeHandIndex === 0) {
-            // Move to the second hand
-            this.activeHandIndex = 1;
-            this.ui.highlightSplitHand(this.activeHandIndex);
-        } else {
-            // Both hands done — run dealer and resolve
-            await this.runDealerTurn();
-            this.resolveSplitEnd();
-        }
-    }
-
-    async runDealerTurn() {
-        this.ui.revealDealerHiddenCard(this.dealerHand);
-        this.ui.updateHandValue(this.dealerHand, this.dealerHand.getValue(), this);
-        await this.delay(200);
-        while (this.dealerHand.getValue() < 17) {
-            await this.drawCard(this.dealerHand);
-            await this.delay(500);
-        }
-    }
-
-    resolveNormalEnd() {
-        const playerVal = this.playerHand.getValue();
-        const dealerVal = this.dealerHand.getValue();
-
-        if (this.dealerHand.isBust() || playerVal > dealerVal)
-            this.end("You win!", 1);
-        else if (playerVal < dealerVal)
-            this.end("Dealer wins.", 0);
-        else
-            this.end("It's a tie!", 2);
-    }
-
-    resolveSplitEnd() {
-        const dealerVal = this.dealerHand.getValue();
-        const dealerBust = this.dealerHand.isBust();
-
-        let totalMoneyChange = 0;
-        let totalBonus = 0;
-        let totalXp = 0;
-        let totalMultChange = 0;
-        const messages = [];
-        let anyLoss = false;
-
-        for (let i = 0; i < this.splitHands.length; i++) {
-            const hand = this.splitHands[i];
-            const handVal = hand.getValue();
-            const label = `Hand ${i + 1}`;
-
-            let action;
-            if (hand.isBust()) {
-                action = 0; // loss
-                messages.push(`${label}: Bust.`);
-            } else if (dealerBust || handVal > dealerVal) {
-                action = 1; // win
-                messages.push(`${label}: Win!`);
-            } else if (handVal < dealerVal) {
-                action = 0; // loss
-                messages.push(`${label}: Dealer wins`);
-            } else {
-                action = 2; // tie
-                messages.push(`${label}: Tie`);
-            }
-
-            // Process each hand with the per-hand bet
-            const roundData = this.player.action(action, this.playerBet);
-            totalMoneyChange += roundData.moneyChange;
-            totalBonus += roundData.bonus;
-            totalXp += roundData.xp;
-            totalMultChange += roundData.multiplierChange;
-
-            if (roundData.lost) anyLoss = true;
-        }
-
-        this.gameActive = false;
-        this.auth.savePlayerData(this.player, this.auth.currentUid);
-
-        if (anyLoss) {
-            this.ui.showGameOver();
-        } else {
-            const summaryData = {
-                bet: this.playerBet * 2,
-                bonus: totalBonus,
-                moneyChange: totalMoneyChange,
-                multiplierChange: totalMultChange,
-                xp: totalXp,
-                isSplit: true
-            };
-            this.ui.showRoundOver(messages.join(' | '), summaryData);
-        }
-    }
-
-    end(message, action) {
-        const roundData = this.player.action(action, this.playerBet);
-        this.gameActive = false;
-        if (roundData.lost === true) {
-            this.ui.showGameOver();
-        } else {
-            this.ui.showRoundOver(message, roundData);
-        }
-        this.auth.savePlayerData(this.player, this.auth.currentUid);
-    }
-
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    delay(ms) { 
+        return new Promise(res => setTimeout(res, ms)); 
     }
 }

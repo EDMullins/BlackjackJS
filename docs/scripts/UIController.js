@@ -6,13 +6,7 @@ export class UIController {
             { name: "Default", value: "default", level: 0 },
             { name: "Light", value: "light", level: 1 },
             { name: "Dark", value: "dark", level: 2 },
-            { name: "Light", value: "light", level: 5 },
-            { name: "Light", value: "light", level: 10 },
-            { name: "Light", value: "light", level: 15 },
-            { name: "Light", value: "light", level: 25 },
-            { name: "Light", value: "light", level: 45 },
-            { name: "Light", value: "light", level: 75 },
-            { name: "Light", value: "light", level: 100 },
+            // Add your other themes here...
         ];
     }
 
@@ -22,28 +16,41 @@ export class UIController {
     }
 
     domElements() {
-        // UI Elements
+        // Core Sections
         this.playerCardSection = document.getElementById('playerCardSection');
         this.dealerCardSection = document.getElementById('dealerCardSection');
+        this.playerValueDisplay = document.getElementById('playerHandValue');
+        this.dealerValueDisplay = document.getElementById('dealerHandValue');
+
+        // Controls
         this.hitButton = document.getElementById('hit');
         this.standButton = document.getElementById('stand');
         this.splitButton = document.getElementById('split');
         this.doubleButton = document.getElementById('double');
+
+        // Stats & Money
         this.moneyDisplay = document.getElementById('money');
         this.moneyPopup = document.getElementById('moneyPopup');
-        this.playerValueDisplay = document.getElementById('playerHandValue');
-        this.dealerValueDisplay = document.getElementById('dealerHandValue');
+        this.winStreak = document.getElementById('winStreak');
+        this.xpBar = document.getElementById('xpBar');
+        this.levelDisplay = document.getElementById('levelDisplay');
+        this.mult = document.getElementById('mult');
 
+        // Overlays
         this.roundOverSection = document.getElementById('roundOverSection');
         this.roundResultDisplay = document.getElementById('roundResult');
         this.roundData = document.getElementById('roundData');
-
         this.betSection = document.getElementById('betSection');
+        this.gameOver = document.getElementById('gameOver');
+
+        // Inputs & Buttons
         this.betInput = document.getElementById('bet');
         this.errorMsg = document.getElementById('errorMsg');
         this.betBtn = document.getElementById('betBtn');
         this.newHandBtn = document.getElementById('newHand');
+        this.newGameBtn = document.getElementById('newGame');
 
+        // Menus (Login, Stats, Store, Inventory)
         this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
@@ -72,19 +79,13 @@ export class UIController {
         this.inventoryBtns = document.querySelectorAll('.inventoryBtn');
         this.inventorySection = document.getElementById('inventorySection');
         this.inventoryXBtn = document.getElementById('inventoryXBtn');
-
-        this.winStreak = document.getElementById('winStreak');
-        this.xpBar = document.getElementById('xpBar');
-        this.levelDisplay = document.getElementById('levelDisplay');
-        this.mult = document.getElementById('mult');
-
-        this.gameOver = document.getElementById('gameOver');
-        this.newGameBtn = document.getElementById('newGame');
     }
+
+    // --- Event Binding ---
 
     bindGameEvents(game) {
         this.hitButton.onclick = () => game.hit();
-        this.standButton.onclick = async () => game.stand();
+        this.standButton.onclick = () => game.stand();
         this.splitButton.onclick = () => game.split();
         this.doubleButton.onclick = () => game.double();
 
@@ -93,113 +94,61 @@ export class UIController {
         });
 
         this.betBtn.onclick = () => {
-            const betValue = this.betInput.value;
-            const bet = Number(betValue);
-
-            game.playerBet = bet;
+            game.playerBet = Number(this.betInput.value);
             this.hideBetSection();
             game.start();
         };
 
-        this.newHandBtn.onclick = () => {
-            game.reset();
-        };
+        this.newHandBtn.onclick = () => game.reset();
+        this.newGameBtn.onclick = () => game.reset();
 
-        this.newGameBtn.onclick = () => {
-            game.reset();
-        };
+        // Menu Toggles
+        this.statsMenuBtn.onclick = () => this.statsSection.classList.toggle('hidden');
+        this.statsXBtn.onclick = () => this.statsSection.classList.add('hidden');
 
-        this.statsMenuBtn.onclick = () => {
-            this.statsSection.classList.toggle('hidden');
-        };
-
-        this.statsXBtn.onclick = () => {
-            this.statsSection.classList.add('hidden');
-        };
-
-        this.storeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.storeSection.classList.toggle('hidden');
-                this.inventorySection.classList.add('hidden');
-            });
-        });
-
-        this.storeXBtn.onclick = () => {
-            this.storeSection.classList.add('hidden');
-        };
-
-        this.inventoryBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.inventorySection.classList.toggle('hidden');
-                this.storeSection.classList.add('hidden');
-            });
-        });
-
-        this.inventoryXBtn.onclick = () => {
+        this.storeBtns.forEach(btn => btn.onclick = () => {
+            this.storeSection.classList.toggle('hidden');
             this.inventorySection.classList.add('hidden');
-        };
+        });
+        this.storeXBtn.onclick = () => this.storeSection.classList.add('hidden');
+
+        this.inventoryBtns.forEach(btn => btn.onclick = () => {
+            this.inventorySection.classList.toggle('hidden');
+            this.storeSection.classList.add('hidden');
+        });
+        this.inventoryXBtn.onclick = () => this.inventorySection.classList.add('hidden');
     }
 
     bindAuthEvents(auth) {
-        this.loginMenuBtn.onclick = () => {
-            this.loginSection.classList.toggle('hidden');
-        };
-
-        this.loginXBtn.onclick = () => {
-            this.loginSection.classList.add('hidden');
-        };
-
-        this.loginBtn.onclick = () => {
-            auth.login(
-                this.emailInput.value,
-                this.passwordInput.value,
-                this.authMessage
-            );
-        };
-
-        this.registerBtn.onclick = () => {
-            auth.register(
-                this.emailInput.value,
-                this.passwordInput.value,
-                this.authMessage
-            );
-        };
-
-        document.getElementById("resetBtn").onclick = () => {
-            auth.resetPassword(
-                this.emailInput.value,
-                this.authMessage
-            );
-        };
+        this.loginMenuBtn.onclick = () => this.loginSection.classList.toggle('hidden');
+        this.loginXBtn.onclick = () => this.loginSection.classList.add('hidden');
+        this.loginBtn.onclick = () => auth.login(this.emailInput.value, this.passwordInput.value, this.authMessage);
+        this.registerBtn.onclick = () => auth.register(this.emailInput.value, this.passwordInput.value, this.authMessage);
+        document.getElementById("resetBtn").onclick = () => auth.resetPassword(this.emailInput.value, this.authMessage);
     }
 
+    // --- Card Rendering ---
+
     renderCard(card, hand, hidden) {
-        let container;
+        let container = this.dealerCardSection;
 
         if (hand.isPlayer) {
-            if (hand.isSplitHand) {
-                // Find the split column that belongs to this hand object
-                const idx = this.game?.splitHands?.indexOf(hand) ?? -1;
-                container = idx >= 0
-                    ? document.querySelector(`.splitHandCol[data-hand-index="${idx}"] .cardSection`)
-                    : this.playerCardSection;
+            const handIndex = this.game.playerHands.indexOf(hand);
+            if (this.game.playerHands.length > 1 && handIndex !== -1) {
+                // Find the specific column for this split hand
+                container = document.querySelector(`.splitHandCol[data-hand-index="${handIndex}"] .cardSection`);
             } else {
                 container = this.playerCardSection;
             }
-        } else {
-            container = this.dealerCardSection;
         }
 
-        // Create wrapper for slide animation
         const wrapper = document.createElement('div');
         wrapper.className = 'cardSlideWrapper';
 
-        // Dealer arm image
         const dealer = document.createElement('img');
         dealer.src = './imgs/hand.png';
         dealer.className = 'dealerArm';
 
-        // Card image
         const img = document.createElement('img');
         img.className = 'cardImage';
         img.src = card.getImage();
@@ -209,17 +158,10 @@ export class UIController {
         wrapper.appendChild(img);
         container.appendChild(wrapper);
 
-        // Trigger slide animation
         setTimeout(() => {
             wrapper.classList.add('slide-in');
-
-            setTimeout(() => {
-                dealer.classList.add('slide-out');
-            }, 800);
-
-            setTimeout(() => {
-                dealer.remove();
-            }, 2600);
+            setTimeout(() => dealer.classList.add('slide-out'), 800);
+            setTimeout(() => dealer.remove(), 2600);
         }, 200);
     }
 
@@ -229,74 +171,32 @@ export class UIController {
             return;
         }
 
-        if (game && game.isSplit && game.splitHands.length === 2) {
-            const v0 = game.splitHands[0].getValue();
-            const v1 = game.splitHands[1].getValue();
-
-            this.playerValueDisplay.innerHTML = `Player's Hand: ${v0}, ${v1}`;
-        } else {
-            this.playerValueDisplay.textContent = `Player's Hand: ${value}`;
-        }
+        // Map all hand values into a string like "18" or "14 | 20"
+        const values = game.playerHands.map(h => h.getValue()).join(" | ");
+        this.playerValueDisplay.textContent = `Player's Hand: ${values}`;
     }
 
     revealDealerHiddenCard(dealerHand) {
-        for (let card of dealerHand.cards) {
+        dealerHand.cards.forEach(card => {
             if (card.hidden) {
                 card.reveal();
-                const img = this.dealerCardSection.querySelector(
-                    `img[alt="Hidden Card"]`
-                );
+                const img = this.dealerCardSection.querySelector(`img[alt="Hidden Card"]`);
                 if (img) {
                     img.src = card.getImage();
                     img.alt = card.rank;
                 }
             }
-        }
+        });
     }
 
-    updatePlayerData(player) {
-        this.moneyDisplay.textContent = `Money: ${player.money}`;
-        this.xpBar.style.width = `${player.xp / player.xpToNextLvl * 100}%`;
-        this.levelDisplay.textContent = `Level: ${player.level}`;
-        this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
-        this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
-        // Stats Menu
-        this.statsMoney.textContent = `Money: ${player.money}`;
-        this.statsWins.textContent = `Wins: ${player.wins}`;
-        this.statsLosses.textContent = `Losses: ${player.losses}`;
-        this.statsLevel.textContent = `Level: ${player.level}`;
-        this.statsMoneyOnNewRound.textContent = `Money On Loss: ${player.moneyOnNewRound}`;
-        this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
-        this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
-
-        this.validateBet(this.betInput.value, player.money);
-        this.renderThemes();
-    }
-
-    clearCards() {
-        this.playerCardSection.innerHTML = '';
-        this.dealerCardSection.innerHTML = '';
-        this.playerValueDisplay.textContent = "Player's Hand:";
-        this.dealerValueDisplay.textContent = "Dealer's Hand:";
-
-        // Remove any split columns that were injected
-        const splitContainer = document.getElementById('splitHandsContainer');
-        if (splitContainer) splitContainer.remove();
-
-        // Restore the original playerCardSection visibility
-        this.playerCardSection.classList.remove('hidden');
-    }
+    // --- Split UI Logic ---
 
     renderSplitLayout(hand1, hand2) {
-        // Hide the original single-hand container
         this.playerCardSection.classList.add('hidden');
-
-        // Remove any previous split container
         const existing = document.getElementById('splitHandsContainer');
         if (existing) existing.remove();
 
         const playerSection = document.querySelector('.playerSection');
-
         const container = document.createElement('div');
         container.id = 'splitHandsContainer';
         container.className = 'd-flex justify-content-center gap-3 mt-2';
@@ -312,16 +212,14 @@ export class UIController {
             col.appendChild(cardSection);
             container.appendChild(col);
 
-            // Re-render the one card already in this hand
+            // Re-render the initial card for each hand
             hand.cards.forEach(card => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'cardSlideWrapper slide-in';
-
                 const img = document.createElement('img');
                 img.className = 'cardImage';
                 img.src = card.getImage();
                 img.alt = card.rank;
-
                 wrapper.appendChild(img);
                 cardSection.appendChild(wrapper);
             });
@@ -337,40 +235,19 @@ export class UIController {
         });
     }
 
+    // --- Game States & Overlays ---
+
     showRoundOver(result, roundData) {
         this.roundOverSection.classList.remove('hidden');
         this.roundResultDisplay.textContent = result;
         this.roundData.innerHTML = `
-                <div class="d-flex justify-content-between">
-                    <p>Bet</p><p>${roundData.bet}</p>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <p>Multiplier Bonus</p><p>${roundData.bonus}</p>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <p>Net Money Change</p><p>${roundData.moneyChange}</p>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <p>Multiplier Gained</p><p>${roundData.multiplierChange.toFixed(2)}</p>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <p>XP Gained</p><p>${roundData.xp.toFixed(0)}</p>
-                </div>
-            `;
-
+            <div class="d-flex justify-content-between"><p>Bet</p><p>${roundData.bet}</p></div>
+            <div class="d-flex justify-content-between"><p>Multiplier Bonus</p><p>${roundData.bonus}</p></div>
+            <div class="d-flex justify-content-between"><p>Net Money Change</p><p>${roundData.moneyChange}</p></div>
+            <div class="d-flex justify-content-between"><p>Multiplier Gained</p><p>${roundData.multiplierChange.toFixed(2)}</p></div>
+            <div class="d-flex justify-content-between"><p>XP Gained</p><p>${roundData.xp.toFixed(0)}</p></div>
+        `;
         this.disableGameButtons();
-    }
-
-    hideRoundOver() {
-        this.roundOverSection.classList.add('hidden');
-    }
-
-    showBetSection() {
-        this.betSection.classList.remove('hidden');
-    }
-
-    hideBetSection() {
-        this.betSection.classList.add('hidden');
     }
 
     showGameOver() {
@@ -378,78 +255,82 @@ export class UIController {
         this.disableGameButtons();
     }
 
-    hideGameOver() {
-        this.gameOver.classList.add('hidden');
+    hideRoundOver() { this.roundOverSection.classList.add('hidden'); }
+    hideGameOver() { this.gameOver.classList.add('hidden'); }
+    showBetSection() { this.betSection.classList.remove('hidden'); }
+    hideBetSection() { this.betSection.classList.add('hidden'); }
+
+    // --- Player Stats Update ---
+
+    updatePlayerData(player) {
+        this.moneyDisplay.textContent = `Money: ${player.money}`;
+        this.xpBar.style.width = `${(player.xp / player.xpToNextLvl) * 100}%`;
+        this.levelDisplay.textContent = `Level: ${player.level}`;
+        this.mult.textContent = `${player.multiplier.toFixed(2)}x`;
+        this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
+
+        // Stats Menu
+        this.statsMoney.textContent = `Money: ${player.money}`;
+        this.statsWins.textContent = `Wins: ${player.wins}`;
+        this.statsLosses.textContent = `Losses: ${player.losses}`;
+        this.statsLevel.textContent = `Level: ${player.level}`;
+        this.statsMoneyOnNewRound.textContent = `Money On Loss: ${player.moneyOnNewRound}`;
+        this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
+        this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
+
+        this.validateBet(this.betInput.value, player.money);
+        this.renderThemes();
+    }
+
+    // --- Utilities ---
+
+    clearCards() {
+        this.playerCardSection.innerHTML = '';
+        this.dealerCardSection.innerHTML = '';
+        this.playerValueDisplay.textContent = "Player's Hand:";
+        this.dealerValueDisplay.textContent = "Dealer's Hand:";
+
+        const splitContainer = document.getElementById('splitHandsContainer');
+        if (splitContainer) splitContainer.remove();
+        this.playerCardSection.classList.remove('hidden');
+    }
+
+    validateBet(value, money) {
+        const bet = Number(value);
+        let error = "";
+
+        if (value === "") error = "";
+        else if (!/^\d+$/.test(value)) error = "Invalid number";
+        else if (bet <= 0) error = "Must be > 0";
+        else if (bet > money) error = `Can't exceed ${money}`;
+
+        this.errorMsg.textContent = error;
+        this.betBtn.disabled = (error !== "" || value === "");
+    }
+
+    showMoneyPopup(amount) {
+        if (!amount) return;
+        this.moneyPopup.textContent = amount > 0 ? `+${amount}` : `${amount}`;
+        this.moneyPopup.classList.remove("show");
+        void this.moneyPopup.offsetWidth; // Trigger reflow
+        this.moneyPopup.classList.add("show");
+        setTimeout(() => this.moneyPopup.classList.remove("show"), 800);
     }
 
     enableGameButtons() {
         this.hitButton.disabled = false;
         this.standButton.disabled = false;
     }
-
     disableGameButtons() {
         this.hitButton.disabled = true;
         this.standButton.disabled = true;
+        this.hideSplitButton();
+        this.disableDoubleButton();
     }
-
-    showSplitButton() {
-        this.splitButton.classList.remove('hidden');
-    }
-
-    hideSplitButton() {
-        this.splitButton.classList.add('hidden');
-    }
-
-    enableDoubleButton() {
-        this.doubleButton.disabled = false;
-    }
-
-    disableDoubleButton() {
-        this.doubleButton.disabled = true;
-    }
-
-    validateBet(value, money) {
-        if (value === "") {
-            this.errorMsg.textContent = "";
-            this.betBtn.disabled = true;
-            return;
-        }
-        if (!/^\d+$/.test(value)) {
-            this.errorMsg.textContent = "Invalid number";
-            this.betBtn.disabled = true;
-            return;
-        }
-
-        const bet = Number(value);
-
-        if (bet <= 0) {
-            this.errorMsg.textContent = "Must be greater than 0";
-            this.betBtn.disabled = true;
-            return;
-        }
-        if (bet > money) {
-            this.errorMsg.textContent = `Can't exceed ${money}`;
-            this.betBtn.disabled = true;
-            return;
-        }
-
-        this.errorMsg.textContent = "";
-        this.betBtn.disabled = false;
-    }
-
-    showMoneyPopup(amount) {
-        if (!amount) return;
-
-        this.moneyPopup.textContent = amount > 0 ? `+${amount}` : `${amount}`;
-
-        this.moneyPopup.classList.remove("show");
-        void this.moneyPopup.offsetWidth;
-        this.moneyPopup.classList.add("show");
-
-        setTimeout(() => {
-            this.moneyPopup.classList.remove("show");
-        }, 800);
-    }
+    showSplitButton() { this.splitButton.classList.remove('hidden'); }
+    hideSplitButton() { this.splitButton.classList.add('hidden'); }
+    enableDoubleButton() { this.doubleButton.disabled = false; }
+    disableDoubleButton() { this.doubleButton.disabled = true; }
 
     setTheme(themeName) {
         document.documentElement.setAttribute("data-theme", themeName);
@@ -458,30 +339,25 @@ export class UIController {
 
     renderThemes() {
         this.themeOptions.innerHTML = "";
-
         const level = this.game.player.level;
 
         this.themes.forEach(theme => {
             const btn = document.createElement("button");
             btn.classList.add("btn", "btn-secondary", "mb-1");
-
             const unlocked = level >= theme.level;
+
             if (unlocked) {
                 btn.textContent = theme.name;
-
-                btn.addEventListener("click", () => {
+                btn.onclick = () => {
                     this.setTheme(theme.value);
                     this.game.player.theme = theme.value;
-                    if (this.auth.currentUid) {
-                        this.auth.savePlayerData(this.game.player, this.auth.currentUid);
-                    }
-                });
+                    if (this.auth.currentUid) this.auth.savePlayerData(this.game.player, this.auth.currentUid);
+                };
             } else {
                 btn.classList.add("btn-dark");
                 btn.textContent = `${theme.name} (Lvl ${theme.level})`;
                 btn.disabled = true;
             }
-
             this.themeOptions.appendChild(btn);
         });
     }
