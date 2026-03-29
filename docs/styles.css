@@ -406,6 +406,10 @@ footer {
         bottom: 125px;
     }
 
+    #roundOverSection {
+        min-width: 300px;
+    }
+
     #storeSection {
         min-width: 300px;
 
