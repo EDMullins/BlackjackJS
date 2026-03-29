@@ -94,8 +94,9 @@ export class UIController {
         });
 
         this.betBtn.onclick = () => {
-            game.playerBet = Number(this.betInput.value);
-            game.originalBet = game.playerBet;
+            game.handBets[0] = Number(this.betInput.value);
+            game.originalBet = game.handBets[0];
+            game.totalBet = game.handBets[0];
             this.hideBetSection();
             game.start();
         };

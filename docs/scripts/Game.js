@@ -17,8 +17,9 @@ export class Game {
         this.playerHands = []; // Always an array of Hand objects
         this.activeHandIndex = 0;
 
-        this.playerBet = null;
         this.originalBet = null;
+        this.totalBet = null;
+        this.handBets = [];
         this.gameActive = false;
 
         this.ui.bindGameEvents(this);
@@ -47,7 +48,7 @@ export class Game {
         this.ui.updatePlayerData(this.player);
         this.ui.enableGameButtons();
 
-        const canDouble = this.player.money >= this.playerBet + this.originalBet;
+        const canDouble = this.player.money >= this.handBets[this.activeHandIndex] + this.originalBet;
         if (this.playerHands[0].canSplit() && canDouble) this.ui.showSplitButton();
         if (canDouble) this.ui.enableDoubleButton();
     }
@@ -82,18 +83,22 @@ export class Game {
     }
 
     async double() {
-        if (!this.gameActive || this.player.money < this.playerBet * 2) return;
+        if (!this.gameActive) return;
+        if (this.player.money < this.totalBet + this.originalBet) return;
 
-        // Double the bet for this specific hand resolution logic
-        // Note: For simplicity, this assumes the double applies to the whole round bet.
-        this.playerBet += this.originalBet;
-        console.log("Double clicked, originalBet: ", this.originalBet, "new bet: ", this.playerBet);
+        this.ui.disableDoubleButton();
+        this.ui.hideSplitButton();
+        this.handBets[this.activeHandIndex] += this.originalBet;
+        this.totalBet += this.originalBet;
+        console.log("Hand: ", this.activeHandIndex, ", originalBet: ", this.originalBet, "new bet: ", this.handBets[this.activeHandIndex], "totalBet: ", this.totalBet);
         await this.drawCard(this.currentHand);
         await this.advanceOrResolve();
     }
 
     async split() {
-        if (!this.gameActive || !this.playerHands[0].canSplit()) return;
+        if (!this.gameActive || !this.playerHands[0].canSplit() || this.player.money < this.totalBet + this.originalBet) return;
+
+        this.totalBet += this.originalBet;
 
         this.ui.hideSplitButton();
 
@@ -108,6 +113,8 @@ export class Game {
         h2.addCard(card2);
 
         this.playerHands = [h1, h2];
+        // x2 bet
+        this.handBets = [this.originalBet, this.originalBet];
         this.ui.renderSplitLayout(h1, h2);
 
         await this.drawCard(this.playerHands[0]);
@@ -122,6 +129,9 @@ export class Game {
         if (this.playerHands[this.activeHandIndex + 1]) {
             this.activeHandIndex++;
             this.ui.highlightSplitHand(this.activeHandIndex);
+            if (this.player.money >= this.totalBet + this.originalBet && this.currentHand.cards.length === 2) {
+                this.ui.enableDoubleButton();
+            }
         } else {
             // No more hands, dealer's turn
             await this.finalizeRound();
@@ -169,8 +179,9 @@ export class Game {
     end(results) {
         this.gameActive = false;
 
+        // Combine results from all hands to calculate total bet, bonus, money change, etc.
         const combinedData = results
-            .map(r => this.player.action(r.action, this.playerBet))
+            .map((r, i) => this.player.action(r.action, this.handBets[i]))
             .reduce((acc, curr) => ({
                 bet: acc.bet + curr.bet,
                 bonus: acc.bonus + curr.bonus,
@@ -193,7 +204,9 @@ export class Game {
 
     reset() {
         this.gameActive = false;
-        this.playerBet = null;
+        this.totalBet = null;
+        this.originalBet = null;
+        this.handBets = [];
         this.playerHands = [];
         this.activeHandIndex = 0;
         this.dealerHand.clear();
