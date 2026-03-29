@@ -18,6 +18,7 @@ export class Game {
         this.activeHandIndex = 0;
 
         this.playerBet = null;
+        this.originalBet = null;
         this.gameActive = false;
 
         this.ui.bindGameEvents(this);
@@ -46,7 +47,7 @@ export class Game {
         this.ui.updatePlayerData(this.player);
         this.ui.enableGameButtons();
 
-        const canDouble = this.player.money >= this.playerBet * 2;
+        const canDouble = this.player.money >= this.playerBet + this.originalBet;
         if (this.playerHands[0].canSplit() && canDouble) this.ui.showSplitButton();
         if (canDouble) this.ui.enableDoubleButton();
     }
@@ -85,7 +86,8 @@ export class Game {
 
         // Double the bet for this specific hand resolution logic
         // Note: For simplicity, this assumes the double applies to the whole round bet.
-        this.playerBet *= 2;
+        this.playerBet += this.originalBet;
+        console.log("Double clicked, originalBet: ", this.originalBet, "new bet: ", this.playerBet);
         await this.drawCard(this.currentHand);
         await this.advanceOrResolve();
     }
@@ -94,7 +96,6 @@ export class Game {
         if (!this.gameActive || !this.playerHands[0].canSplit()) return;
 
         this.ui.hideSplitButton();
-        this.ui.disableDoubleButton();
 
         const card1 = this.playerHands[0].cards[0];
         const card2 = this.playerHands[0].cards[1];
@@ -112,8 +113,6 @@ export class Game {
         await this.drawCard(this.playerHands[0]);
         await this.drawCard(this.playerHands[1]);
         this.ui.highlightSplitHand(0);
-        this.ui.updateHandValue(hand1, hand1.getValue(), this);
-        this.ui.updateHandValue(hand2, hand2.getValue(), this);
     }
 
     // --- Flow Control ---

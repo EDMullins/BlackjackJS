@@ -6,7 +6,7 @@ export class UIController {
             { name: "Default", value: "default", level: 0 },
             { name: "Light", value: "light", level: 1 },
             { name: "Dark", value: "dark", level: 2 },
-            // Add your other themes here...
+            // other themes here...
         ];
     }
 
@@ -95,6 +95,7 @@ export class UIController {
 
         this.betBtn.onclick = () => {
             game.playerBet = Number(this.betInput.value);
+            game.originalBet = game.playerBet;
             this.hideBetSection();
             game.start();
         };
