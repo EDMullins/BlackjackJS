@@ -18,10 +18,10 @@ export class Card {
     return parseInt(this.rank);
   }
 
-  getImage() {
+  getImage(deckCardPath) {
     if (this.hidden) {
-      return `imgs/back.png`;
+      return `${deckCardPath}back.png`;
     }
-    return `imgs/${this.rank}.png`;
+    return `${deckCardPath}${this.rank}.png`;
   }
 }

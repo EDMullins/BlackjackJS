@@ -62,25 +62,21 @@
     </footer>
 
     <!-- Different Menus (not always visible) -->
-    <div class="d-flex justify-content-center">
-        <div id="roundOverSection" class="flex-column align-items-center menuPanel hidden">
-            <h2 id="roundResult">
-                <!-- Result will be added here -->
-            </h2>
-            <div id="roundData">
-                <!-- Round data will be added here -->
-            </div>
-            <button id="newHand" class="btn btn-primary">New Hand</button>
+    <div id="roundOverSection" class="flex-column justify-content-center align-items-center menuPanel hidden">
+        <h2 id="roundResult">
+            <!-- Result will be added here -->
+        </h2>
+        <div id="roundData">
+            <!-- Round data will be added here -->
         </div>
+        <button id="newHand" class="btn btn-primary">New Hand</button>
     </div>
 
-    <div class="d-flex justify-content-center">
-        <div id="betSection" class="menuPanel hidden">
-            <h2 class="mb-4">Enter your Bet</h2>
-            <input type="text" id="bet" name="bet">
-            <div class="mt-1"><span id="errorMsg"></span></div>
-            <button id="betBtn" class="btn btn-primary mt-3" disabled>Place Bet</button>
-        </div>
+    <div id="betSection" class="menuPanel justify-content-center hidden">
+        <h2 class="mb-4">Enter your Bet</h2>
+        <input type="text" id="bet" name="bet">
+        <div class="mt-1"><span id="errorMsg"></span></div>
+        <button id="betBtn" class="btn btn-primary mt-3" disabled>Place Bet</button>
     </div>
 
     <div id="statsSection" class="stats-panel hidden">
@@ -103,7 +99,8 @@
         <div class="d-flex flex-column">
             <button class="storeBtn btn btn-primary ">Store</button>
             <button class="inventoryBtn btn btn-primary mt-2">Inventory</button>
-            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View Repo</a>
+            <a href="https://github.com/EDMullins/BlackjackJS" target="_blank" class="btn btn-primary mt-2">View
+                Repo</a>
         </div>
     </div>
 
@@ -136,17 +133,17 @@
                 <button id="storeXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
             </div>
         </div>
-
+        <div id="purchaseMessage"></div>
         <hr>
         <div class="scrolling">
             <h2>Themes</h2>
-            <div id="themeOptions">
-                <!-- Themes from UIController get displayed here -->
-            </div>
+            <div id="themeOptions"></div>
             <hr>
             <h2>Dealers</h2>
+            <div id="dealerOptions"></div>
             <hr>
             <h2>Decks</h2>
+            <div id="deckOptions"></div>
         </div>
     </div>
 
@@ -158,17 +155,16 @@
                 <button id="inventoryXBtn" class="btn btn-primary"><i class="bi bi-x-lg"></i></button>
             </div>
         </div>
-
         <hr>
         <div class="scrolling">
             <h2>Themes</h2>
-            <div id="themesOwned">
-                <!-- Themes from UIController get displayed here -->
-            </div>
+            <div id="themesOwned"></div>
             <hr>
             <h2>Dealers</h2>
+            <div id="dealersOwned"></div>
             <hr>
             <h2>Decks</h2>
+            <div id="decksOwned"></div>
         </div>
     </div>
 

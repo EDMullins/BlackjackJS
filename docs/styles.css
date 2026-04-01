@@ -272,12 +272,12 @@ h4 {
     max-height: 500px;
     overflow: hidden;
 
-    #themeOptions {
+    .scrolling div {
         display: grid;
         grid-template-columns: auto auto auto;
     }
 
-    #themeOptions button {
+    .scrolling div button {
         height: 50px;
         margin-block: 3px;
         margin-inline: 3px;
@@ -288,6 +288,17 @@ h4 {
     min-width: 450px;
     max-height: 500px;
     overflow: hidden;
+
+    .scrolling div {
+        display: grid;
+        grid-template-columns: auto auto auto;
+    }
+
+    .scrolling div button {
+        height: 50px;
+        margin-block: 3px;
+        margin-inline: 3px;
+    }
 }
 
 .scrolling {
@@ -412,13 +423,17 @@ footer {
     #storeSection {
         min-width: 300px;
 
-        #themeOptions {
+        .scrolling div {
             grid-template-columns: auto;
         }
     }
 
     #inventorySection {
         min-width: 300px;
+
+        .scrolling div {
+            grid-template-columns: auto;
+        }
     }
 
     #split {

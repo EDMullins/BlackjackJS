@@ -1,18 +1,13 @@
 export class UIController {
     constructor() {
         this.domElements();
-        this.currentTheme = "default";
-        this.themes = [
-            { name: "Default", value: "default", level: 0 },
-            { name: "Light", value: "light", level: 1 },
-            { name: "Dark", value: "dark", level: 2 },
-            // other themes here...
-        ];
+        this.currentTheme = null;
     }
 
-    connectGame(game, auth) {
+    connectGame(game, auth, store) {
         this.game = game;
         this.auth = auth;
+        this.store = store;
     }
 
     domElements() {
@@ -75,10 +70,16 @@ export class UIController {
         this.storeSection = document.getElementById('storeSection');
         this.storeXBtn = document.getElementById('storeXBtn');
         this.themeOptions = document.getElementById('themeOptions');
-
+        this.dealerOptions = document.getElementById('dealerOptions');
+        this.deckOptions = document.getElementById('deckOptions');
+        this.purchaseMessage = document.getElementById('purchaseMessage');
+ 
         this.inventoryBtns = document.querySelectorAll('.inventoryBtn');
         this.inventorySection = document.getElementById('inventorySection');
         this.inventoryXBtn = document.getElementById('inventoryXBtn');
+        this.themesOwned = document.getElementById('themesOwned');
+        this.dealersOwned = document.getElementById('dealersOwned');
+        this.decksOwned = document.getElementById('decksOwned');
     }
 
     // --- Event Binding ---
@@ -148,12 +149,13 @@ export class UIController {
         wrapper.className = 'cardSlideWrapper';
 
         const dealer = document.createElement('img');
-        dealer.src = './imgs/hand.png';
+        dealer.src = this.store.getItem("dealers", this.store.getEquipped("dealers")).armImagePath;
         dealer.className = 'dealerArm';
 
         const img = document.createElement('img');
         img.className = 'cardImage';
-        img.src = card.getImage();
+        console.log("rendering card with image path:", this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
+        img.src = card.getImage(this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
         img.alt = hidden ? "Hidden Card" : card.rank;
 
         wrapper.appendChild(dealer);
@@ -184,7 +186,7 @@ export class UIController {
                 card.reveal();
                 const img = this.dealerCardSection.querySelector(`img[alt="Hidden Card"]`);
                 if (img) {
-                    img.src = card.getImage();
+                    img.src = card.getImage(this.store.getEquipped("decks").cardImagePath);
                     img.alt = card.rank;
                 }
             }
@@ -220,7 +222,7 @@ export class UIController {
                 wrapper.className = 'cardSlideWrapper slide-in';
                 const img = document.createElement('img');
                 img.className = 'cardImage';
-                img.src = card.getImage();
+                img.src = card.getImage(this.store.getEquipped("decks").cardImagePath);
                 img.alt = card.rank;
                 wrapper.appendChild(img);
                 cardSection.appendChild(wrapper);
@@ -281,7 +283,6 @@ export class UIController {
         this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
 
         this.validateBet(this.betInput.value, player.money);
-        this.renderThemes();
     }
 
     // --- Utilities ---
@@ -334,33 +335,117 @@ export class UIController {
     enableDoubleButton() { this.doubleButton.disabled = false; }
     disableDoubleButton() { this.doubleButton.disabled = true; }
 
+    // Store UI methods
+    renderStoreItems() {
+        if (!this.store) return;
+        this.themeOptions.innerHTML = "";
+        Object.entries(this.store.themes).forEach(([key, theme]) => {
+            if (!this.store.ownsItem('themes', key)) {
+                const btn = this.createStoreButton(theme, 'themes', key);
+                this.themeOptions.appendChild(btn);
+            }
+        });
+ 
+        // Dealers for purchase
+        this.dealerOptions.innerHTML = "";
+        Object.entries(this.store.dealers).forEach(([key, dealer]) => {
+            if (!this.store.ownsItem('dealers', key)) {
+                const btn = this.createStoreButton(dealer, 'dealers', key);
+                this.dealerOptions.appendChild(btn);
+            }
+        });
+ 
+        // Decks for purchase
+        this.deckOptions.innerHTML = "";
+        Object.entries(this.store.decks).forEach(([key, deck]) => {
+            if (!this.store.ownsItem('decks', key)) {
+                const btn = this.createStoreButton(deck, 'decks', key);
+                this.deckOptions.appendChild(btn);
+            }
+        });
+    }
+ 
+    renderInventoryItems() {
+        if (!this.store) return;
+ 
+        // Owned Themes
+        this.themesOwned.innerHTML = "";
+        const ownedThemes = this.store.getOwnedByType('themes');
+        Object.entries(ownedThemes).forEach(([key, theme]) => {
+            const btn = this.createInventoryButton(theme, 'themes', key);
+            this.themesOwned.appendChild(btn);
+        });
+ 
+        // Owned Dealers
+        this.dealersOwned.innerHTML = "";
+        const ownedDealers = this.store.getOwnedByType('dealers');
+        Object.entries(ownedDealers).forEach(([key, dealer]) => {
+            const btn = this.createInventoryButton(dealer, 'dealers', key);
+            this.dealersOwned.appendChild(btn);
+        });
+ 
+        // Owned Decks
+        this.decksOwned.innerHTML = "";
+        const ownedDecks = this.store.getOwnedByType('decks');
+        Object.entries(ownedDecks).forEach(([key, deck]) => {
+            const btn = this.createInventoryButton(deck, 'decks', key);
+            this.decksOwned.appendChild(btn);
+        });
+    }
+ 
+    createStoreButton(item, type, key) {
+        const btn = document.createElement("button");
+        btn.classList.add("btn", "btn-secondary", "mb-1");
+        btn.textContent = `${item.name} - $${item.cost}`;
+        
+        const canAfford = this.game.player.money >= item.cost;
+        if (canAfford) btn.disabled = false;
+        
+        btn.onclick = () => this.buyItem(type, key);
+        return btn;
+    }
+ 
+    createInventoryButton(item, type, key) {
+        const btn = document.createElement("button");
+        btn.classList.add("btn", "btn-secondary", "mb-1");
+        
+        const isEquipped = this.store.getEquipped(type) === key;
+        btn.textContent = item.name + (isEquipped ? " ✓" : "");
+        
+        if (isEquipped) {
+            btn.classList.add("btn-primary");
+        }
+        
+        btn.onclick = async () => {
+            this.store.equipItem(type, key);
+            await this.store.saveToDb(this.auth.currentUid);
+            
+            if (type === 'themes') {
+                this.setTheme(item.value);
+            }
+            
+            this.renderInventoryItems();
+        };
+        
+        return btn;
+    }
+ 
+    async buyItem(type, key) {
+        const result = this.store.buyItem(type, key);
+        
+        this.purchaseMessage.textContent = result.message;
+        this.purchaseMessage.style.color = result.success ? 'green' : 'red';
+        
+        if (result.success) {
+            await this.store.saveToDb(this.auth.currentUid);
+            this.updatePlayerData(this.game.player);
+            this.renderStoreItems();
+            this.renderInventoryItems();
+        }
+    }
+
     setTheme(themeName) {
         document.documentElement.setAttribute("data-theme", themeName);
         this.currentTheme = themeName;
-    }
-
-    renderThemes() {
-        this.themeOptions.innerHTML = "";
-        const level = this.game.player.level;
-
-        this.themes.forEach(theme => {
-            const btn = document.createElement("button");
-            btn.classList.add("btn", "btn-secondary", "mb-1");
-            const unlocked = level >= theme.level;
-
-            if (unlocked) {
-                btn.textContent = theme.name;
-                btn.onclick = () => {
-                    this.setTheme(theme.value);
-                    this.game.player.theme = theme.value;
-                    if (this.auth.currentUid) this.auth.savePlayerData(this.game.player, this.auth.currentUid);
-                };
-            } else {
-                btn.classList.add("btn-dark");
-                btn.textContent = `${theme.name} (Lvl ${theme.level})`;
-                btn.disabled = true;
-            }
-            this.themeOptions.appendChild(btn);
-        });
     }
 }

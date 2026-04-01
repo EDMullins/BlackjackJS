@@ -24,6 +24,9 @@ export class AuthController {
                 if (docSnap.exists()) {
                     Object.assign(game.player, docSnap.data());
                 }
+                if (this.ui.store) {
+                    await this.ui.store.loadFromDb(user.uid);
+                }
 
                 game.reset();
                 this.ui.updatePlayerData(game.player);
@@ -75,10 +78,10 @@ export class AuthController {
             msgElement.style.color = "red";
         }
     }
-    
+
     async savePlayerData(player, uid) {
         if (!uid) return;
-
+ 
         const docRef = doc(db, "users", uid);
         await setDoc(docRef, {
             xp: player.xp,
@@ -91,8 +94,14 @@ export class AuthController {
             xpToNextLvl: player.xpToNextLvl,
             theme: player.theme,
             winStreakHigh: player.winStreakHigh,
-            gameWinsHigh: player.gameWinsHigh
+            gameWinsHigh: player.gameWinsHigh,
+            abilityStates: player.abilityStates
         }, { merge: true });
+ 
+        // Save store data
+        if (this.ui.store) {
+            await this.ui.store.saveToDb(uid);
+        }
     }
 
     logout(game) {

@@ -90,5 +90,13 @@ export class Player {
         this.theme = "default";
         this.winStreak = 0;
         this.winStreakHigh = 0;
+        // Ability state tracking for theme abilities
+        this.abilityStates = {
+            luckyStreakWins: 0,
+            luckyStreakLosses: 0,
+            redrawnThisHand: 0,
+            nextWinBoosted: false,
+            nextLossPenalized: false
+        };
     }
 }

@@ -36,6 +36,10 @@ export class Hand {
     return this.getValue() > 21;
   }
 
+  isBlackjack() {
+    return this.cards.length === 2 && this.getValue() === 21;
+  }
+
   canSplit() {
     if (this.isSplit) return false;
     if (this.cards.length !== 2) return false;

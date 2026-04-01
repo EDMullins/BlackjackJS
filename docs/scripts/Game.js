@@ -14,13 +14,15 @@ export class Game {
 
         this.deck = new Deck();
         this.dealerHand = new Hand();
-        this.playerHands = []; // Always an array of Hand objects
+        this.playerHands = [];
         this.activeHandIndex = 0;
 
         this.originalBet = null;
         this.totalBet = null;
         this.handBets = [];
         this.gameActive = false;
+
+        this.activeAbilities = {};
 
         this.ui.bindGameEvents(this);
         this.ui.bindAuthEvents(auth);
@@ -31,9 +33,16 @@ export class Game {
         return this.playerHands[this.activeHandIndex];
     }
 
-    // Initializes a new round with a single player hand.
     async start() {
         this.gameActive = true;
+        
+        // Get active abilities from store
+        this.activeAbilities = this.ui.store.getActiveAbilities();
+        const deckAbilities = this.activeAbilities.deck;
+        
+        // Create deck with ability modifiers
+        this.deck = new Deck(deckAbilities);
+        
         this.playerHands = [new Hand(true)];
         this.activeHandIndex = 0;
 
@@ -54,7 +63,13 @@ export class Game {
     }
 
     async drawCard(hand, hidden = false) {
-        const card = this.deck.drawCard();
+        let card = this.deck.drawCard();
+        
+        // NEW: Apply dealer abilities that affect card draws
+        if (!hand.isPlayer && hand === this.dealerHand) {
+            card = this.applyDealerAbilities(card, hand);
+        }
+        
         hand.addCard(card, hidden);
         this.ui.renderCard(card, hand, hidden);
         await this.delay(400);
@@ -90,7 +105,6 @@ export class Game {
         this.ui.hideSplitButton();
         this.handBets[this.activeHandIndex] += this.originalBet;
         this.totalBet += this.originalBet;
-        console.log("Hand: ", this.activeHandIndex, ", originalBet: ", this.originalBet, "new bet: ", this.handBets[this.activeHandIndex], "totalBet: ", this.totalBet);
         await this.drawCard(this.currentHand);
         await this.advanceOrResolve();
     }
@@ -113,7 +127,6 @@ export class Game {
         h2.addCard(card2);
 
         this.playerHands = [h1, h2];
-        // x2 bet
         this.handBets = [this.originalBet, this.originalBet];
         this.ui.renderSplitLayout(h1, h2);
 
@@ -125,7 +138,6 @@ export class Game {
     // --- Flow Control ---
 
     async advanceOrResolve() {
-        // If there's another hand in the array, move to it
         if (this.playerHands[this.activeHandIndex + 1]) {
             this.activeHandIndex++;
             this.ui.highlightSplitHand(this.activeHandIndex);
@@ -133,7 +145,6 @@ export class Game {
                 this.ui.enableDoubleButton();
             }
         } else {
-            // No more hands, dealer's turn
             await this.finalizeRound();
         }
     }
@@ -170,7 +181,7 @@ export class Game {
             else { action = 2; status = "Tie"; }
 
             const label = this.playerHands.length > 1 ? `Hand ${i + 1}: ` : "";
-            return { action, message: `${label}${status}` };
+            return { action, message: `${label}${status}`, handIndex: i };
         });
 
         this.end(results);
@@ -179,9 +190,12 @@ export class Game {
     end(results) {
         this.gameActive = false;
 
-        // Combine results from all hands to calculate total bet, bonus, money change, etc.
+        // NEW: Apply theme ability modifiers to each result
         const combinedData = results
-            .map((r, i) => this.player.action(r.action, this.handBets[i]))
+            .map((r, i) => {
+                const modifiedResult = this.applyThemeAbilityModifiers(r.action, this.handBets[i]);
+                return this.player.action(modifiedResult.action, modifiedResult.betAmount);
+            })
             .reduce((acc, curr) => ({
                 bet: acc.bet + curr.bet,
                 bonus: acc.bonus + curr.bonus,
@@ -218,6 +232,98 @@ export class Game {
         this.ui.hideRoundOver();
         this.ui.hideGameOver();
         this.ui.showBetSection();
+    }
+
+    // --- NEW: Ability Application Methods ---
+
+    /**
+     * Apply dealer hand abilities to cards drawn by dealer
+     */
+    applyDealerAbilities(card, hand) {
+        const dealerAbilities = this.activeAbilities?.dealer;
+        if (!dealerAbilities) return card;
+
+        // Lucky Hand: 20% chance non-face card swaps to face card
+        if (dealerAbilities.onCardDraw?.type === 'nonFaceCardSwap') {
+            if (card.getValue() < 10) {
+                if (Math.random() < dealerAbilities.onCardDraw.chance) {
+                    const faceCards = ['J', 'Q', 'K'];
+                    const newRank = faceCards[Math.floor(Math.random() * faceCards.length)];
+                    card.rank = newRank;
+                }
+            }
+        }
+
+        // Ice King: Constrain first dealer card to 2-6
+        if (dealerAbilities.dealerFirst?.type === 'constrainFirstCard' && hand.cards.length === 0) {
+            const min = dealerAbilities.dealerFirst.min;
+            const max = dealerAbilities.dealerFirst.max;
+            if (card.getValue() < min || card.getValue() > max) {
+                const validRanks = [];
+                for (let i = min; i <= max; i++) {
+                    validRanks.push(String(i));
+                }
+                card.rank = validRanks[Math.floor(Math.random() * validRanks.length)];
+            }
+        }
+
+        return card;
+    }
+
+    /**
+     * Apply theme ability modifiers to round results
+     */
+    applyThemeAbilityModifiers(action, betAmount) {
+        const themeAbilities = this.activeAbilities?.theme;
+        let modifiedAction = action;
+        let modifiedBetAmount = betAmount;
+
+        if (!themeAbilities) {
+            return { action: modifiedAction, betAmount: modifiedBetAmount };
+        }
+
+        // Gambler: Keep 25% of bet on loss
+        if (themeAbilities.onLoss?.type === 'keepBetPercentage' && action === 0) {
+            const keepAmount = Math.floor(betAmount * themeAbilities.onLoss.value);
+            modifiedBetAmount = betAmount - keepAmount;
+        }
+
+        // Iron Wallet: Cap losses at 40% of total money
+        if (themeAbilities.lossLimit?.type === 'maxLossPercentage' && action === 0) {
+            const maxLoss = Math.floor(this.player.money * themeAbilities.lossLimit.value);
+            if (betAmount > maxLoss) {
+                modifiedBetAmount = maxLoss;
+            }
+        }
+
+        // Lucky Streak: Bonus on 3 wins, penalty on 2 losses
+        if (themeAbilities.onWin?.type === 'streakBonus' && action === 1) {
+            this.player.abilityStates.luckyStreakWins++;
+            if (this.player.abilityStates.luckyStreakWins >= themeAbilities.onWin.winsRequired) {
+                if (this.player.abilityStates.nextWinBoosted) {
+                    modifiedBetAmount = Math.floor(betAmount * (1 + themeAbilities.onWin.bonus));
+                    this.player.abilityStates.nextWinBoosted = false;
+                    this.player.abilityStates.luckyStreakWins = 0;
+                } else {
+                    this.player.abilityStates.nextWinBoosted = true;
+                }
+            }
+        }
+
+        if (themeAbilities.onLoss?.type === 'streakPenalty' && action === 0) {
+            this.player.abilityStates.luckyStreakLosses++;
+            if (this.player.abilityStates.luckyStreakLosses >= themeAbilities.onLoss.lossesRequired) {
+                if (this.player.abilityStates.nextLossPenalized) {
+                    modifiedBetAmount = Math.floor(betAmount * (1 + themeAbilities.onLoss.penalty));
+                    this.player.abilityStates.nextLossPenalized = false;
+                    this.player.abilityStates.luckyStreakLosses = 0;
+                } else {
+                    this.player.abilityStates.nextLossPenalized = true;
+                }
+            }
+        }
+
+        return { action: modifiedAction, betAmount: modifiedBetAmount };
     }
 
     delay(ms) { 
