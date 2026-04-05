@@ -3,7 +3,7 @@ import { UIController } from "./UIController.js";
 import { AuthController } from "./AuthController.js";
 import { Store } from "./Store.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const ui = new UIController();
     const auth = new AuthController(ui);
     const game = new Game(ui, auth);
@@ -13,6 +13,5 @@ document.addEventListener("DOMContentLoaded", () => {
     ui.bindGameEvents(game);
     ui.bindAuthEvents(auth);
     ui.renderStoreItems();
-    ui.renderInventoryItems()
-    game.reset();
+    await game.reset();
 });

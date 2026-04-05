@@ -16,28 +16,38 @@ export class AuthController {
             if (user) {
                 this.currentUid = user.uid;
                 this.ui.loginMenuBtn.textContent = "Logout";
-                this.ui.loginMenuBtn.onclick = () => this.logout(game);
+                this.ui.loginMenuBtn.onclick = async () => await this.logout(game);
 
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    Object.assign(game.player, docSnap.data());
+                    // Load player data
+                    const data = docSnap.data();
+                    Object.assign(game.player, data);
                 }
+                
+                // Load store data FIRST before rendering
                 if (this.ui.store) {
                     await this.ui.store.loadFromDb(user.uid);
                 }
 
-                game.reset();
+                await game.reset();
                 this.ui.updatePlayerData(game.player);
-                this.ui.setTheme(game.player.theme);
+                
+                // Get theme from store equipment, not player data
+                const equippedTheme = this.ui.store.getEquipped('themes');
+                this.ui.setItem('themes', equippedTheme);
+                
+                // Render store items AFTER everything is loaded
+                this.ui.renderStoreItems();
             } else {
                 this.currentUid = null;
                 this.ui.loginMenuBtn.textContent = "Login";
                 game.player.resetData();
-                game.reset();
+                await game.reset();
                 this.ui.updatePlayerData(game.player);
-                this.ui.setTheme("default");
+                this.ui.setItem('themes', "default");
 
                 this.ui.loginMenuBtn.onclick = () => {
                     this.ui.loginSection.classList.toggle('hidden');
@@ -83,6 +93,7 @@ export class AuthController {
         if (!uid) return;
  
         const docRef = doc(db, "users", uid);
+        // DO NOT SAVE theme anymore - it's managed by the store
         await setDoc(docRef, {
             xp: player.xp,
             level: player.level,
@@ -92,21 +103,28 @@ export class AuthController {
             losses: player.losses,
             moneyOnNewRound: player.moneyOnNewRound,
             xpToNextLvl: player.xpToNextLvl,
-            theme: player.theme,
             winStreakHigh: player.winStreakHigh,
             gameWinsHigh: player.gameWinsHigh,
             abilityStates: player.abilityStates
         }, { merge: true });
  
-        // Save store data
+        // Save store data separately
         if (this.ui.store) {
             await this.ui.store.saveToDb(uid);
         }
     }
 
-    logout(game) {
+    async logout(game) {
         signOut(auth);
         game.player.resetData();
-        game.reset();
+        
+        // Reset store to defaults
+        if (this.ui.store) {
+            this.ui.store.reset();
+        }
+        
+        await game.reset();
+        this.ui.setItem('themes', "default");
+        this.ui.renderStoreItems();
     }
 }

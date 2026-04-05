@@ -4,7 +4,7 @@ export class Player {
         this.resetData();
     }
 
-    action(winner, betAmount) {
+    action(winner, betAmount, store) {
         const oldStats = {
             money: this.money,
             multiplier: this.multiplier
@@ -13,17 +13,23 @@ export class Player {
         let xpGained = 0;
         let popupAmount = 0;
         let multBonus = 0;
+        let deckBonus = 0;
 
         switch (winner) {
             case 1: // Win
                 this.wins++;
                 this.winStreak++;
                 multBonus = Math.floor(this.multiplier * (betAmount * 0.01));
-                this.money += betAmount + multBonus;
+                
+                // Apply deck payout modifier (Slim, Hobo, Wild decks)
+                const deckModifier = store ? store.getDeckPayoutModifier() : 1.0;
+                deckBonus = Math.floor(betAmount * (deckModifier - 1.0));
+
+                this.money += betAmount + multBonus + deckBonus;
                 xpGained += 50 * this.multiplier;
                 this.xp += xpGained;
                 this.multiplier += 0.25;
-                popupAmount = betAmount;
+                popupAmount = betAmount + multBonus + deckBonus;
                 break;
             case 0: // Loss
                 this.losses++;
@@ -41,7 +47,6 @@ export class Player {
 
         // checkState returns true if player is broke (Game Over)
         const lost = this.checkState();
-
         if (this.onUpdate) this.onUpdate(popupAmount);
 
         return {
@@ -87,7 +92,6 @@ export class Player {
         this.losses = 0;
         this.moneyOnNewRound = 100;
         this.xpToNextLvl = 150;
-        this.theme = "default";
         this.winStreak = 0;
         this.winStreakHigh = 0;
         // Ability state tracking for theme abilities

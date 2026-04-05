@@ -284,27 +284,80 @@ h4 {
     }
 }
 
-#inventorySection {
-    min-width: 450px;
-    max-height: 500px;
-    overflow: hidden;
-
-    .scrolling div {
-        display: grid;
-        grid-template-columns: auto auto auto;
-    }
-
-    .scrolling div button {
-        height: 50px;
-        margin-block: 3px;
-        margin-inline: 3px;
-    }
-}
-
 .scrolling {
     max-height: 350px;
     overflow-y: scroll;
     scrollbar-color: var(--primary-color) var(--background-color-secondary);
+}
+
+.store-equipped {
+    background-color: var(--primary-color) !important;
+    color: var(--background-color-secondary) !important;
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 0 15px var(--primary-color), inset 0 0 10px rgba(255, 255, 255, 0.2) !important;
+    cursor: default !important;
+}
+
+.store-equipped:hover {
+    background-color: var(--background-color-secondary) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    opacity: 1;
+    box-shadow: 0 0 8px var(--primary-color) !important;
+}
+
+/* Pending equipment - queued to apply after round */
+.store-pending {
+    background-color: #ff9800 !important;
+    color: white !important;
+    border: 2px solid #ff9800 !important;
+    opacity: 0.8;
+    cursor: default !important;
+}
+
+.store-pending:hover {
+    background-color: #f57c00 !important;
+    border-color: #f57c00 !important;
+    opacity: 1;
+}
+
+/* Owned but not equipped - secondary button */
+.store-owned {
+    background-color: var(--background-color-secondary) !important;
+    color: var(--primary-color) !important;
+    border: 2px solid var(--primary-color) !important;
+}
+
+.store-owned:hover {
+    background-color: var(--background-color-secondary) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(235, 213, 30, 0.3) !important;
+}
+
+/* Unowned item - grayed out */
+.store-unowned {
+    background-color: var(--shadow-color) !important;
+    color: var(--primary-color) !important;
+    border: 2px solid var(--shadow-color) !important;
+}
+
+.store-unowned:not(:disabled):hover {
+    background-color: var(--background-color-secondary) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(235, 213, 30, 0.3) !important;
+}
+
+.store-unowned:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.4 !important;
+}
+
+#purchaseMessage:empty {
+    display: none;
 }
 
 footer {
@@ -421,14 +474,6 @@ footer {
     }
 
     #storeSection {
-        min-width: 300px;
-
-        .scrolling div {
-            grid-template-columns: auto;
-        }
-    }
-
-    #inventorySection {
         min-width: 300px;
 
         .scrolling div {

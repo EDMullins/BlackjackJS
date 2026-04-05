@@ -35,14 +35,14 @@ export class Game {
 
     async start() {
         this.gameActive = true;
-        
+
         // Get active abilities from store
         this.activeAbilities = this.ui.store.getActiveAbilities();
         const deckAbilities = this.activeAbilities.deck;
-        
+
         // Create deck with ability modifiers
         this.deck = new Deck(deckAbilities);
-        
+
         this.playerHands = [new Hand(true)];
         this.activeHandIndex = 0;
 
@@ -64,12 +64,12 @@ export class Game {
 
     async drawCard(hand, hidden = false) {
         let card = this.deck.drawCard();
-        
+
         // NEW: Apply dealer abilities that affect card draws
         if (!hand.isPlayer && hand === this.dealerHand) {
             card = this.applyDealerAbilities(card, hand);
         }
-        
+
         hand.addCard(card, hidden);
         this.ui.renderCard(card, hand, hidden);
         await this.delay(400);
@@ -190,11 +190,11 @@ export class Game {
     end(results) {
         this.gameActive = false;
 
-        // NEW: Apply theme ability modifiers to each result
+        // Apply theme ability modifiers to each result
         const combinedData = results
             .map((r, i) => {
                 const modifiedResult = this.applyThemeAbilityModifiers(r.action, this.handBets[i]);
-                return this.player.action(modifiedResult.action, modifiedResult.betAmount);
+                return this.player.action(modifiedResult.action, modifiedResult.betAmount, this.ui.store);
             })
             .reduce((acc, curr) => ({
                 bet: acc.bet + curr.bet,
@@ -216,7 +216,28 @@ export class Game {
         this.auth.savePlayerData(this.player, this.auth.currentUid);
     }
 
-    reset() {
+    async reset() {
+        // Apply any pending equipment changes from the store BEFORE starting new hand
+        if (this.ui.store && this.ui.store.hasPendingChanges()) {
+            // Commit pending changes (applies them to equipped state)
+            this.ui.store.commitPendingEquipment();
+            
+            // Save committed changes to database
+            if (this.auth && this.auth.currentUid) {
+                await this.ui.store.saveToDb(this.auth.currentUid);
+            }
+            
+            // Apply visual changes for committed equipment
+            const equippedTheme = this.ui.store.getEquipped('themes');
+            this.ui.setItem('themes', equippedTheme);
+            
+            // Update player data to reflect any deck payout modifiers
+            this.ui.updatePlayerData(this.player);
+            
+            // Re-render store UI to reflect new equipment
+            this.ui.renderStoreItems();
+        }
+
         this.gameActive = false;
         this.totalBet = null;
         this.originalBet = null;
@@ -234,11 +255,7 @@ export class Game {
         this.ui.showBetSection();
     }
 
-    // --- NEW: Ability Application Methods ---
-
-    /**
-     * Apply dealer hand abilities to cards drawn by dealer
-     */
+    // --- Ability Application Methods ---
     applyDealerAbilities(card, hand) {
         const dealerAbilities = this.activeAbilities?.dealer;
         if (!dealerAbilities) return card;
@@ -270,9 +287,7 @@ export class Game {
         return card;
     }
 
-    /**
-     * Apply theme ability modifiers to round results
-     */
+    // Apply theme ability modifiers to round results
     applyThemeAbilityModifiers(action, betAmount) {
         const themeAbilities = this.activeAbilities?.theme;
         let modifiedAction = action;
@@ -326,7 +341,7 @@ export class Game {
         return { action: modifiedAction, betAmount: modifiedBetAmount };
     }
 
-    delay(ms) { 
-        return new Promise(res => setTimeout(res, ms)); 
+    delay(ms) {
+        return new Promise(res => setTimeout(res, ms));
     }
 }

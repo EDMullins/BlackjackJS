@@ -225,6 +225,9 @@ export class Store {
             dealers: 'default',
             decks: 'default'
         };
+
+        // Pending equipment changes (applied after round ends)
+        this.pendingEquipped = null;
     }
 
     // Get all items of a type
@@ -262,11 +265,39 @@ export class Store {
         return this.equipped[type];
     }
 
+    isEquipped(type, value) {
+        return this.equipped[type] === value;
+    }
+
     // Equip item (must own)
-    equipItem(type, value) {
+    // If pending=true, queues change for after current round. If pending=false, applies immediately.
+    equipItem(type, value, pending = false) {
         if (!this.ownsItem(type, value)) return false;
-        this.equipped[type] = value;
+        
+        if (pending) {
+            // Queue the change for after round ends
+            if (!this.pendingEquipped) {
+                this.pendingEquipped = { ...this.equipped };
+            }
+            this.pendingEquipped[type] = value;
+        } else {
+            // Apply immediately
+            this.equipped[type] = value;
+        }
         return true;
+    }
+
+    // Check if there are pending equipment changes
+    hasPendingChanges() {
+        return this.pendingEquipped !== null;
+    }
+
+    // Commit pending equipment changes (call after round completes)
+    commitPendingEquipment() {
+        if (this.pendingEquipped) {
+            this.equipped = { ...this.pendingEquipped };
+            this.pendingEquipped = null;
+        }
     }
 
     // Purchase item
@@ -293,6 +324,34 @@ export class Store {
         };
     }
 
+    getDeckPayoutModifier() {
+        const deckAbilities = this.getItem('decks', this.equipped.decks)?.abilities || {};
+        let modifier = 1.0;
+        if (deckAbilities.payout?.type === 'increaseAllPayout') {
+            modifier += deckAbilities.payout.increase;
+        }
+        return modifier;
+    }
+
+    getBlackjackPayoutModifier() {
+        const deckAbilities = this.getItem('decks', this.equipped.decks)?.abilities || {};
+        let modifier = 1.0;
+        if (deckAbilities.blackjackPayout?.type === 'increaseBlackjackPayout') {
+            modifier += deckAbilities.blackjackPayout.increase;
+        }
+        return modifier;
+    }
+
+    hasRedraws() {
+        const themeAbilities = this.getItem('themes', this.equipped.themes)?.abilities || {};
+        return themeAbilities.onPlayerDraw?.type === 'allowRedraw' ? themeAbilities.onPlayerDraw.perHand : 0;
+    }
+
+    getMaxBetReduction() {
+        const themeAbilities = this.getItem('themes', this.equipped.themes)?.abilities || {};
+        return themeAbilities.betReduction?.type === 'maxBetReduction' ? themeAbilities.betReduction.value : 0;
+    }
+
     // Load from DB
     async loadFromDb(uid) {
         try {
@@ -303,13 +362,14 @@ export class Store {
                 const data = docSnap.data().store;
                 this.owned = data.owned || this.owned;
                 this.equipped = data.equipped || this.equipped;
+                // pendingEquipped is not persisted - kept in memory only
             }
         } catch (error) {
             console.error("Error loading store:", error);
         }
     }
 
-    // Save to DB
+    // Save to DB (only saves owned and equipped, not pending changes)
     async saveToDb(uid) {
         try {
             const docRef = doc(db, "users", uid);
@@ -322,5 +382,22 @@ export class Store {
         } catch (error) {
             console.error("Error saving store:", error);
         }
+    }
+
+    // Reset store to defaults
+    reset() {
+        this.owned = {
+            themes: { default: true },
+            dealers: { default: true },
+            decks: { default: true }
+        };
+
+        this.equipped = {
+            themes: 'default',
+            dealers: 'default',
+            decks: 'default'
+        };
+
+        this.pendingEquipped = null;
     }
 }

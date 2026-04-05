@@ -2,6 +2,8 @@ export class UIController {
     constructor() {
         this.domElements();
         this.currentTheme = null;
+        this.currentDealer = null;
+        this.currentDeck = null;
     }
 
     connectGame(game, auth, store) {
@@ -45,7 +47,7 @@ export class UIController {
         this.newHandBtn = document.getElementById('newHand');
         this.newGameBtn = document.getElementById('newGame');
 
-        // Menus (Login, Stats, Store, Inventory)
+        // Menus (Login, Stats, Store)
         this.loginMenuBtn = document.getElementById('loginMenuBtn');
         this.loginSection = document.getElementById('loginSection');
         this.loginXBtn = document.getElementById('loginXBtn');
@@ -54,6 +56,7 @@ export class UIController {
         this.emailInput = document.getElementById('email');
         this.passwordInput = document.getElementById('password');
         this.authMessage = document.getElementById('authMessage');
+        this.resetBtn = document.getElementById('resetBtn');
 
         this.statsMenuBtn = document.getElementById('statsMenuBtn');
         this.statsSection = document.getElementById('statsSection');
@@ -73,13 +76,6 @@ export class UIController {
         this.dealerOptions = document.getElementById('dealerOptions');
         this.deckOptions = document.getElementById('deckOptions');
         this.purchaseMessage = document.getElementById('purchaseMessage');
- 
-        this.inventoryBtns = document.querySelectorAll('.inventoryBtn');
-        this.inventorySection = document.getElementById('inventorySection');
-        this.inventoryXBtn = document.getElementById('inventoryXBtn');
-        this.themesOwned = document.getElementById('themesOwned');
-        this.dealersOwned = document.getElementById('dealersOwned');
-        this.decksOwned = document.getElementById('decksOwned');
     }
 
     // --- Event Binding ---
@@ -102,24 +98,15 @@ export class UIController {
             game.start();
         };
 
-        this.newHandBtn.onclick = () => game.reset();
-        this.newGameBtn.onclick = () => game.reset();
+        this.newHandBtn.onclick = async () => await game.reset();
+        this.newGameBtn.onclick = async () => await game.reset();
 
         // Menu Toggles
         this.statsMenuBtn.onclick = () => this.statsSection.classList.toggle('hidden');
         this.statsXBtn.onclick = () => this.statsSection.classList.add('hidden');
 
-        this.storeBtns.forEach(btn => btn.onclick = () => {
-            this.storeSection.classList.toggle('hidden');
-            this.inventorySection.classList.add('hidden');
-        });
+        this.storeBtns.forEach(btn => btn.onclick = () => this.storeSection.classList.toggle('hidden'));
         this.storeXBtn.onclick = () => this.storeSection.classList.add('hidden');
-
-        this.inventoryBtns.forEach(btn => btn.onclick = () => {
-            this.inventorySection.classList.toggle('hidden');
-            this.storeSection.classList.add('hidden');
-        });
-        this.inventoryXBtn.onclick = () => this.inventorySection.classList.add('hidden');
     }
 
     bindAuthEvents(auth) {
@@ -127,7 +114,7 @@ export class UIController {
         this.loginXBtn.onclick = () => this.loginSection.classList.add('hidden');
         this.loginBtn.onclick = () => auth.login(this.emailInput.value, this.passwordInput.value, this.authMessage);
         this.registerBtn.onclick = () => auth.register(this.emailInput.value, this.passwordInput.value, this.authMessage);
-        document.getElementById("resetBtn").onclick = () => auth.resetPassword(this.emailInput.value, this.authMessage);
+        this.resetBtn.onclick = () => auth.resetPassword(this.emailInput.value, this.authMessage);
     }
 
     // --- Card Rendering ---
@@ -154,7 +141,6 @@ export class UIController {
 
         const img = document.createElement('img');
         img.className = 'cardImage';
-        console.log("rendering card with image path:", this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
         img.src = card.getImage(this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
         img.alt = hidden ? "Hidden Card" : card.rank;
 
@@ -186,7 +172,7 @@ export class UIController {
                 card.reveal();
                 const img = this.dealerCardSection.querySelector(`img[alt="Hidden Card"]`);
                 if (img) {
-                    img.src = card.getImage(this.store.getEquipped("decks").cardImagePath);
+                    img.src = card.getImage(this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
                     img.alt = card.rank;
                 }
             }
@@ -222,7 +208,7 @@ export class UIController {
                 wrapper.className = 'cardSlideWrapper slide-in';
                 const img = document.createElement('img');
                 img.className = 'cardImage';
-                img.src = card.getImage(this.store.getEquipped("decks").cardImagePath);
+                img.src = card.getImage(this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
                 img.alt = card.rank;
                 wrapper.appendChild(img);
                 cardSection.appendChild(wrapper);
@@ -335,117 +321,125 @@ export class UIController {
     enableDoubleButton() { this.doubleButton.disabled = false; }
     disableDoubleButton() { this.doubleButton.disabled = true; }
 
-    // Store UI methods
+    // --- Store UI Methods ---
+
     renderStoreItems() {
         if (!this.store) return;
+
+        // Render Themes
         this.themeOptions.innerHTML = "";
         Object.entries(this.store.themes).forEach(([key, theme]) => {
-            if (!this.store.ownsItem('themes', key)) {
-                const btn = this.createStoreButton(theme, 'themes', key);
-                this.themeOptions.appendChild(btn);
-            }
+            const btn = this.createStoreItemButton(theme, 'themes', key);
+            this.themeOptions.appendChild(btn);
         });
- 
-        // Dealers for purchase
+
+        // Render Dealers
         this.dealerOptions.innerHTML = "";
         Object.entries(this.store.dealers).forEach(([key, dealer]) => {
-            if (!this.store.ownsItem('dealers', key)) {
-                const btn = this.createStoreButton(dealer, 'dealers', key);
-                this.dealerOptions.appendChild(btn);
-            }
+            const btn = this.createStoreItemButton(dealer, 'dealers', key);
+            this.dealerOptions.appendChild(btn);
         });
- 
-        // Decks for purchase
+
+        // Render Decks
         this.deckOptions.innerHTML = "";
         Object.entries(this.store.decks).forEach(([key, deck]) => {
-            if (!this.store.ownsItem('decks', key)) {
-                const btn = this.createStoreButton(deck, 'decks', key);
-                this.deckOptions.appendChild(btn);
-            }
+            const btn = this.createStoreItemButton(deck, 'decks', key);
+            this.deckOptions.appendChild(btn);
         });
     }
- 
-    renderInventoryItems() {
-        if (!this.store) return;
- 
-        // Owned Themes
-        this.themesOwned.innerHTML = "";
-        const ownedThemes = this.store.getOwnedByType('themes');
-        Object.entries(ownedThemes).forEach(([key, theme]) => {
-            const btn = this.createInventoryButton(theme, 'themes', key);
-            this.themesOwned.appendChild(btn);
-        });
- 
-        // Owned Dealers
-        this.dealersOwned.innerHTML = "";
-        const ownedDealers = this.store.getOwnedByType('dealers');
-        Object.entries(ownedDealers).forEach(([key, dealer]) => {
-            const btn = this.createInventoryButton(dealer, 'dealers', key);
-            this.dealersOwned.appendChild(btn);
-        });
- 
-        // Owned Decks
-        this.decksOwned.innerHTML = "";
-        const ownedDecks = this.store.getOwnedByType('decks');
-        Object.entries(ownedDecks).forEach(([key, deck]) => {
-            const btn = this.createInventoryButton(deck, 'decks', key);
-            this.decksOwned.appendChild(btn);
-        });
-    }
- 
-    createStoreButton(item, type, key) {
+
+    /**
+     * Create a store item button with integrated inventory
+     * - If equipped: shows ✓ Equipped with highlight
+     * - If owned but not equipped: shows Equip button
+     * - If not owned: shows Buy button (grayed out if can't afford)
+     */
+    createStoreItemButton(item, type, key) {
         const btn = document.createElement("button");
-        btn.classList.add("btn", "btn-secondary", "mb-1");
-        btn.textContent = `${item.name} - $${item.cost}`;
-        
-        const canAfford = this.game.player.money >= item.cost;
-        if (canAfford) btn.disabled = false;
-        
-        btn.onclick = () => this.buyItem(type, key);
-        return btn;
-    }
- 
-    createInventoryButton(item, type, key) {
-        const btn = document.createElement("button");
-        btn.classList.add("btn", "btn-secondary", "mb-1");
-        
-        const isEquipped = this.store.getEquipped(type) === key;
-        btn.textContent = item.name + (isEquipped ? " ✓" : "");
-        
+        btn.classList.add("btn", "mb-1");
+
+        const isOwned = this.store.ownsItem(type, key);
+        const isEquipped = this.store.isEquipped(type, key);
+        const isPending = this.store.pendingEquipped && this.store.pendingEquipped[type] === key && !isEquipped;
+
         if (isEquipped) {
-            btn.classList.add("btn-primary");
-        }
-        
-        btn.onclick = async () => {
-            this.store.equipItem(type, key);
-            await this.store.saveToDb(this.auth.currentUid);
+            // Equipped - highlight and disable
+            btn.classList.add("btn-primary", "store-equipped");
+            btn.textContent = `✓ ${item.name} (Equipped)`;
+            btn.disabled = true;
+        } else if (isPending) {
+            // Pending equipment - show as secondary with pending label (only during gameActive)
+            btn.classList.add("btn-secondary", "store-pending");
+            btn.textContent = `⏳ ${item.name} (Pending)`;
+            btn.disabled = true;
+        } else if (isOwned) {
+            // Owned but not equipped - show equip button
+            btn.classList.add("btn-secondary", "store-owned");
+            btn.textContent = `${item.name} - Equip`;
+            btn.disabled = false;
             
-            if (type === 'themes') {
-                this.setTheme(item.value);
+            // If game is active, equip will be pending; if not, it applies immediately
+            btn.onclick = async () => {
+                const isPendingMode = this.game && this.game.gameActive;
+                this.store.equipItem(type, key, isPendingMode);
+                
+                // If not pending (immediate equip), save to DB and apply visual changes
+                if (!isPendingMode) {
+                    await this.store.saveToDb(this.auth.currentUid);
+                    
+                    if (type === 'themes') {
+                        this.setItem('themes', item.value);
+                    }
+                }
+                
+                this.renderStoreItems();
+            };
+        } else {
+            // Not owned - show buy button
+            btn.classList.add("btn-secondary", "store-unowned");
+            btn.textContent = `${item.name} - $${item.cost}`;
+
+            const canAfford = this.game.player.money >= item.cost;
+            btn.disabled = !canAfford;
+
+            if (!canAfford) {
+                btn.style.opacity = "0.5";
+                btn.style.cursor = "not-allowed";
             }
-            
-            this.renderInventoryItems();
-        };
-        
+
+            btn.onclick = () => this.buyItem(type, key);
+        }
+
         return btn;
     }
- 
+
     async buyItem(type, key) {
         const result = this.store.buyItem(type, key);
-        
+
         this.purchaseMessage.textContent = result.message;
         this.purchaseMessage.style.color = result.success ? 'green' : 'red';
-        
+
         if (result.success) {
             await this.store.saveToDb(this.auth.currentUid);
             this.updatePlayerData(this.game.player);
             this.renderStoreItems();
-            this.renderInventoryItems();
         }
     }
 
-    setTheme(themeName) {
-        document.documentElement.setAttribute("data-theme", themeName);
-        this.currentTheme = themeName;
+    setItem(type, value) {
+        if (type === 'themes') {
+            document.documentElement.setAttribute("data-theme", value);
+            this.currentTheme = value;
+        }
+        else if (type === 'dealers') {
+            // Update existing dealer arms
+
+            this.currentDealer = value;
+        }
+        else if (type === 'decks') {
+            // Update existing card images
+
+            this.currentDeck = value;
+        }
     }
 }
