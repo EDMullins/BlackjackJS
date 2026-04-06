@@ -259,7 +259,7 @@ export class Game {
         const dealerAbilities = this.activeAbilities?.dealer;
         if (!dealerAbilities) return card;
 
-        // Lucky Hand: 20% chance non-face card swaps to face card
+        // Lucky Hands: 20% chance non-face card swaps to face card
         if (dealerAbilities.onCardDraw?.type === 'nonFaceCardSwap' && hand.isPlayer) {
             if (card.getValue() < 10) {
                 if (Math.random() < dealerAbilities.onCardDraw.chance) {
@@ -267,7 +267,7 @@ export class Game {
                     const newRank = faceCards[Math.floor(Math.random() * faceCards.length)];
                     card.rank = newRank;
                     //TODO: Add visual effect for card swap
-                    console.log('card swapped to face');
+                    console.log('Lucky Hands: Card swapped to face');
                 }
             }
         }
@@ -276,11 +276,12 @@ export class Game {
         if (dealerAbilities.dealerFirst?.type === 'revealFirstCard' && !hand.isPlayer && hand.cards.length === 0) {
             if (Math.random() < dealerAbilities.dealerFirst.chance) {
                 card.hidden = false;
+                console.log('Fortune Teller: Card revealed for dealer')
             }
         }
 
         // Ice King: Constrain first dealer card to 2-6
-        if (dealerAbilities.dealerFirst?.type === 'constrainFirstCard' && hand.cards.length === 0) {
+        if (dealerAbilities.dealerFirst?.type === 'constrainFirstCard' && hand.cards.length === 0 && !hand.isPlayer) {
             const min = dealerAbilities.dealerFirst.min;
             const max = dealerAbilities.dealerFirst.max;
             if (card.getValue() < min || card.getValue() > max) {
@@ -289,6 +290,29 @@ export class Game {
                     validRanks.push(String(i));
                 }
                 card.rank = validRanks[Math.floor(Math.random() * validRanks.length)];
+                console.log('Ice King: card 2-6 applied for dealer');
+            }
+        }
+
+        // Gold Hands: When a face card is drawn, you get a bonus (15% of bet)
+        if (dealerAbilities.onCardDraw?.type === 'faceCardBonus') {
+            if (card.getValue() >= 10) {
+                const bonus = Math.floor(this.handBets[this.activeHandIndex] * dealerAbilities.onCardDraw.bonus);
+                this.player.money += bonus;
+                this.ui.updatePlayerData(this.player);
+                this.ui.showMoneyPopup(bonus, true);
+                console.log('Gold Hands: Face card bonus applied');
+            }
+        }
+
+        // Humble Hands: When a card below 5 is drawn, you get a bonus (15% of bet)
+        if (dealerAbilities.onCardDraw?.type === 'numberedCardBonus') {
+            if (card.getValue() < 5) {
+                const bonus = Math.floor(this.handBets[this.activeHandIndex] * dealerAbilities.onCardDraw.bonus);
+                this.player.money += bonus;
+                this.ui.updatePlayerData(this.player);
+                this.ui.showMoneyPopup(bonus, true);
+                console.log('Humble Hands: Numbered card bonus applied');
             }
         }
 
@@ -311,10 +335,10 @@ export class Game {
             modifiedBetAmount = betAmount - keepAmount;
         }
 
-        // Iron Wallet: Cap losses at 40% of total money
+        // Iron Wallet: Cap losses at 40% of total money. Bet is reduced by 30% in validateBet()
         if (themeAbilities.lossLimit?.type === 'maxLossPercentage' && action === 0) {
             const maxLoss = Math.floor(this.player.money * themeAbilities.lossLimit.value);
-            if (betAmount > maxLoss) {
+            if (modifiedBetAmount > maxLoss) {
                 modifiedBetAmount = maxLoss;
             }
         }
@@ -332,8 +356,7 @@ export class Game {
                 }
             }
         }
-
-        if (themeAbilities.onLoss?.type === 'streakPenalty' && action === 0) {
+        else if (themeAbilities.onLoss?.type === 'streakPenalty' && action === 0) {
             this.player.abilityStates.luckyStreakLosses++;
             if (this.player.abilityStates.luckyStreakLosses >= themeAbilities.onLoss.lossesRequired) {
                 if (this.player.abilityStates.nextLossPenalized) {

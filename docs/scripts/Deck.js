@@ -28,26 +28,25 @@ export class Deck {
       }
     }
 
-    // Apply face card increase if needed
+    // Royal Deck: 
     if (this.abilityModifiers.deckComposition?.type === 'increaseFaceCards') {
       const increase = this.abilityModifiers.deckComposition.increase;
       const faceCards = ['J', 'Q', 'K'];
       const numToAdd = Math.floor(deck.length * increase);
-      
+      console.log(`Adding ${numToAdd} random face cards to the deck for Royal Deck ability`);
       for (let i = 0; i < numToAdd; i++) {
         const randomFace = faceCards[Math.floor(Math.random() * faceCards.length)];
         deck.push(new Card(randomFace));
       }
     }
 
-    // Randomize card values (Wild Deck)
+    // Wild Deck: Randomize card ranks. There can be more or less than 4 of each rank.
     if (this.abilityModifiers.deckComposition?.type === 'randomizeCardValues') {
-      deck.forEach(card => {
-        if (card.rank !== 'A') { // Keep aces as is
-          const possibleRanks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-          card.rank = possibleRanks[Math.floor(Math.random() * possibleRanks.length)];
-        }
-      });
+      for (let card of deck) {
+        const randomRank = ranks[Math.floor(Math.random() * ranks.length)];
+        card.rank = randomRank;
+      }
+      console.log("Wild Deck applied: Card ranks have been randomized");
     }
 
     // Shuffle

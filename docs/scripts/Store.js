@@ -59,10 +59,10 @@ export class Store {
                 cost: 2500,
                 level: 7,
                 value: "luckyStreak",
-                description: "After 3 wins, next win gives +50% payout. After 2 losses, next loss costs +25%.",
+                description: "On 3rd win, gives +50% payout. After 2 losses, lose +25%.",
                 abilities: {
-                    onWin: { type: "streakBonus", winsRequired: 3, bonus: 0.50 },
-                    onLoss: { type: "streakPenalty", lossesRequired: 2, penalty: 0.25 }
+                    onWin: { type: "streakBonus", winsRequired: 2, bonus: 0.50 },
+                    onLoss: { type: "streakPenalty", lossesRequired: 1, penalty: 0.25 }
                 }
             },
             paradisePink: {
@@ -88,12 +88,12 @@ export class Store {
                 armImagePath: "./imgs/hand.png",
                 abilities: {}
             },
-            luckyHand: {
-                name: "Lucky Hand",
+            luckyHands: {
+                name: "Lucky Hands",
                 cost: 1500,
                 level: 4,
-                value: "luckyHand",
-                description: "Non-face cards have 20% chance to swap to face card when drawn",
+                value: "luckyHands",
+                description: "For Player: Non-face cards have 20% chance to swap to face card when drawn",
                 armImagePath: "./imgs/hand-lucky.png",
                 abilities: {
                     onCardDraw: { type: "nonFaceCardSwap", chance: 0.20 }
@@ -126,10 +126,10 @@ export class Store {
                 cost: 2200,
                 level: 7,
                 value: "goldHands",
-                description: "When dealer draws face cards, you get 20% of the bet as bonus",
+                description: "If a face card is drawn, you get 15% of the bet as bonus",
                 armImagePath: "./imgs/hand-gold.png",
                 abilities: {
-                    dealerDraw: { type: "faceCardBonus", bonus: 0.20 }
+                    onCardDraw: { type: "faceCardBonus", bonus: 0.15 }
                 }
             },
             humbleHands: {
@@ -137,10 +137,10 @@ export class Store {
                 cost: 2000,
                 level: 6,
                 value: "humbleHands",
-                description: "When dealer draws numbered cards, you get 15% of the bet as bonus",
+                description: "When a card below 5 is drawn, you get 15% of the bet as bonus",
                 armImagePath: "./imgs/hand-humble.png",
                 abilities: {
-                    dealerDraw: { type: "numberedCardBonus", bonus: 0.15 }
+                    onCardDraw: { type: "numberedCardBonus", bonus: 0.15 }
                 }
             }
         };
@@ -161,11 +161,11 @@ export class Store {
                 cost: 2000,
                 level: 5,
                 value: "royalDeck",
-                description: "Luxurious gold-trimmed cards. +15% face card chance. Blackjack pays +25%.",
+                description: "Luxurious gold-trimmed cards. +20% face card chance. +10% payout",
                 cardImagePath: "./imgs/royal/",
                 abilities: {
-                    deckComposition: { type: "increaseFaceCards", increase: 0.15 },
-                    blackjackPayout: { type: "increaseBlackjackPayout", increase: 0.25 }
+                    deckComposition: { type: "increaseFaceCards", increase: 0.20 },
+                    payout: { type: "increasePayout", increase: 0.10 }
                 }
             },
             slimDeck: {
@@ -177,7 +177,7 @@ export class Store {
                 cardImagePath: "./imgs/slim/",
                 abilities: {
                     deckComposition: { type: "removeRanks", ranks: ['2', '3'] },
-                    payout: { type: "increaseAllPayout", increase: 0.10 }
+                    payout: { type: "increasePayout", increase: 0.10 }
                 }
             },
             hoboDeck: {
@@ -189,7 +189,7 @@ export class Store {
                 cardImagePath: "./imgs/hobo/",
                 abilities: {
                     deckComposition: { type: "removeRanks", ranks: ['J', 'Q', 'K'] },
-                    payout: { type: "increaseAllPayout", increase: 0.25 }
+                    payout: { type: "increasePayout", increase: 0.25 }
                 }
             },
             wildDeck: {
@@ -197,21 +197,12 @@ export class Store {
                 cost: 2500,
                 level: 8,
                 value: "wildDeck",
-                description: "Neon psychedelic cards with random properties. +25% payout.",
+                description: "Completely random ranks. +25% payout.",
                 cardImagePath: "./imgs/wild/",
                 abilities: {
                     deckComposition: { type: "randomizeCardValues" },
                     payout: { type: "increaseAllPayout", increase: 0.25 }
                 }
-            },
-            cosmicDeck: {
-                name: "Cosmic Deck",
-                cost: 1600,
-                level: 5,
-                value: "cosmic",
-                description: "Space-themed mystical cards with star designs",
-                cardImagePath: "./imgs/cosmic/",
-                abilities: {}
             }
         };
 
@@ -329,17 +320,8 @@ export class Store {
     getDeckPayoutModifier() {
         const deckAbilities = this.getItem('decks', this.equipped.decks)?.abilities || {};
         let modifier = 1.0;
-        if (deckAbilities.payout?.type === 'increaseAllPayout') {
+        if (deckAbilities.payout?.type === 'increasePayout') {
             modifier += deckAbilities.payout.increase;
-        }
-        return modifier;
-    }
-
-    getBlackjackPayoutModifier() {
-        const deckAbilities = this.getItem('decks', this.equipped.decks)?.abilities || {};
-        let modifier = 1.0;
-        if (deckAbilities.blackjackPayout?.type === 'increaseBlackjackPayout') {
-            modifier += deckAbilities.blackjackPayout.increase;
         }
         return modifier;
     }

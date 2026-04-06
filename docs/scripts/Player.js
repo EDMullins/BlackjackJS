@@ -21,7 +21,7 @@ export class Player {
                 this.winStreak++;
                 multBonus = Math.floor(this.multiplier * (betAmount * 0.01));
                 
-                // Apply deck payout modifier (Slim, Hobo, Wild decks)
+                // Apply deck payout modifier (Slim, Hobo, Wild, etc)
                 const deckModifier = store ? store.getDeckPayoutModifier() : 1.0;
                 deckBonus = Math.floor(betAmount * (deckModifier - 1.0));
 

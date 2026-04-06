@@ -287,6 +287,10 @@ export class UIController {
         if (value === "") error = "";
         else if (!/^\d+$/.test(value)) error = "Invalid number";
         else if (bet <= 0) error = "Must be > 0";
+        else if (this.store.getEquipped("themes") === "ironWallet") {
+            // max bet -30%
+            if (bet > money * 0.7) error = `Can't exceed ${Math.floor(money * 0.7)}`;
+        }
         else if (bet > money) error = `Can't exceed ${money}`;
 
         this.errorMsg.textContent = error;
