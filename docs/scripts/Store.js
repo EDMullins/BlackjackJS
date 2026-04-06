@@ -7,7 +7,7 @@ export class Store {
     constructor(player) {
         this.player = player;
         
-        // Catalog of all items
+        // Themes have abilities that affect the player's hand and gameplay
         this.themes = {
             default: {
                 name: "Default",
@@ -77,6 +77,7 @@ export class Store {
             }
         };
 
+        // Dealers have abilities that affect the dealer's hand and gameplay
         this.dealers = {
             default: {
                 name: "Default Dealer",
@@ -103,10 +104,10 @@ export class Store {
                 cost: 2000,
                 level: 6,
                 value: "fortuneTeller",
-                description: "Dealer's first card is dealt face up",
+                description: "50% Dealer's first card is dealt face up",
                 armImagePath: "./imgs/hand-fortune.png",
                 abilities: {
-                    dealerFirst: { type: "revealFirstCard" }
+                    dealerFirst: { type: "revealFirstCard", chance: 0.50 }
                 }
             },
             iceKing: {
@@ -144,6 +145,7 @@ export class Store {
             }
         };
 
+        // Decks have more complex abilities that affect the deck composition and payout modifiers
         this.decks = {
             default: {
                 name: "Standard Deck",

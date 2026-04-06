@@ -256,10 +256,6 @@ h4 {
     color: var(--primary-color);
 }
 
-/* .stats-content {
-    TODO: Align data right
-} */
-
 .menu-header {
     color: var(--primary-color);
     display: flex;
@@ -272,15 +268,15 @@ h4 {
     max-height: 500px;
     overflow: hidden;
 
-    .scrolling div {
+    #themeOptions, #dealerOptions, #deckOptions {
         display: grid;
         grid-template-columns: auto auto auto;
     }
 
     .scrolling div button {
-        height: 50px;
         margin-block: 3px;
         margin-inline: 3px;
+        display: flex;
     }
 }
 
@@ -306,7 +302,6 @@ h4 {
     box-shadow: 0 0 8px var(--primary-color) !important;
 }
 
-/* Pending equipment - queued to apply after round */
 .store-pending {
     background-color: #ff9800 !important;
     color: white !important;
@@ -321,7 +316,22 @@ h4 {
     opacity: 1;
 }
 
-/* Owned but not equipped - secondary button */
+.store-btn-content {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.store-btn-title {
+    font-weight: bold;
+}
+
+.store-btn-desc {
+    font-size: 0.85em;
+    opacity: 0.85;
+    margin-top: 0.25rem;
+}
+
 .store-owned {
     background-color: var(--background-color-secondary) !important;
     color: var(--primary-color) !important;
@@ -336,7 +346,6 @@ h4 {
     box-shadow: 0 0 8px rgba(235, 213, 30, 0.3) !important;
 }
 
-/* Unowned item - grayed out */
 .store-unowned {
     background-color: var(--shadow-color) !important;
     color: var(--primary-color) !important;
@@ -430,13 +439,11 @@ footer {
     min-width: 0; /* allow flex shrink */
 }
 
-/* Active split hand — glowing border so the player knows which hand they're on */
 .splitHandCol.active-split-hand {
     box-shadow: 0 0 0 3px var(--primary-color), 0 0 12px 2px var(--primary-color);
     background-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Inactive split hand — dimmed */
 .splitHandCol.inactive-split-hand {
     opacity: 0.55;
 }
@@ -476,7 +483,7 @@ footer {
     #storeSection {
         min-width: 300px;
 
-        .scrolling div {
+        #themeOptions, #dealerOptions, #deckOptions {
             grid-template-columns: auto;
         }
     }

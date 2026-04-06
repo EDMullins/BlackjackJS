@@ -61,13 +61,7 @@ export class UIController {
         this.statsMenuBtn = document.getElementById('statsMenuBtn');
         this.statsSection = document.getElementById('statsSection');
         this.statsXBtn = document.getElementById('statsXBtn');
-        this.statsMoney = document.getElementById('statsMoney');
-        this.statsWins = document.getElementById('statsWins');
-        this.statsLosses = document.getElementById('statsLosses');
-        this.statsLevel = document.getElementById('statsLevel');
-        this.statsMoneyOnNewRound = document.getElementById('statsMoneyOnNewRound');
-        this.statsXP = document.getElementById('statsXP');
-        this.statsWinStreakHigh = document.getElementById('statsWinStreakHigh');
+        this.statsContent = document.getElementById('statsContent');
 
         this.storeBtns = document.querySelectorAll('.storeBtn');
         this.storeSection = document.getElementById('storeSection');
@@ -260,13 +254,15 @@ export class UIController {
         this.winStreak.textContent = player.winStreak > 0 ? `x${player.winStreak}` : "";
 
         // Stats Menu
-        this.statsMoney.textContent = `Money: ${player.money}`;
-        this.statsWins.textContent = `Wins: ${player.wins}`;
-        this.statsLosses.textContent = `Losses: ${player.losses}`;
-        this.statsLevel.textContent = `Level: ${player.level}`;
-        this.statsMoneyOnNewRound.textContent = `Money On Loss: ${player.moneyOnNewRound}`;
-        this.statsXP.textContent = `XP: ${Math.floor(player.xp)} / ${player.xpToNextLvl}`;
-        this.statsWinStreakHigh.textContent = `Highest Win Streak: ${player.winStreakHigh}`;
+        this.statsContent.innerHTML = `
+        <div class="d-flex justify-content-between"><p>Money</p><p>${player.money}</p></div>
+        <div class="d-flex justify-content-between"><p>Wins</p><p>${player.wins}</p></div>
+        <div class="d-flex justify-content-between"><p>Losses</p><p>${player.losses}</p></div>
+        <div class="d-flex justify-content-between"><p>Level</p><p>${player.level}</p></div>
+        <div class="d-flex justify-content-between"><p>Money On Loss</p><p>${player.moneyOnNewRound}</p></div>
+        <div class="d-flex justify-content-between"><p>XP</p><p>${Math.floor(player.xp)} / ${player.xpToNextLvl}</p></div>
+        <div class="d-flex justify-content-between"><p>Highest Win Streak</p><p>${player.winStreakHigh}</p></div>
+        `;
 
         this.validateBet(this.betInput.value, player.money);
     }
@@ -348,34 +344,33 @@ export class UIController {
         });
     }
 
-    /**
-     * Create a store item button with integrated inventory
-     * - If equipped: shows ✓ Equipped with highlight
-     * - If owned but not equipped: shows Equip button
-     * - If not owned: shows Buy button (grayed out if can't afford)
-     */
     createStoreItemButton(item, type, key) {
         const btn = document.createElement("button");
-        btn.classList.add("btn", "mb-1");
+        btn.classList.add("btn", "mb-1", "store-item-btn");
 
         const isOwned = this.store.ownsItem(type, key);
         const isEquipped = this.store.isEquipped(type, key);
         const isPending = this.store.pendingEquipped && this.store.pendingEquipped[type] === key && !isEquipped;
 
+        // Helper function to create button HTML with description
+        const getButtonHTML = (title, description) => {
+            return `<div class="store-btn-content"><div class="store-btn-title">${title}</div><div class="store-btn-desc">${description}</div></div>`;
+        };
+
         if (isEquipped) {
             // Equipped - highlight and disable
             btn.classList.add("btn-primary", "store-equipped");
-            btn.textContent = `✓ ${item.name} (Equipped)`;
+            btn.innerHTML = getButtonHTML(`${item.name} (Equipped)`, item.description);
             btn.disabled = true;
         } else if (isPending) {
             // Pending equipment - show as secondary with pending label (only during gameActive)
             btn.classList.add("btn-secondary", "store-pending");
-            btn.textContent = `⏳ ${item.name} (Pending)`;
+            btn.innerHTML = getButtonHTML(`${item.name} (Pending)`, item.description);
             btn.disabled = true;
         } else if (isOwned) {
             // Owned but not equipped - show equip button
             btn.classList.add("btn-secondary", "store-owned");
-            btn.textContent = `${item.name} - Equip`;
+            btn.innerHTML = getButtonHTML(`${item.name}`, item.description);
             btn.disabled = false;
             
             // If game is active, equip will be pending; if not, it applies immediately
@@ -397,7 +392,7 @@ export class UIController {
         } else {
             // Not owned - show buy button
             btn.classList.add("btn-secondary", "store-unowned");
-            btn.textContent = `${item.name} - $${item.cost}`;
+            btn.innerHTML = getButtonHTML(`${item.name} - $${item.cost}`, item.description);
 
             const canAfford = this.game.player.money >= item.cost;
             btn.disabled = !canAfford;

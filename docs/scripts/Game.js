@@ -62,16 +62,15 @@ export class Game {
         if (canDouble) this.ui.enableDoubleButton();
     }
 
-    async drawCard(hand, hidden = false) {
+    async drawCard(hand, hide = false) {
         let card = this.deck.drawCard();
+        card.hidden = hide;
 
-        // NEW: Apply dealer abilities that affect card draws
-        if (!hand.isPlayer && hand === this.dealerHand) {
-            card = this.applyDealerAbilities(card, hand);
-        }
+        // Apply dealer abilities that affect card draws
+        card = this.applyDealerAbilities(card, hand);
 
-        hand.addCard(card, hidden);
-        this.ui.renderCard(card, hand, hidden);
+        hand.addCard(card, card.hidden);
+        this.ui.renderCard(card, hand, card.hidden);
         await this.delay(400);
         this.ui.updateHandValue(hand, hand.getValue(), this);
     }
@@ -261,13 +260,22 @@ export class Game {
         if (!dealerAbilities) return card;
 
         // Lucky Hand: 20% chance non-face card swaps to face card
-        if (dealerAbilities.onCardDraw?.type === 'nonFaceCardSwap') {
+        if (dealerAbilities.onCardDraw?.type === 'nonFaceCardSwap' && hand.isPlayer) {
             if (card.getValue() < 10) {
                 if (Math.random() < dealerAbilities.onCardDraw.chance) {
                     const faceCards = ['J', 'Q', 'K'];
                     const newRank = faceCards[Math.floor(Math.random() * faceCards.length)];
                     card.rank = newRank;
+                    //TODO: Add visual effect for card swap
+                    console.log('card swapped to face');
                 }
+            }
+        }
+
+        // Fortune Teller: 50% Dealer's cards are drawn face up
+        if (dealerAbilities.dealerFirst?.type === 'revealFirstCard' && !hand.isPlayer && hand.cards.length === 0) {
+            if (Math.random() < dealerAbilities.dealerFirst.chance) {
+                card.hidden = false;
             }
         }
 
