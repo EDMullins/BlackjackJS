@@ -1,38 +1,118 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Young+Serif&display=swap');
 
 :root {
-    --primary-color: #edd51e;
-    --primary-color-hover: #237856;
-    --background-color: #7fb572;
-    --background-color-secondary: #14564b;
-    --shadow-color: #094d36;
-    --soft-text-color: #496e3f;
     --primary-font: 'Noto Serif', serif;
     --secondary-font: 'Young Serif', serif;
+
+    --primary-color: #edd51e;
+    --background-color: #7fb572;
+    --background-color-secondary: #14564b;
+    --background-color-tertiary: #eaeaea;
+    --shadow-color: #094d36;
+    --text-color: #edd51e;
+    --soft-text-color: #496e3f;
+    --button-bg: #edd51e;
+    --button-text: #094d36;
+    --button-bg-hover: #237856;
+    --button-text-hover: #edd51e;
     --header-gradient-1: rgba(20, 86, 75, 0.95);
     --header-gradient-2: rgba(20, 86, 75, 0.9);
 }
 
 [data-theme="light"] {
     --primary-color: #404040;
-    --primary-color-hover: #ebebeb;
-    --background-color: #dbd9d2;
-    --background-color-secondary: #b9b9b9;
+    --background-color: #d2dbd9;
+    --background-color-secondary: #cecece;
+    --background-color-tertiary: #e8e1e1;
     --shadow-color: #d9d9d9;
+    --text-color: #181818;
     --soft-text-color: #7d7d7d;
-    --header-gradient-1: rgba(150, 150, 150, 0.95);
-    --header-gradient-2: rgba(150, 150, 150, 0.9);
+    --button-bg: #dfdfdf;
+    --button-text: #222222;
+    --button-bg-hover: #4a4b4b;
+    --button-text-hover: #e2f0ea;
+    --header-gradient-1: rgba(200, 200, 200, 0.95);
+    --header-gradient-2: rgba(220, 220, 220, 0.9);
 }
 
 [data-theme="dark"] {
-    --primary-color: #ececec;
-    --primary-color-hover: #323232;
-    --background-color: #505050;
-    --background-color-secondary: #2d2d2d;
-    --shadow-color: #282828;
-    --soft-text-color: #000000;
-    --header-gradient-1: rgba(39, 39, 39, 0.95);
-    --header-gradient-2: rgba(39, 39, 39, 0.9);
+    --primary-color: #eaeaea;
+    --background-color: #686868;
+    --background-color-secondary: #414141;
+    --background-color-tertiary: #eaeaea;
+    --shadow-color: #000000;
+    --text-color: #e7e7e7;
+    --soft-text-color: #101010;
+    --button-bg: #242424;
+    --button-text: #f4f4f4;
+    --button-bg-hover: #d8d8d8;
+    --button-text-hover: #000000;
+    --header-gradient-1: rgba(40, 40, 40, 0.95);
+    --header-gradient-2: rgba(40, 40, 40, 0.9);
+}
+
+[data-theme="gambler"] {
+    --primary-color: #ffd700;
+    --background-color: #4a2c1a;
+    --background-color-secondary: #2d1b0f;
+    --background-color-tertiary: #6b3a24;
+    --shadow-color: #1a0f05;
+    --text-color: #ffd700;
+    --soft-text-color: #d4a574;
+    --button-bg: #ff6b00;
+    --button-text: #fff8dc;
+    --button-bg-hover: #ffd700;
+    --button-text-hover: #1a0f05;
+    --header-gradient-1: rgba(106, 58, 36, 0.95);
+    --header-gradient-2: rgba(139, 69, 19, 0.9);
+}
+
+[data-theme="ironWallet"] {
+    --primary-color: #d3d3d3;
+    --background-color: #3d3d3d;
+    --background-color-secondary: #252525;
+    --background-color-tertiary: #555555;
+    --shadow-color: #0a0a0a;
+    --text-color: #e8e8e8;
+    --soft-text-color: #999999;
+    --button-bg: #808080;
+    --button-text: #ffffff;
+    --button-bg-hover: #a9a9a9;
+    --button-text-hover: #1a1a1a;
+    --header-gradient-1: rgba(50, 50, 50, 0.95);
+    --header-gradient-2: rgba(70, 70, 70, 0.9);
+}
+
+[data-theme="luckyStreak"] {
+    --primary-color: #00ff00;
+    --background-color: #1a3a1a;
+    --background-color-secondary: #0d1f0d;
+    --background-color-tertiary: #2d5a2d;
+    --shadow-color: #051505;
+    --text-color: #00ff00;
+    --soft-text-color: #66cc66;
+    --button-bg: #00dd00;
+    --button-text: #001a00;
+    --button-bg-hover: #00ff00;
+    --button-text-hover: #000000;
+    --header-gradient-1: rgba(13, 51, 13, 0.95);
+    --header-gradient-2: rgba(25, 76, 25, 0.9);
+}
+
+[data-theme="paradisePink"] {
+    --primary-color: #fffdec;
+    --background-color: #ffc5d3;
+    --background-color-secondary: #822e5b;
+    --background-color-tertiary: #f5b5c9;
+    --shadow-color: #4d0937;
+    --text-color: #fffdec;
+    --soft-text-color: #bf5c73;
+    --button-bg: #ff69b4;
+    --button-text: #ffffff;
+    --button-bg-hover: #ffaad7;
+    --button-text-hover: #3c3c3c;
+    --header-gradient-1: rgba(129, 32, 74, 0.95);
+    --header-gradient-2: rgba(129, 32, 74, 0.9);
 }
 
 body {
@@ -67,17 +147,17 @@ h4 {
 }
 
 .btn-primary {
-    background-color: var(--primary-color) !important;
+    background-color: var(--button-bg) !important;
     font-family: var(--primary-font) !important;
     border: none !important;
-    color: var(--background-color-secondary) !important;
+    color: var(--button-text) !important;
     font-weight: bold !important;
     box-shadow: 3px 3px 0 var(--shadow-color);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-color-hover) !important;
-    color: var(--primary-color) !important;
+    background-color: var(--button-bg-hover) !important;
+    color: var(--button-text-hover) !important;
     box-shadow: 5px 5px 0 var(--shadow-color);
 }
 
@@ -99,6 +179,12 @@ h4 {
     width: 145px;
     border-radius: 6px;
     box-shadow: 2px 2px 5px var(--shadow-color);
+}
+
+.cardImage[style*="cursor: pointer"]:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px var(--primary-color), 2px 2px 5px var(--shadow-color);
+    filter: brightness(1.1);
 }
 
 .cardImage:first-child {
@@ -151,14 +237,15 @@ h4 {
     height: 60px;
 }
 
-#split, #double {
+#split,
+#double {
     width: 80px !important;
 }
 
 .menuPanel {
     z-index: 3;
     background-color: var(--background-color-secondary);
-    color: var(--primary-color);
+    color: var(--text-color);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -192,7 +279,10 @@ h4 {
         padding: 0.5vw;
         border: none;
         border-radius: 5px;
-        background-color: rgb(232, 232, 232);
+        background-color: var(--background-color-tertiary) !important;
+    }
+    input:focus {
+        outline: 2px solid var(--primary-color);
     }
 }
 
@@ -208,7 +298,7 @@ h4 {
 
 #loginXBtn {
     margin-bottom: 2vw;
-    color: var(--primary-color);
+    color: var(--button-text);
     font-size: 20px;
 }
 
@@ -253,7 +343,7 @@ h4 {
     box-shadow: var(--shadow-color) 3px 1px 15px;
     border: #222222 solid 2px;
     font-family: var(--primary-font);
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .menu-header {
@@ -268,7 +358,9 @@ h4 {
     max-height: 500px;
     overflow: hidden;
 
-    #themeOptions, #dealerOptions, #deckOptions {
+    #themeOptions,
+    #dealerOptions,
+    #deckOptions {
         display: grid;
         grid-template-columns: auto auto auto;
     }
@@ -334,27 +426,27 @@ h4 {
 
 .store-owned {
     background-color: var(--background-color-secondary) !important;
-    color: var(--primary-color) !important;
+    color: var(--text-color) !important;
     border: 2px solid var(--primary-color) !important;
 }
 
 .store-owned:hover {
     background-color: var(--background-color-secondary) !important;
-    color: var(--primary-color) !important;
+    color: var(--text-color) !important;
     border-color: var(--primary-color) !important;
     opacity: 1;
-    box-shadow: 0 0 8px rgba(235, 213, 30, 0.3) !important;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .store-unowned {
     background-color: var(--shadow-color) !important;
-    color: var(--primary-color) !important;
+    color: var(--text-color) !important;
     border: 2px solid var(--shadow-color) !important;
 }
 
 .store-unowned:not(:disabled):hover {
     background-color: var(--background-color-secondary) !important;
-    color: var(--primary-color) !important;
+    color: var(--text-color) !important;
     border-color: var(--primary-color) !important;
     opacity: 1;
     box-shadow: 0 0 8px rgba(235, 213, 30, 0.3) !important;
@@ -377,7 +469,7 @@ footer {
     border-top: 4px solid var(--shadow-color);
     border-radius: 15px 15px 0 0;
     background-color: var(--background-color-secondary);
-    color: var(--primary-color);
+    color: var(--text-color);
     transition: padding-top 0.2s ease-out, background-color 0.2s ease;
     transform: translateY(0px);
 }
@@ -436,7 +528,7 @@ footer {
     border-radius: 10px;
     padding: 8px;
     transition: box-shadow 0.3s ease, background-color 0.3s ease;
-    min-width: 0; /* allow flex shrink */
+    min-width: 0;
 }
 
 .splitHandCol.active-split-hand {
@@ -483,7 +575,9 @@ footer {
     #storeSection {
         min-width: 300px;
 
-        #themeOptions, #dealerOptions, #deckOptions {
+        #themeOptions,
+        #dealerOptions,
+        #deckOptions {
             grid-template-columns: auto;
         }
     }

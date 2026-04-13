@@ -113,7 +113,7 @@ export class UIController {
 
     // --- Card Rendering ---
 
-    renderCard(card, hand, hidden) {
+    renderCard(card, hand, hidden, cardIndex = null) {
         let container = this.dealerCardSection;
 
         if (hand.isPlayer) {
@@ -128,6 +128,9 @@ export class UIController {
 
         const wrapper = document.createElement('div');
         wrapper.className = 'cardSlideWrapper';
+        if (cardIndex !== null) {
+            wrapper.dataset.cardIndex = cardIndex;
+        }
 
         const dealer = document.createElement('img');
         dealer.src = this.store.getItem("dealers", this.store.getEquipped("dealers")).armImagePath;
@@ -137,6 +140,18 @@ export class UIController {
         img.className = 'cardImage';
         img.src = card.getImage(this.store.getItem("decks", this.store.getEquipped("decks")).cardImagePath);
         img.alt = hidden ? "Hidden Card" : card.rank;
+
+        // If player has redraws available (paradise pink theme) and this is a player card, make it clickable
+        if (this.game.gameActive && hand.isPlayer && !hidden && this.game.redrawsUsed < this.game.redrawsAvailable) {
+            console.log(`Card at index ${cardIndex} is clickable for redraw`);
+            img.style.cursor = 'pointer';
+            const cardIdx = cardIndex;
+            img.onclick = (e) => {
+                if(!this.game.gameActive) return; // Prevent interaction if game is inactive
+                e.stopPropagation();
+                this.game.redrawCard(hand, cardIdx);
+            };
+        }
 
         wrapper.appendChild(dealer);
         wrapper.appendChild(img);
@@ -158,6 +173,24 @@ export class UIController {
         // Map all hand values into a string like "18" or "14 | 20"
         const values = game.playerHands.map(h => h.getValue()).join(" | ");
         this.playerValueDisplay.textContent = `Player's Hand: ${values}`;
+    }
+
+    removeCardFromRender(hand, cardIndex) {
+        let container = this.dealerCardSection;
+
+        if (hand.isPlayer) {
+            const handIndex = this.game.playerHands.indexOf(hand);
+            if (this.game.playerHands.length > 1 && handIndex !== -1) {
+                container = document.querySelector(`.splitHandCol[data-hand-index="${handIndex}"] .cardSection`);
+            } else {
+                container = this.playerCardSection;
+            }
+        }
+
+        const wrappers = container.querySelectorAll('.cardSlideWrapper');
+        if (cardIndex >= 0 && cardIndex < wrappers.length) {
+            wrappers[cardIndex].remove();
+        }
     }
 
     revealDealerHiddenCard(dealerHand) {
@@ -396,9 +429,15 @@ export class UIController {
         } else {
             // Not owned - show buy button
             btn.classList.add("btn-secondary", "store-unowned");
-            btn.innerHTML = getButtonHTML(`${item.name} - $${item.cost}`, item.description);
+            let canAfford = false;
+            if (type === 'themes') {
+                btn.innerHTML = getButtonHTML(`${item.name} - Lvl ${item.level}`, item.description);
+                canAfford = this.game.player.level >= item.level;
+            } else {
+                btn.innerHTML = getButtonHTML(`${item.name} - $${item.cost}`, item.description);
+                canAfford = this.game.player.money >= item.cost;
+            }
 
-            const canAfford = this.game.player.money >= item.cost;
             btn.disabled = !canAfford;
 
             if (!canAfford) {

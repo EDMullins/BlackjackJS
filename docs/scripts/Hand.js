@@ -49,4 +49,12 @@ export class Hand {
   clear() {
     this.cards = [];
   }
+
+  removeCard(index) {
+    if (index >= 0 && index < this.cards.length) {
+      this.cards.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
 }

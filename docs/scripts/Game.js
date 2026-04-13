@@ -24,6 +24,10 @@ export class Game {
 
         this.activeAbilities = {};
 
+        // Redraw tracking
+        this.redrawsAvailable = 0;
+        this.redrawsUsed = 0;
+
         this.ui.bindGameEvents(this);
         this.ui.bindAuthEvents(auth);
         this.auth.init(this);
@@ -38,6 +42,10 @@ export class Game {
 
         // Get active abilities from store
         this.activeAbilities = this.ui.store.getActiveAbilities();
+
+        // Initialize redraws for this hand
+        this.redrawsAvailable = this.ui.store.hasRedraws();
+        this.redrawsUsed = 0;
         const deckAbilities = this.activeAbilities.deck;
 
         // Create deck with ability modifiers
@@ -70,9 +78,38 @@ export class Game {
         card = this.applyDealerAbilities(card, hand);
 
         hand.addCard(card, card.hidden);
-        this.ui.renderCard(card, hand, card.hidden);
+        this.ui.renderCard(card, hand, card.hidden, hand.cards.length - 1);
         await this.delay(400);
         this.ui.updateHandValue(hand, hand.getValue(), this);
+    }
+
+    async redrawCard(hand, cardIndex) {
+        if (this.redrawsUsed >= this.redrawsAvailable) {
+            return; // No redraws available
+        }
+
+        // Remove the card at the index
+        hand.removeCard(cardIndex);
+        this.ui.removeCardFromRender(hand, cardIndex);
+        await this.delay(200);
+
+        // Draw a new card
+        let card = this.deck.drawCard();
+        card = this.applyDealerAbilities(card, hand);
+        hand.addCard(card);
+        this.ui.renderCard(card, hand, false, hand.cards.length - 1);
+        await this.delay(400);
+
+        this.redrawsUsed++;
+        this.ui.updateHandValue(hand, hand.getValue(), this);
+
+        // Recheck if split is now possible after redraw
+        if (hand.isPlayer && hand === this.playerHands[0] && hand.canSplit()) {
+            const canDouble = this.player.money >= this.totalBet + this.originalBet;
+            if (canDouble) {
+                this.ui.showSplitButton();
+            }
+        }
     }
 
     // --- Player Actions ---

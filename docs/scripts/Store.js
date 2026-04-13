@@ -6,12 +6,11 @@ const db = getFirestore();
 export class Store {
     constructor(player) {
         this.player = player;
-        
+
         // Themes have abilities that affect the player's hand and gameplay
         this.themes = {
             default: {
                 name: "Default",
-                cost: 0,
                 level: 0,
                 value: "default",
                 description: "The classic green felt theme",
@@ -19,7 +18,6 @@ export class Store {
             },
             light: {
                 name: "Light",
-                cost: 10,
                 level: 1,
                 value: "light",
                 description: "A light, minimalist theme",
@@ -27,7 +25,6 @@ export class Store {
             },
             dark: {
                 name: "Dark",
-                cost: 50,
                 level: 2,
                 value: "dark",
                 description: "A dark, sleek theme",
@@ -35,7 +32,6 @@ export class Store {
             },
             gambler: {
                 name: "Gambler",
-                cost: 2000,
                 level: 5,
                 value: "gambler",
                 description: "On a loss, keep 25% of the bet",
@@ -45,7 +41,6 @@ export class Store {
             },
             ironWallet: {
                 name: "Iron Wallet",
-                cost: 2500,
                 level: 8,
                 value: "ironWallet",
                 description: "Never lose more than 40% of total money in a single hand. Max bet reduced by 30%.",
@@ -56,7 +51,6 @@ export class Store {
             },
             luckyStreak: {
                 name: "Lucky Streak",
-                cost: 2500,
                 level: 7,
                 value: "luckyStreak",
                 description: "On 3rd win, gives +50% payout. After 2 losses, lose +25%.",
@@ -67,7 +61,6 @@ export class Store {
             },
             paradisePink: {
                 name: "Paradise Pink",
-                cost: 3000,
                 level: 10,
                 value: "paradisePink",
                 description: "Once per hand, redraw a card you just drew",
@@ -266,7 +259,7 @@ export class Store {
     // If pending=true, queues change for after current round. If pending=false, applies immediately.
     equipItem(type, value, pending = false) {
         if (!this.ownsItem(type, value)) return false;
-        
+
         if (pending) {
             // Queue the change for after round ends
             if (!this.pendingEquipped) {
@@ -296,12 +289,17 @@ export class Store {
     // Purchase item
     buyItem(type, value) {
         const item = this.getItem(type, value);
-        
+
         if (!item) return { success: false, message: "Item not found" };
         if (this.ownsItem(type, value)) return { success: false, message: "Already own this" };
+        if (type === 'themes' && this.player.level < item.level) return { success: false, message: `Requires level ${item.level}` };
         if (this.player.money < item.cost) return { success: false, message: "Not enough money" };
 
-        this.player.money -= item.cost;
+        // Themes are free but require level unlock
+        if (type !== 'themes') {
+            this.player.money -= item.cost;
+        }
+
         if (!this.owned[type]) this.owned[type] = {};
         this.owned[type][value] = true;
 
@@ -328,7 +326,7 @@ export class Store {
 
     hasRedraws() {
         const themeAbilities = this.getItem('themes', this.equipped.themes)?.abilities || {};
-        return themeAbilities.onPlayerDraw?.type === 'allowRedraw' ? themeAbilities.onPlayerDraw.perHand : 0;
+        return themeAbilities.onDraw?.type === 'allowRedraw' ? themeAbilities.onDraw.perHand : 0;
     }
 
     getMaxBetReduction() {
@@ -341,7 +339,7 @@ export class Store {
         try {
             const docRef = doc(db, "users", uid);
             const docSnap = await getDoc(docRef);
-            
+
             if (docSnap.exists() && docSnap.data().store) {
                 const data = docSnap.data().store;
                 this.owned = data.owned || this.owned;
