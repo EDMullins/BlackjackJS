@@ -458,7 +458,9 @@ export class UIController {
         this.purchaseMessage.style.color = result.success ? 'green' : 'red';
 
         if (result.success) {
-            await this.store.saveToDb(this.auth.currentUid);
+            if (this.auth && this.auth.currentUid) {
+                await this.store.saveToDb(this.auth.currentUid);
+            }
             this.updatePlayerData(this.game.player);
             this.renderStoreItems();
         }
@@ -471,12 +473,10 @@ export class UIController {
         }
         else if (type === 'dealers') {
             // Update existing dealer arms
-
             this.currentDealer = value;
         }
         else if (type === 'decks') {
             // Update existing card images
-
             this.currentDeck = value;
         }
     }

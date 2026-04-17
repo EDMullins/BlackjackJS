@@ -104,7 +104,7 @@ export class Game {
         this.ui.updateHandValue(hand, hand.getValue(), this);
 
         // Recheck if split is now possible after redraw
-        if (hand.isPlayer && hand === this.playerHands[0] && hand.canSplit()) {
+        if (hand.isPlayer && hand === this.playerHands[0] && hand.canSplit() && this.redrawsUsed < this.redrawsAvailable) {
             const canDouble = this.player.money >= this.totalBet + this.originalBet;
             if (canDouble) {
                 this.ui.showSplitButton();
@@ -370,14 +370,6 @@ export class Game {
         if (themeAbilities.onLoss?.type === 'keepBetPercentage' && action === 0) {
             const keepAmount = Math.floor(betAmount * themeAbilities.onLoss.value);
             modifiedBetAmount = betAmount - keepAmount;
-        }
-
-        // Iron Wallet: Cap losses at 40% of total money. Bet is reduced by 30% in validateBet()
-        if (themeAbilities.lossLimit?.type === 'maxLossPercentage' && action === 0) {
-            const maxLoss = Math.floor(this.player.money * themeAbilities.lossLimit.value);
-            if (modifiedBetAmount > maxLoss) {
-                modifiedBetAmount = maxLoss;
-            }
         }
 
         // Lucky Streak: Bonus on 3 wins, penalty on 2 losses

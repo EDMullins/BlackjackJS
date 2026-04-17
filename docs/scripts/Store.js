@@ -39,16 +39,6 @@ export class Store {
                     onLoss: { type: "keepBetPercentage", value: 0.25 }
                 }
             },
-            ironWallet: {
-                name: "Iron Wallet",
-                level: 8,
-                value: "ironWallet",
-                description: "Never lose more than 40% of total money in a single hand. Max bet reduced by 30%.",
-                abilities: {
-                    lossLimit: { type: "maxLossPercentage", value: 0.40 },
-                    betReduction: { type: "maxBetReduction", value: 0.30 }
-                }
-            },
             luckyStreak: {
                 name: "Lucky Streak",
                 level: 7,
@@ -173,13 +163,13 @@ export class Store {
                     payout: { type: "increasePayout", increase: 0.10 }
                 }
             },
-            hoboDeck: {
-                name: "Hobo Deck",
+            vintageDeck: {
+                name: "Vintage Deck",
                 cost: 2200,
                 level: 6,
-                value: "hoboDeck",
+                value: "vintageDeck",
                 description: "Worn, vintage cards with no face cards. +25% payout.",
-                cardImagePath: "./imgs/hobo/",
+                cardImagePath: "./imgs/vintage/",
                 abilities: {
                     deckComposition: { type: "removeRanks", ranks: ['J', 'Q', 'K'] },
                     payout: { type: "increasePayout", increase: 0.25 }

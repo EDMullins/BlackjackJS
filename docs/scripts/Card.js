@@ -20,8 +20,8 @@ export class Card {
 
   getImage(deckCardPath) {
     if (this.hidden) {
-      return `${deckCardPath}back.png`;
+      return `${deckCardPath}back.jpg`;
     }
-    return `${deckCardPath}${this.rank}.png`;
+    return `${deckCardPath}${this.rank}.jpg`;
   }
 }

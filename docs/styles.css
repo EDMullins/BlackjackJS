@@ -67,22 +67,6 @@
     --header-gradient-2: rgba(139, 69, 19, 0.9);
 }
 
-[data-theme="ironWallet"] {
-    --primary-color: #d3d3d3;
-    --background-color: #3d3d3d;
-    --background-color-secondary: #252525;
-    --background-color-tertiary: #555555;
-    --shadow-color: #0a0a0a;
-    --text-color: #e8e8e8;
-    --soft-text-color: #999999;
-    --button-bg: #808080;
-    --button-text: #ffffff;
-    --button-bg-hover: #a9a9a9;
-    --button-text-hover: #1a1a1a;
-    --header-gradient-1: rgba(50, 50, 50, 0.95);
-    --header-gradient-2: rgba(70, 70, 70, 0.9);
-}
-
 [data-theme="luckyStreak"] {
     --primary-color: #00ff00;
     --background-color: #1a3a1a;
