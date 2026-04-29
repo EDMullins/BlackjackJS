@@ -296,19 +296,6 @@ export class Game {
         const dealerAbilities = this.activeAbilities?.dealer;
         if (!dealerAbilities) return card;
 
-        // Lucky Hands: 20% chance non-face card swaps to face card
-        if (dealerAbilities.onCardDraw?.type === 'nonFaceCardSwap' && hand.isPlayer) {
-            if (card.getValue() < 10) {
-                if (Math.random() < dealerAbilities.onCardDraw.chance) {
-                    const faceCards = ['J', 'Q', 'K'];
-                    const newRank = faceCards[Math.floor(Math.random() * faceCards.length)];
-                    card.rank = newRank;
-                    //TODO: Add visual effect for card swap
-                    console.log('Lucky Hands: Card swapped to face');
-                }
-            }
-        }
-
         // Fortune Teller: 50% Dealer's cards are drawn face up
         if (dealerAbilities.dealerFirst?.type === 'revealFirstCard' && !hand.isPlayer && hand.cards.length === 0) {
             if (Math.random() < dealerAbilities.dealerFirst.chance) {

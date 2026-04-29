@@ -13,28 +13,28 @@ export class Store {
                 name: "Default",
                 level: 0,
                 value: "default",
-                description: "The classic green felt theme",
+                description: "The classic green felt theme<br>No special abilities",
                 abilities: {}
             },
             light: {
                 name: "Light",
                 level: 1,
                 value: "light",
-                description: "A light, minimalist theme",
+                description: "A light, minimalist theme<br>No special abilities",
                 abilities: {}
             },
             dark: {
                 name: "Dark",
                 level: 2,
                 value: "dark",
-                description: "A dark, sleek theme",
+                description: "A dark, sleek theme<br>No special abilities",
                 abilities: {}
             },
             gambler: {
                 name: "Gambler",
                 level: 5,
                 value: "gambler",
-                description: "On a loss, keep 25% of the bet",
+                description: "Yellow/Orange theme<br>On a loss, keep 25% of the bet",
                 abilities: {
                     onLoss: { type: "keepBetPercentage", value: 0.25 }
                 }
@@ -43,9 +43,9 @@ export class Store {
                 name: "Lucky Streak",
                 level: 7,
                 value: "luckyStreak",
-                description: "On 3rd win, gives +50% payout. After 2 losses, lose +25%.",
+                description: "Lucky Green<br>On 3rd win, gives +100% payout. After 2 losses, lose +25%.",
                 abilities: {
-                    onWin: { type: "streakBonus", winsRequired: 2, bonus: 0.50 },
+                    onWin: { type: "streakBonus", winsRequired: 2, bonus: 1.00 },
                     onLoss: { type: "streakPenalty", lossesRequired: 1, penalty: 0.25 }
                 }
             },
@@ -53,7 +53,7 @@ export class Store {
                 name: "Paradise Pink",
                 level: 10,
                 value: "paradisePink",
-                description: "Once per hand, redraw a card you just drew",
+                description: "Pretty pink theme<br>Once per hand, redraw a card you just drew",
                 abilities: {
                     onDraw: { type: "allowRedraw", perHand: 1 }
                 }
@@ -63,67 +63,51 @@ export class Store {
         // Dealers have abilities that affect the dealer's hand and gameplay
         this.dealers = {
             default: {
-                name: "Default Dealer",
+                name: "Default",
                 cost: 0,
-                level: 0,
                 value: "default",
                 description: "The classic dealer hand",
-                armImagePath: "./imgs/hand.png",
+                armImagePath: "./imgs/dealers/hand.png",
                 abilities: {}
             },
-            luckyHands: {
-                name: "Lucky Hands",
-                cost: 1500,
-                level: 4,
-                value: "luckyHands",
-                description: "For Player: Non-face cards have 20% chance to swap to face card when drawn",
-                armImagePath: "./imgs/hand-lucky.png",
+            birdHands: {
+                name: "Friendly Bird",
+                cost: 2000,
+                value: "birdHands",
+                description: "When a card below 5 is drawn, you get 15% of the bet as bonus",
+                armImagePath: "./imgs/dealers/bullocks-oriole.png",
                 abilities: {
-                    onCardDraw: { type: "nonFaceCardSwap", chance: 0.20 }
+                    onCardDraw: { type: "numberedCardBonus", bonus: 0.15 }
                 }
             },
-            fortuneTeller: {
-                name: "Fortune Teller",
-                cost: 2000,
-                level: 6,
-                value: "fortuneTeller",
+            kittyDealer: {
+                name: "Kitty Dealer",
+                cost: 5000,
+                value: "kittyDealer",
                 description: "50% Dealer's first card is dealt face up",
-                armImagePath: "./imgs/hand-fortune.png",
+                armImagePath: "./imgs/dealers/kitty.png",
                 abilities: {
                     dealerFirst: { type: "revealFirstCard", chance: 0.50 }
                 }
             },
             iceKing: {
                 name: "Ice King",
-                cost: 1800,
-                level: 5,
+                cost: 7500,
                 value: "iceKing",
                 description: "Dealer's first card is always 2-6",
-                armImagePath: "./imgs/hand-ice.png",
+                armImagePath: "./imgs/dealers/hand-ice.png",
                 abilities: {
                     dealerFirst: { type: "constrainFirstCard", min: 2, max: 6 }
                 }
             },
             goldHands: {
                 name: "Gold Hands",
-                cost: 2200,
-                level: 7,
+                cost: 10000,
                 value: "goldHands",
                 description: "If a face card is drawn, you get 15% of the bet as bonus",
-                armImagePath: "./imgs/hand-gold.png",
+                armImagePath: "./imgs/dealers/hand-gold.png",
                 abilities: {
                     onCardDraw: { type: "faceCardBonus", bonus: 0.15 }
-                }
-            },
-            humbleHands: {
-                name: "Humble Hands",
-                cost: 2000,
-                level: 6,
-                value: "humbleHands",
-                description: "When a card below 5 is drawn, you get 15% of the bet as bonus",
-                armImagePath: "./imgs/hand-humble.png",
-                abilities: {
-                    onCardDraw: { type: "numberedCardBonus", bonus: 0.15 }
                 }
             }
         };
@@ -133,58 +117,53 @@ export class Store {
             default: {
                 name: "Standard Deck",
                 cost: 0,
-                level: 0,
                 value: "default",
                 description: "A standard 52-card deck with classic card art",
-                cardImagePath: "./imgs/default/",
+                cardImagePath: "./imgs/decks/default/",
                 abilities: {}
             },
-            royalDeck: {
-                name: "Royal Deck",
-                cost: 2000,
-                level: 5,
-                value: "royalDeck",
-                description: "Luxurious gold-trimmed cards. +20% face card chance. +10% payout",
-                cardImagePath: "./imgs/royal/",
+            avianDeck: {
+                name: "Avian Deck",
+                cost: 2500,
+                value: "avianDeck",
+                description: "Bird themed cards<br>Completely random ranks. +25% payout.",
+                cardImagePath: "./imgs/decks/avian/",
                 abilities: {
-                    deckComposition: { type: "increaseFaceCards", increase: 0.20 },
-                    payout: { type: "increasePayout", increase: 0.10 }
-                }
-            },
-            slimDeck: {
-                name: "Slim Deck",
-                cost: 1800,
-                level: 4,
-                value: "slimDeck",
-                description: "Removes all 2s and 3s with minimalist design. +10% payout.",
-                cardImagePath: "./imgs/slim/",
-                abilities: {
-                    deckComposition: { type: "removeRanks", ranks: ['2', '3'] },
-                    payout: { type: "increasePayout", increase: 0.10 }
+                    deckComposition: { type: "randomizeCardValues" },
+                    payout: { type: "increaseAllPayout", increase: 0.25 }
                 }
             },
             vintageDeck: {
                 name: "Vintage Deck",
-                cost: 2200,
-                level: 6,
+                cost: 5000,
                 value: "vintageDeck",
-                description: "Worn, vintage cards with no face cards. +25% payout.",
-                cardImagePath: "./imgs/vintage/",
+                description: "Vintage cards<br>no face cards. +25% payout.",
+                cardImagePath: "./imgs/decks/vintage/",
                 abilities: {
                     deckComposition: { type: "removeRanks", ranks: ['J', 'Q', 'K'] },
                     payout: { type: "increasePayout", increase: 0.25 }
                 }
             },
-            wildDeck: {
-                name: "Wild Deck",
-                cost: 2500,
-                level: 8,
-                value: "wildDeck",
-                description: "Completely random ranks. +25% payout.",
-                cardImagePath: "./imgs/wild/",
+            slimDeck: {
+                name: "Slim Deck",
+                cost: 7500,
+                value: "slimDeck",
+                description: "Removes all 2s and 3s with minimalist design. +10% payout.",
+                cardImagePath: "./imgs/decks/slim/",
                 abilities: {
-                    deckComposition: { type: "randomizeCardValues" },
-                    payout: { type: "increaseAllPayout", increase: 0.25 }
+                    deckComposition: { type: "removeRanks", ranks: ['2', '3'] },
+                    payout: { type: "increasePayout", increase: 0.10 }
+                }
+            },
+            royalDeck: {
+                name: "Royal Deck",
+                cost: 10000,
+                value: "royalDeck",
+                description: "Luxurious gold-trimmed cards. +20% face card chance. +10% payout",
+                cardImagePath: "./imgs/decks/royal/",
+                abilities: {
+                    deckComposition: { type: "increaseFaceCards", increase: 0.20 },
+                    payout: { type: "increasePayout", increase: 0.10 }
                 }
             }
         };
@@ -334,7 +313,6 @@ export class Store {
                 const data = docSnap.data().store;
                 this.owned = data.owned || this.owned;
                 this.equipped = data.equipped || this.equipped;
-                // pendingEquipped is not persisted - kept in memory only
             }
         } catch (error) {
             console.error("Error loading store:", error);

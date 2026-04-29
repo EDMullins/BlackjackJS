@@ -53,18 +53,18 @@
 
 [data-theme="gambler"] {
     --primary-color: #ffd700;
-    --background-color: #4a2c1a;
+    --background-color: #ac613e;
     --background-color-secondary: #2d1b0f;
     --background-color-tertiary: #6b3a24;
     --shadow-color: #1a0f05;
     --text-color: #ffd700;
-    --soft-text-color: #d4a574;
+    --soft-text-color: #56301e;
     --button-bg: #ff6b00;
     --button-text: #fff8dc;
     --button-bg-hover: #ffd700;
     --button-text-hover: #1a0f05;
-    --header-gradient-1: rgba(106, 58, 36, 0.95);
-    --header-gradient-2: rgba(139, 69, 19, 0.9);
+    --header-gradient-1: rgba(74, 44, 26, 0.95);
+    --header-gradient-2: rgba(74, 44, 26, 0.90);
 }
 
 [data-theme="luckyStreak"] {

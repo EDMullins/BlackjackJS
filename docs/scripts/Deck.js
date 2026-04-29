@@ -40,7 +40,7 @@ export class Deck {
       }
     }
 
-    // Wild Deck: Randomize card ranks. There can be more or less than 4 of each rank.
+    // Avian Deck: Randomize card ranks. There can be more or less than 4 of each rank.
     if (this.abilityModifiers.deckComposition?.type === 'randomizeCardValues') {
       for (let card of deck) {
         const randomRank = ranks[Math.floor(Math.random() * ranks.length)];
